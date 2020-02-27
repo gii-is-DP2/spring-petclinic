@@ -24,6 +24,8 @@ import java.util.logging.Logger;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.omg.PortableInterceptor.ORBInitInfoPackage.DuplicateName;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -106,6 +108,38 @@ class PetServiceTests {
 		pet.setName("bowser");
 		Collection<PetType> types = this.petService.findPetTypes();
 		pet.setType(EntityUtils.getById(types, PetType.class, 2));
+		pet.setBirthDate(LocalDate.now());
+		owner6.addPet(pet);
+		assertThat(owner6.getPets().size()).isEqualTo(found + 1);
+
+            try {
+                this.petService.savePet(pet);
+            } catch (DuplicatedPetNameException ex) {
+                Logger.getLogger(PetServiceTests.class.getName()).log(Level.SEVERE, null, ex);
+            }
+		this.ownerService.saveOwner(owner6);
+
+		owner6 = this.ownerService.findOwnerById(6);
+		assertThat(owner6.getPets().size()).isEqualTo(found + 1);
+		// checks that id has been generated
+		assertThat(pet.getId()).isNotNull();
+	}
+	
+	@ParameterizedTest
+	@CsvSource({
+	    "name1,         1",
+	    "name2,         2",
+	    "name3,         3"
+	})
+	@Transactional
+	public void shouldInsertSeveralPetsIntoDatabaseAndGenerateId(String petName, int petTypeId) {
+		Owner owner6 = this.ownerService.findOwnerById(6);
+		int found = owner6.getPets().size();
+
+		Pet pet = new Pet();
+		pet.setName(petName);
+		Collection<PetType> types = this.petService.findPetTypes();
+		pet.setType(EntityUtils.getById(types, PetType.class, petTypeId));
 		pet.setBirthDate(LocalDate.now());
 		owner6.addPet(pet);
 		assertThat(owner6.getPets().size()).isEqualTo(found + 1);
