@@ -1,0 +1,12 @@
+﻿Nivel de acabado
+El equipo aspirará a un nivel de 8 puntos con una aplicación de nivel 2.
+
+
+Justificación de nivel
+Tras varias reuniones en grupo y algunos brainstormings, se decidieron las entidades que formarán parte de la aplicación así como las relaciones entre estas y una idea de cómo se deberían ver una vez implementadas. Estas historias de usuario se asignaron por parejas y una vez estuvieron hechas todas se pusieron en común con el grupo para corregir errores. Tras esto, se redactó la documentación de manera grupal sin ninguna parte asignada a ningún grupo en concreto.
+
+
+Retrospectiva
+En general, el equipo de desarrollo ha realizado el Sprint sin demasiados inconvenientes, gracias a una buena organización y a un reparto equitativo de las tareas.
+El trabajo en parejas ha resultado útil a la hora de resolver dudas de manera rápida, y la corrección por parejas nos ha ayudado a detectar problemas con relativa facilidad.
+El tiempo dedicado por cada grupo está entorno a la hora y media de trabajo en las historias de usuarios, sumándole a estas alrededor de las dos horas para la planificación de las historias de usuario y otras dos horas para la realización de los documentos a entregar.

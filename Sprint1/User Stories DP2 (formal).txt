@@ -1,0 +1,150 @@
+﻿Historias de usuario
+Historia 1: Reserva de habitación en guardería
+Como owner quiero poder reservar una habitación en la guardería para que mi mascota reciba los cuidados necesarios cuando yo no esté disponible.
+Escenario positivo: Que el sistema registre la reserva y almacene los datos, de forma que la reserva esté presente al momento de ingresar a mi mascota en la guardería.
+Escenario negativo: Que el sistema aparente el registro de la reserva, pero al momento de ingresar a mi mascota a la guardería, la reserva no exista.
+
+
+Historia 2: Cancelación de reserva de habitaciones de animales.
+Como owner, quiero poder cancelar la reserva de habitación de mi mascota para que si finalmente no necesito dejar a mi mascota en la guardería no tenga que hacerlo.
+Escenario positivo: Cancelar la reserva de una habitación y que esta se haya borrado de la base de datos.
+Escenario negativo:Cancelar la reserva de una habitación y que esta no se haya borrado de la base de datos.
+
+
+Historia 3: Consultar información sobre la reserva de habitación para animales.
+Como owner, quiero poder consultar información sobre la reserva de habitación de mi mascota para tener claro los detalles de la reserva.
+Escenario positivo: Consultar información de una reserva de habitación y que se muestre toda la información importante para un owner.
+Escenario negativo: Consultar información de una reserva de habitación y no se muestre toda la información que debería o parte de ella.
+
+
+Historia 4: Modificar reserva de habitación en guardería
+Como owner quiero poder modificar mi reserva de habitación en la guardería para poder cambiar las características en caso de que haya cambiado de opinión o surja algún imprevisto.
+Escenario positivo: Que el sistema modifique y almacene correctamente los datos de la reserva.
+Escenario negativo: Que el sistema no modifique mi reserva y se mantengan los datos iniciales.
+
+
+Historia 5: Consultar animales que tienen reservada una habitación
+Como administrador, quiero poder consultar qué animales tienen reservada una habitación para tener un registro de las reservas que se han realizado.
+Escenario positivo: Acceder a los datos de las reservas y que estas muestren todas las reservas correspondientes a la consulta.
+Escenario negativo: Que la consulta no acceda al listado de las reservas o que no muestre todas las reservas de la base de datos.
+
+
+Historia 6: Solicitar cita para la peluquería.
+Como owner, quiero poder solicitar cita para la peluquería para evitar colas a la hora de cortarle el pelo a mi mascota.
+Escenario positivo: Solicitar una cita para peluquería y que ésta se guarde en la base de datos.
+Escenario negativo: Que dos citas para el mismo momento se guarden en la base de datos.
+
+
+Historia 7: Cancelar una cita de peluquería.
+Como owner, quiero poder cancelar una cita de peluquería para que si finalmente decido que no la quiero la hora de la cita quede libre.
+Escenario positivo: Cancelar una cita de peluquería y que esta se haya borrado de la base de datos, quedando disponible el horario para otros owners.
+Escenario negativo: Cancelar la reserva de una habitación y que esta no se haya borrado de la base de datos.
+
+
+Historia 8: Modificar una cita de la peluquería
+Como owner, quiero poder modificar mi cita en la peluquería para que la reserva sea acorde a mis preferencias.
+Escenario positivo: Que el sistema modifique y almacene correctamente los datos de la reserva.
+Escenario negativo: Que el sistema no modifique mi reserva y se mantengan los datos iniciales.
+
+
+Historia 9: Consultar información sobre las citas.
+Como owner, quiero poder consultar información sobre la citas de mis animales para la peluquería para tener claro los detalles de las citas.
+Escenario positivo: Consultar información de una cita y que se muestre toda la información importante para un owner.
+Escenario negativo: Consultar información de una cita y que salte un error o no se muestre toda la información que debería o parte de ella.
+
+
+Historia 10: Consultar animales que tienen reservada una peluquería.
+Como administrador, quiero poder listar los animales que tienen cita en la peluquería para tener un registro de las citas que se han solicitado.
+Escenario positivo: Teniendo una cita en peluquería, que el sistema me muestre correctamente la mascota y horario de la cita.
+Escenario negativo: Teniendo una cita en peluquería, que el sistema no me la muestre, o me la muestre con fecha o mascota erróneos.  
+
+
+Historia 11: Reserva de entrenamiento
+Como owner, quiero poder reservar entrenamientos para poder entrenar a mi mascota en lugares especialmente diseñados para ello.
+Escenario positivo: Que el sistema permita la creación de un entrenamiento y el sistema almacene los datos correspondientes a la creación de este.
+Escenario negativo: La aparente correcta creación de la reserva de una entrenamiento y que estos datos no sean almacenados en la base de datos.
+
+
+Historia 12: Cancelación de una reserva de entrenamiento.
+Como owner, quiero poder cancelar una reserva de entrenamiento para dejar la reserva libre para otra persona
+Escenario positivo: Cancelar la reserva de una pista y que esta se haya borrado de la base de datos.
+Escenario negativo: Cancelar la reserva de una pista y que esta no se haya borrado de la base de datos.
+
+
+Historia 13: Actualizar reserva de un entrenamiento.
+Como owner, quiero poder actualizar un entrenamiento para poder cambiar la pista del entrenamiento o incluso el entrenador en caso de que fuese necesario.
+Escenario positivo: Actualizar un entrenamiento y que los cambios se hayan realizado correctamente.
+Escenario negativo: Actualizar un entrenamiento y que los cambios no se hayan realizado correctamente.
+
+
+Historia 14: Consultar las reservas de entrenamientos de mis mascotas.
+Como owner, quiero poder consultar qué reservas tengo hechas con mis animales  para tener un registro de las reservas que he realizado.
+Escenario positivo: Acceder a los datos de mis reservas de entrenamientos y que estas muestren los datos correspondientes a la consulta.
+Escenario negativo: Que la consulta no acceda a mis reservas de entrenamientos y por lo tanto no se muestren correctamente los datos.
+
+
+Historia 15: Asignar entrenador.
+Como owner, quiero poder seleccionar el entrenador que quiero que entrene a mi mascota para poder elegir así el entrenador que más me convenga.
+Escenario positivo: Contratar un entrenador y que la reserva de dicho entrenador se guarde en la base de datos.
+Escenario negativo: Contratar un entrenador y que la reserva de dicho entrenador no se guarde en la base de datos.
+
+
+Historia 16: Creación de un entrenador.
+Como administrador, quiero poder añadir nuevos entrenadores para poder tener guardados los entrenadores entrenadores contratado.
+Escenario positivo: Rellenar el formulario con los datos del entrenador y que al crearlo se añada a la base de datos.
+Escenario negativo: Rellenar el formulario con los datos del entrenador y que al crearlo no se añada ala base de datos.
+
+
+Historia 17: Consultar entrenadores
+Como administrador, quiero listar los entrenadores para poder mostrar al público los datos de los entrenadores que están a su disposición.
+Escenario positivo: Acceder a los datos de los entrenadores y que el sistema los muestre de forma correcta.
+Escenario negativo: Que la consulta no acceda al listado de las reservas o que no muestre todos los datos correspondientes a la misma.
+
+
+Historia 18: Consultar las reservas de entrenamiento de mis mascotas.
+Como administrador, quiero poder consultar qué reservas de entrenamientos se han hecho  para tener un registro de las reservas de entrenamientos que se han realizado. 
+Escenario positivo: Acceder a los datos de las reservas de entrenamientos y que se muestren los datos correctamente.
+Escenario negativo: Que la consulta no acceda a las reservas de entrenamientos y por ello no se muestren.
+
+
+Historia 19: Consultar citas que tiene un animal 
+Como owner, quiero poder consultar las citas de peluquería de una mascota para recopilar las citas asociadas al mismo.
+Escenario positivo: Consultar las citas que tiene un animal y mostrarlas de forma correcta.
+Escenario negativo: Que la consulta acceda a las citas de otro animal.
+
+
+Historia 20: Listar entrenamientos que tiene un entrenador.
+Como admin, quiero poder listar todos los entrenamientos que tiene un entrenador para tener información sobre las actividades de los entrenadores y su carga de trabajo
+Escenario positivo: Listar los entrenamientos que tiene un entrenador y que se muestren todos.
+Escenario negativo: Listar todos los entrenamientos que tiene un entrenador y no aparezcan los entrenamientos pasados.
+
+
+Entidades
+* Reserva (hotel)
+* Cita (peluquería)
+* Entrenamiento
+* Entrenador
+* Mascota
+* Owner
+* Cita (veterinario)
+* Administrador
+* Veterinario
+
+
+Descripción
+Nuestro proyecto se basará en una ampliación de la aplicación proporcionada en la asignatura.
+Los cambios que realizaremos serán la creación de una guardería para los animales, que permita a los dueños de los mismos dejarlos durante un periodo de tiempo al cuidado de la guardería; la creación de una peluquería donde de nuevo los dueños puedan llevar a sus mascotas para diferentes tipos de cuidados cosméticos y la posibilidad de reservar un entrenamiento, teniendo la posibilidad a su vez de contratar a un entrenador, para adiestrar a las mascotas en lugares diseñados específicamente para ellas.
+Todo esto a su vez dispondrá de funcionalidades de creación, modificación y eliminación de las nuevas entidades, así como consultas a los datos más relevantes.
+
+
+
+
+Planificación
+Para nuestra modificación del proyecto de ejemplo de spring Pet Clinic se implementarán las historias de usuario definidas anteriormente enfocadas a proveer de mayor variedad servicios a la página. Estas se repartirán de manera que cada subgrupo (dos parejas y un trío) tenga que implementar historias que incumban a una misma funcionalidad.
+Por lo tanto el reparto de historias sería el siguiente:
+* Pareja de Antonio y Enrique: historias desde la 1 hasta la 5 (guardería).
+* Pareja de Jose y Alonso: historias desde la 6 hasta la 10 (peluquería).
+* Trío formado por David, Ian y Federico: historias desde la 11 hasta 20 (entrenamientos).
+Para el sprint dos, cada pareja hará las cuatro primeras historias que le correspondan como mínimo (la pareja de Antonio y Enrique hará las historias 1, 2, 3 y 4 y la de Jose y Alonso hará las historias 6, 7, 8 y 9) y el trío hará las seis primeras historias (las historias 11, 12, 13, 14, 15 y 16).
+Para el sprint tres, los tres grupos implementarán una historia cada uno, así como los tests correspondientes.
+Para el sprint cuatro, El trío con ayuda de las parejas si fuera necesario, terminará sus historias de usuario, y se repartirá los tests de manera que la carga de trabajo sea equitativa.
