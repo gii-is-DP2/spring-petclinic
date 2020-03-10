@@ -30,11 +30,8 @@
         </ul>
         <ul class="navbar-nav">
             <sec:authorize access="!isAuthenticated()">
-                <li class="nav-item">
-                    <a class="nav-link btn btn-primary mr-2" href="/login">Iniciar sesión</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link btn btn-secondary" href="/users/new">Registrarse</a>
+                <li class="nav-item ${currentPage eq 'clients' ? 'active' : ''}">
+                    <a class="nav-link btn btn-sm btn-primary mr-2" href="/clients">Área clientes</a>
                 </li>
             </sec:authorize>
             <sec:authorize access="isAuthenticated()">
