@@ -7,12 +7,12 @@
 <petclinic:layout currentPage="home">
     <div class="jumbotron landing">
 		<div class="container">
-			<h1 class="display-4" style="font-weight: normal;">Bienvenido a clinicas Corona.</h1>
+			<h1 class="display-4" style="font-weight: normal;">Clínicas <strong><em>Corona</em></strong></h1>
 			<p class="lead">This is a simple hero unit, a simple jumbotron-style component for calling extra attention to
 				featured content or information.</p>
-			<hr class="my-4" style="background-color:rgba(255,255,255,0.1);">
+			<hr class="my-4" style="height:2px;background-color:rgba(255,255,255,0.1);">
 			<p>It uses utility classes for typography and spacing to space content out within the larger container.</p>
-			<a class="btn btn-primary btn-lg" href="#" role="button">> Citas</a>
+			<a class="btn btn-primary btn-lg" href="#" role="button">> Citación online</a>
 		</div>
     </div>
     <div class="container">
