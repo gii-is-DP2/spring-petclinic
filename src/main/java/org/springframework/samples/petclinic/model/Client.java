@@ -2,16 +2,16 @@
 package org.springframework.samples.petclinic.model;
 
 import javax.persistence.Column;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotEmpty;
 
 public class Client extends Usuario {
 
 	@Column(name = "healthInsurance")
-	@NotNull
+	@NotEmpty(message = "*")
 	private String	healthInsurance;
 
 	@Column(name = "healthCardNumber")
-	@NotNull
+	@NotEmpty(message = "*")
 	private String	healthCardNumber;
 
 

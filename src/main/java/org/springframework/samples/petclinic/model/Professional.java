@@ -3,16 +3,15 @@ package org.springframework.samples.petclinic.model;
 
 import javax.persistence.Column;
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 
 public class Professional extends Usuario {
 
 	@Column(name = "specialty")
-	@NotEmpty
+	@NotEmpty(message = "*")
 	private String	specialty;
 
 	@Column(name = "collegiateNumber")
-	@NotNull
+	@NotEmpty(message = "*")
 	private Integer	collegiateNumber;
 
 

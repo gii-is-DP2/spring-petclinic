@@ -4,59 +4,80 @@ package org.springframework.samples.petclinic.model;
 import java.util.Date;
 
 import javax.persistence.Column;
-import javax.persistence.Transient;
+import javax.validation.constraints.Digits;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Past;
 
+import org.hibernate.annotations.Formula;
 import org.hibernate.validator.constraints.Length;
+import org.springframework.format.annotation.DateTimeFormat;
 
 public class Usuario extends BaseEntity {
 
 	// Attributes
 	@Column(name = "name")
-	@NotEmpty
+	@NotEmpty(message = "*")
 	private String			name;
 
 	@Column(name = "surname")
-	@NotEmpty
+	@NotEmpty(message = "*")
 	private String			surname;
 
 	@Column(name = "email")
-	@NotEmpty
-	@Email
+	@NotEmpty(message = "*")
+	@Email(message = "Enter a valid email address.")
 	private String			email;
 
-	@Column(name = "birthdate")
+	@Column(name = "birth_date")
+	@DateTimeFormat(pattern = "yyyy/MM/dd")
+	@NotEmpty(message = "*")
 	@Past
-	@NotNull
-	private Date			birthdate;
+	private Date			birthDate;
 
-	@Column(name = "registrationDate")
+	@Column(name = "registration_date")
 	@Past
-	@NotNull
+	@NotEmpty(message = "*")
 	private Date			registrationDate;
 
 	@Column(name = "document")
-	@NotEmpty
+	@NotEmpty(message = "*")
 	private String			document;
 
-	@Column(name = "documentType")
-	@NotEmpty
+	@Column(name = "document_type")
+	@NotEmpty(message = "*")
 	private DocumentType	documentType;
 
 	@Column(name = "avatar")
-	@NotEmpty
+	@NotEmpty(message = "*")
 	private String			avatar;
 
 	@Column(name = "password")
-	@NotEmpty
+	@NotEmpty(message = "*")
 	@Length(min = 5, max = 60)
 	private String			password;
 
+	@Column(name = "age")
+	@Formula("(TIMESTAMPDIFF(YEAR,birth_date,CURDATE()))")
+	@NotEmpty(message = "*")
+	private String			age;
 
-	// Getter & Setter
+	@Column(name = "address")
+	@NotEmpty(message = "*")
+	private String			address;
+
+	@Column(name = "city")
+	@NotEmpty(message = "*")
+	private String			city;
+
+	@Column(name = "telephone")
+	@NotEmpty(message = "*")
+	@Digits(fraction = 0, integer = 10)
+	private String			telephone;
+
+
+	// Getters & Setters
+
 	public String getName() {
 		return this.name;
 	}
@@ -79,14 +100,6 @@ public class Usuario extends BaseEntity {
 
 	public void setEmail(final String email) {
 		this.email = email;
-	}
-
-	public Date getBirthdate() {
-		return this.birthdate;
-	}
-
-	public void setBirthdate(final Date birthdate) {
-		this.birthdate = birthdate;
 	}
 
 	public Date getRegistrationDate() {
@@ -129,11 +142,44 @@ public class Usuario extends BaseEntity {
 		this.avatar = avatar;
 	}
 
-	// Derived
-	@Transient
-	public Integer getAge() {
-		Integer result = 0;
-
-		return result;
+	public Date getBirthDate() {
+		return this.birthDate;
 	}
+
+	public void setBirthDate(final Date birthDate) {
+		this.birthDate = birthDate;
+	}
+
+	public String getAge() {
+		return this.age;
+	}
+
+	public void setAge(final String age) {
+		this.age = age;
+	}
+
+	public String getAddress() {
+		return this.address;
+	}
+
+	public void setAddress(final String address) {
+		this.address = address;
+	}
+
+	public String getCity() {
+		return this.city;
+	}
+
+	public void setCity(final String city) {
+		this.city = city;
+	}
+
+	public String getTelephone() {
+		return this.telephone;
+	}
+
+	public void setTelephone(final String telephone) {
+		this.telephone = telephone;
+	}
+
 }
