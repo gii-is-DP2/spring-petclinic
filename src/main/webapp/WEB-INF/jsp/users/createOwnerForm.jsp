@@ -6,8 +6,9 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="petclinic" tagdir="/WEB-INF/tags" %>
 
-<petclinic:layout pageName="owners">
-    <h2>
+<petclinic:layout currentPage="owners">
+    <div class="container">
+    <h2 class="mx-3 my-5">
         <c:if test="${owner['new']}">New </c:if> Owner
     </h2>
     <form:form modelAttribute="owner" class="form-horizontal" id="add-owner-form">
@@ -24,13 +25,14 @@
             <div class="col-sm-offset-2 col-sm-10">
                 <c:choose>
                     <c:when test="${owner['new']}">
-                        <button class="btn btn-default" type="submit">Add Owner</button>
+                        <button class="btn btn-primary" type="submit">Add Owner</button>
                     </c:when>
                     <c:otherwise>
-                        <button class="btn btn-default" type="submit">Update Owner</button>
+                        <button class="btn btn-primary" type="submit">Update Owner</button>
                     </c:otherwise>
                 </c:choose>
             </div>
         </div>
     </form:form>
+    </div>
 </petclinic:layout>

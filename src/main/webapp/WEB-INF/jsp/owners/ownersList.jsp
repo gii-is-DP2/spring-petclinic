@@ -5,8 +5,9 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="petclinic" tagdir="/WEB-INF/tags" %>
 
-<petclinic:layout pageName="owners">
-    <h2>Owners</h2>
+<petclinic:layout currentPage="owners">
+	<div class="container">
+    <h2 class="my-5">Owners</h2>
 
     <table id="ownersTable" class="table table-striped">
         <thead>
@@ -56,4 +57,5 @@
         </c:forEach>
         </tbody>
     </table>
+    </div>
 </petclinic:layout>

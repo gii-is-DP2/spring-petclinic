@@ -8,9 +8,9 @@
 	uri="http://www.springframework.org/security/tags"%>
 <!--  >%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags"%-->
 
-<petclinic:layout pageName="owners">
-
-    <h2>Find Owners</h2>
+<petclinic:layout currentPage="owners">
+	<div class="container">
+    <h2 class="mx-3 my-5">Find Owners</h2>
 
     
     <form:form modelAttribute="owner" action="/owners" method="get" class="form-horizontal"
@@ -26,7 +26,7 @@
         </div>
         <div class="form-group">
             <div class="col-sm-offset-2 col-sm-10">
-                <button type="submit" class="btn btn-default">Find Owner</button>
+                <button type="submit" class="btn btn-primary">Find Owner</button>
             </div>
         </div>
 
@@ -34,7 +34,8 @@
 
     <br/> 
     <sec:authorize access="hasAuthority('admin')">
-		<a class="btn btn-default" href='<spring:url value="/owners/new" htmlEscape="true"/>'>Add Owner</a>
+		<a class="btn btn-primary" href='<spring:url value="/owners/new" htmlEscape="true"/>'>Add Owner</a>
 	</sec:authorize>
+	</div>
 	
 </petclinic:layout>

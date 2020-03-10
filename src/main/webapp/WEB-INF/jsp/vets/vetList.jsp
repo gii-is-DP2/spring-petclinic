@@ -4,9 +4,10 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="petclinic" tagdir="/WEB-INF/tags" %>
 
-<petclinic:layout pageName="vets">
-    <h2>Veterinarians</h2>
-
+<petclinic:layout currentPage="vets">
+    <div class="container">
+    <h2 class="my-5">Veterinarians</h2>
+	
     <table id="vetsTable" class="table table-striped">
         <thead>
         <tr>
@@ -38,4 +39,5 @@
             </td>            
         </tr>
     </table>
+    </div>
 </petclinic:layout>
