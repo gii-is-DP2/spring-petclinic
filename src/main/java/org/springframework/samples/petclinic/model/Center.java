@@ -13,48 +13,53 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotEmpty;
 
 import org.springframework.beans.support.MutableSortDefinition;
 import org.springframework.beans.support.PropertyComparator;
 
-import javax.persistence.Table;
-import javax.validation.constraints.NotEmpty;
-
 @Entity
-@Table(name = "clients")
+@Table(name = "center")
+public class Center extends NamedEntity {
 
-public class Client extends User {
-
-	@Column(name = "healthInsurance")
-	@NotEmpty(message = "*")
-	private String	healthInsurance;
-
-	@Column(name = "healthCardNumber")
-	@NotEmpty(message = "*")
-	private String	healthCardNumber;
+	@Column(name = "adress")
+	@NotEmpty
+	private String adress;
 
 
-	public String getHealthInsurance() {
-		return this.healthInsurance;
+	public String getAdress() {
+		return this.adress;
 	}
 
-	public void setHealthInsurance(final String healthInsurance) {
-		this.healthInsurance = healthInsurance;
-	}
-
-	public String getHealthCardNumber() {
-		return this.healthCardNumber;
-	}
-
-	public void setHealthCardNumber(final String healthCardNumber) {
-		this.healthCardNumber = healthCardNumber;
+	public void setAdress(final String adress) {
+		this.adress = adress;
 	}
 
 
 	//Relations
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "center", fetch = FetchType.EAGER)
+	private Set<Schedule> schedules;
 
-	@OneToMany(cascade = CascadeType.ALL, mappedBy = "client", fetch = FetchType.EAGER)
+
+	protected Set<Schedule> getSchedulesInternal() {
+		if (this.schedules == null) {
+			this.schedules = new HashSet<>();
+		}
+		return this.schedules;
+	}
+
+	public void setSchedules(final Set<Schedule> schedules) {
+		this.schedules = schedules;
+	}
+
+	public List<Schedule> getSchedules() {
+		List<Schedule> sortedSchedules = new ArrayList<>(this.getSchedulesInternal());
+		PropertyComparator.sort(sortedSchedules, new MutableSortDefinition("date", true, true));
+		return Collections.unmodifiableList(sortedSchedules);
+	}
+
+
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "center", fetch = FetchType.EAGER)
 	private Set<Appointment> appointments;
 
 
