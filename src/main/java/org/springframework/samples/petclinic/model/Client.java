@@ -18,16 +18,20 @@ import javax.validation.constraints.NotNull;
 import org.springframework.beans.support.MutableSortDefinition;
 import org.springframework.beans.support.PropertyComparator;
 
+import javax.persistence.Table;
+import javax.validation.constraints.NotEmpty;
+
 @Entity
 @Table(name = "clients")
-public class Client extends Usuario {
+
+public class Client extends User {
 
 	@Column(name = "healthInsurance")
-	@NotNull
+	@NotEmpty(message = "*")
 	private String	healthInsurance;
 
 	@Column(name = "healthCardNumber")
-	@NotNull
+	@NotEmpty(message = "*")
 	private String	healthCardNumber;
 
 

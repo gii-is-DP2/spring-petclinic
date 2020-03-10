@@ -12,23 +12,24 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
+
 import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 
 import org.springframework.beans.support.MutableSortDefinition;
 import org.springframework.beans.support.PropertyComparator;
 
 @Entity
 @Table(name = "professionals")
-public class Professional extends Usuario {
+public class Professional extends User {
+
 
 	@Column(name = "specialty")
-	@NotEmpty
+	@NotEmpty(message = "*")
 	private String	specialty;
 
 	@Column(name = "collegiateNumber")
-	@NotNull
+	@NotEmpty(message = "*")
 	private Integer	collegiateNumber;
 
 
