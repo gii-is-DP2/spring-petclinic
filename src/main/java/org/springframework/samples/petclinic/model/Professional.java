@@ -2,9 +2,13 @@
 package org.springframework.samples.petclinic.model;
 
 import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
 
-public class Professional extends Usuario {
+@Entity
+@Table(name = "professionals")
+public class Professional extends User {
 
 	@Column(name = "specialty")
 	@NotEmpty(message = "*")

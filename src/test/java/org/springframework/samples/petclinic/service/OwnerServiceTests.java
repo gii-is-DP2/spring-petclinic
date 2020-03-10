@@ -33,7 +33,7 @@ import org.springframework.samples.petclinic.model.Pet;
 import org.springframework.samples.petclinic.model.PetType;
 import org.springframework.samples.petclinic.model.Vet;
 import org.springframework.samples.petclinic.model.Visit;
-import org.springframework.samples.petclinic.model.User;
+import org.springframework.samples.petclinic.model.UserPet;
 import org.springframework.samples.petclinic.model.Authorities;
 import org.springframework.samples.petclinic.service.exceptions.DuplicatedPetNameException;
 import org.springframework.samples.petclinic.util.EntityUtils;
@@ -107,11 +107,11 @@ class OwnerServiceTests {
 		owner.setAddress("4, Evans Street");
 		owner.setCity("Wollongong");
 		owner.setTelephone("4444444444");
-                User user=new User();
-                user.setUsername("Sam");
-                user.setPassword("supersecretpassword");
-                user.setEnabled(true);
-                owner.setUser(user);                
+                UserPet userPet=new UserPet();
+                userPet.setUsername("Sam");
+                userPet.setPassword("supersecretpassword");
+                userPet.setEnabled(true);
+                owner.setUser(userPet);                
                 
 		this.ownerService.saveOwner(owner);
 		assertThat(owner.getId().longValue()).isNotEqualTo(0);
