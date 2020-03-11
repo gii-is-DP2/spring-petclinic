@@ -11,11 +11,11 @@ import javax.validation.constraints.NotEmpty;
 
 public class Client extends User {
 
-	@Column(name = "healthInsurance")
+	@Column(name = "health_insurance")
 	@NotEmpty(message = "*")
 	private String	healthInsurance;
 
-	@Column(name = "healthCardNumber")
+	@Column(name = "health_card_number")
 	@NotEmpty(message = "*")
 	private String	healthCardNumber;
 
