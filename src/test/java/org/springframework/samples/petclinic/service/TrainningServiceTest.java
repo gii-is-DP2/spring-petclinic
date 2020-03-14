@@ -6,8 +6,8 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Service;
 
 @DataJpaTest(includeFilters = @ComponentScan.Filter(Service.class))
-public class ReviewServiceTest {
+public class TrainningServiceTest {
 	
 	@Autowired
-	private ReviewService reviewService;
+	private TrainningService trainningService;
 }
