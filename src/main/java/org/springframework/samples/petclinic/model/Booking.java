@@ -2,18 +2,31 @@ package org.springframework.samples.petclinic.model;
 
 import java.time.LocalDate;
 
-import javax.persistence.Entity;
+import javax.persistence.MappedSuperclass;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
-import lombok.Data;
-
-@Data
-@Entity
-public class Booking extends NamedEntity{
+@MappedSuperclass
+public class Booking extends BaseEntity{
 
 	private String description;
-	
-	@DateTimeFormat(pattern = "yyyy/MM/dd")
-	private LocalDate date;
+
+    @DateTimeFormat(pattern = "yyyy/MM/dd")
+    private LocalDate date;
+
+    public String getDescription() {
+        return this.description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getDate() {
+        return this.description;
+    }
+
+    public void setDate(LocalDate date) {
+        this.date = date;
+    }
 }
