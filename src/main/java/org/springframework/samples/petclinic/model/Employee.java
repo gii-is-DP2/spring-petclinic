@@ -4,11 +4,13 @@ import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 @MappedSuperclass
 public class Employee extends Person {
 
 	@Column(name = "salary")
+	@NotNull(message = "Must not be empty")
 	private double salary;
 
 	@Column(name = "dni")

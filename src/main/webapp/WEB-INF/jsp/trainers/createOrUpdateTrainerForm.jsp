@@ -8,7 +8,7 @@
 
 <petclinic:layout pageName="headers">
     <h2>
-        <c:if test="${headers['new']}">Add </c:if> Trainer
+        <c:if test="${trainer['new']}">Add </c:if> Trainer
     </h2>
     <form:form modelAttribute="trainer" class="form-horizontal" id="add-trainer-form">
         <div class="form-group has-feedback">
