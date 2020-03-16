@@ -10,5 +10,4 @@ public class Trainer extends Employee{
 	
 	private String specialty;
 	private String description;
-
 }

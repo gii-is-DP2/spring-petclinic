@@ -9,7 +9,6 @@ import javax.validation.constraints.NotEmpty;
 public class Employee extends Person {
 
 	@Column(name = "salary")
-	@NotEmpty
 	private double salary;
 
 	@Column(name = "dni")
