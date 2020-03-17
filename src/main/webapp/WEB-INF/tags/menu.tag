@@ -67,6 +67,18 @@
 					</ul>
 				</li>
 				
+				<li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown"> 
+					<span class="glyphicon glyphicon-check"></span> Reservations <span class="glyphicon glyphicon-chevron-down"></span></a>
+					<ul class="dropdown-menu">
+							<li>
+								<petclinic:menuItem active="${name eq 'trainings'}" url="/trainings" title="trainings">
+									<span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
+									<span>Trainings</span>
+								</petclinic:menuItem>
+							</li>
+					</ul>
+				</li>
+				
 				<li class="dropdown">
 					<sec:authorize access="!isAuthenticated()">
 						<a href="#" class="dropdown-toggle" data-toggle="dropdown"> <span class="glyphicon glyphicon-user"></span>User 

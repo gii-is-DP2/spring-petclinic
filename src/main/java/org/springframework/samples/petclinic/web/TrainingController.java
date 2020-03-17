@@ -20,7 +20,7 @@ import org.springframework.web.servlet.ModelAndView;
 @Controller
 public class TrainingController {
 	
-	private static final String VIEWS_TRAINING_CREATE_OR_UPDATE_FORM = "training/createOrUpdateTrainingForm";
+	private static final String VIEWS_TRAINING_CREATE_OR_UPDATE_FORM = "trainings/createOrUpdateTrainingForm";
 	
 	private final TrainingService trainingService;
 	
@@ -34,14 +34,14 @@ public class TrainingController {
 		dataBinder.setDisallowedFields("id");
 	}
 	
-	@GetMapping(value = "/training/new")
+	@GetMapping(value = "/trainings/new")
 	public String initTrainingCreationForm(Map<String, Object> model) {
 		Training training = new Training();
 		model.put("training", training);
 		return VIEWS_TRAINING_CREATE_OR_UPDATE_FORM;
 	}
 	
-	@PostMapping(value = "/training/new")
+	@PostMapping(value = "/trainings/new")
 	public String processCreationForm(@Valid Training training, BindingResult result) {
 		if (result.hasErrors()) {
 			return VIEWS_TRAINING_CREATE_OR_UPDATE_FORM;
@@ -49,13 +49,13 @@ public class TrainingController {
 		else {
 			this.trainingService.saveTraining(training);
 			
-			return "redirect:/training/" + training.getId();
+			return "redirect:/trainings/" + training.getId();
 		}
 	}
 	
-	@GetMapping("/training/{trainingId}")
+	@GetMapping("/trainings/{trainingId}")
 	public ModelAndView showTraining(@PathVariable("trainingId") int trainingId) {
-		ModelAndView mav = new ModelAndView("training/trainingDetails");
+		ModelAndView mav = new ModelAndView("trainings/trainingDetails");
 		mav.addObject(this.trainingService.findTrainingById(trainingId));
 		return mav;
 	}
@@ -64,7 +64,7 @@ public class TrainingController {
 	public String showTrainingsList(Map<String, Object> model) {
 		Collection<Training> results = this.trainingService.findTrainings();
 		model.put("training", results);
-		return "training/trainingsList";
+		return "trainings/trainingsList";
 	}
 	
 }
