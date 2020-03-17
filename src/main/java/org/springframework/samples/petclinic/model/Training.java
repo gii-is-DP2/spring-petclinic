@@ -9,6 +9,6 @@ import lombok.Data;
 @Entity
 @Table(name = "training")
 public class Training extends Booking{
-	private TipoPista pista;
-	private Integer tipoPista;
+	private TipoPista tipoPista;
+	private Integer pista;
 }

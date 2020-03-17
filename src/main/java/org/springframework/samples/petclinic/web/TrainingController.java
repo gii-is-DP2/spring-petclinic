@@ -63,7 +63,7 @@ public class TrainingController {
 	@GetMapping(value = "/trainings")
 	public String showTrainingsList(Map<String, Object> model) {
 		Collection<Training> results = this.trainingService.findTrainings();
-		model.put("training", results);
+		model.put("trainings", results);
 		return "trainings/trainingsList";
 	}
 	
