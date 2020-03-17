@@ -20,17 +20,17 @@ public class TrainingService {
 	}
 	
 	@Transactional(readOnly = true)
-	public Training findTrainningById(int id) throws DataAccessException {
+	public Training findTrainingById(int id) throws DataAccessException {
 		return this.trainingRepository.findById(id).get();
 	}
 	
 	@Transactional(readOnly = true)
-	public Collection<Training> findTrainnings() throws DataAccessException {
+	public Collection<Training> findTrainings() throws DataAccessException {
 		return (Collection<Training>) this.trainingRepository.findAll();
 	}
 	
 	@Transactional
-	public void saveTrainning(Training trainning) throws DataAccessException {
-		this.trainingRepository.save(trainning);		
+	public void saveTraining(Training training) throws DataAccessException {
+		this.trainingRepository.save(training);		
 	}
 }
