@@ -7,8 +7,8 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "trainning")
-public class Trainning extends Booking{
+@Table(name = "training")
+public class Training extends Booking{
 	private TipoPista pista;
 	private Integer tipoPista;
 }
