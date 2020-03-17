@@ -39,12 +39,6 @@
 					<span>Veterinarians</span>
 				</petclinic:menuItem>
 				
-				<petclinic:menuItem active="${name eq 'error'}" url="/oups"
-					title="trigger a RuntimeException to see how it is handled">
-					<span class="glyphicon glyphicon-warning-sign" aria-hidden="true"></span>
-					<span>Error</span>
-				</petclinic:menuItem>
-				
 				<li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown"> 
 					<span class="glyphicon glyphicon-user"></span> Trainers <span class="glyphicon glyphicon-chevron-down"></span></a>
 					<ul class="dropdown-menu">
