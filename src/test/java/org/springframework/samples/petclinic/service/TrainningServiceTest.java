@@ -9,5 +9,5 @@ import org.springframework.stereotype.Service;
 public class TrainningServiceTest {
 	
 	@Autowired
-	private TrainningService trainningService;
+	private TrainingService trainningService;
 }
