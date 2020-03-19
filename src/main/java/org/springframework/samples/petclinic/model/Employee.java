@@ -3,6 +3,7 @@ package org.springframework.samples.petclinic.model;
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 import javax.validation.constraints.Digits;
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
@@ -23,6 +24,7 @@ public class Employee extends Person {
 	private String telephone;
 	
 	@Column(name = "email")
+	@Email
 	@NotEmpty
 	private String email;
 	
