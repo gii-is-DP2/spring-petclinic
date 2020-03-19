@@ -3,7 +3,6 @@ package org.springframework.samples.petclinic.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
-import java.awt.List;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.NoSuchElementException;
@@ -14,10 +13,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.samples.petclinic.model.Owner;
 import org.springframework.samples.petclinic.model.Trainer;
-import org.springframework.samples.petclinic.model.User;
-import org.springframework.samples.petclinic.repository.springdatajpa.TrainerRepository;
+import org.springframework.samples.petclinic.repository.TrainerRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -76,6 +73,23 @@ public class TrainerServiceTest {
 		Collection<Trainer> foundTrainer = this.trainerService.findTrainers();
 		verify(this.trainerRepository, times(1)).findAll();
 		assertThat(foundTrainer.size()).isEqualTo(2);
+	}
+	
+	@Test
+	void shouldFindTrainersByLastName() {
+		Integer trainer1Id = 1;
+		String lastName = "Sartori";
+		Trainer trainer1 = new Trainer();
+		trainer1.setId(trainer1Id);
+		trainer1.setFirstName("Federico");
+		Collection<Trainer> trainers = new ArrayList<Trainer>();
+		trainers.add(trainer1);
+		
+		when(this.trainerRepository.findByLastName(lastName)).thenReturn(trainers);
+		
+		Collection<Trainer> foundTrainer = this.trainerService.findTrainersByLastName(lastName);
+		verify(this.trainerRepository, times(1)).findByLastName(lastName);
+		assertThat(foundTrainer.size()).isEqualTo(1);
 	}
 	
 	@Test

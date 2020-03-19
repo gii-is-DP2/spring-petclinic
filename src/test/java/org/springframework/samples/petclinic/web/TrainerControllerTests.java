@@ -119,11 +119,30 @@ public class TrainerControllerTests {
 	}
 	
 	@WithMockUser(value = "spring")
+    @Test
+    void testInitFindForm() throws Exception {
+		mockMvc.perform(get("/trainers"))
+			.andExpect(status().isOk())
+			.andExpect(model().attributeExists("trainer"))
+			.andExpect(view().name("trainers/trainersList"));
+	}
+	
+	@WithMockUser(value = "spring")
 	@Test
-	void testShowTrainersList() throws Exception {
+	void testShowAllTrainersList() throws Exception {
 		given(this.trainerService.findTrainers()).willReturn(Lists.newArrayList(this.trainer));
 		
-		mockMvc.perform(get("/trainers"))
+		mockMvc.perform(get("/trainers/find").param("lastName", ""))
+			.andExpect(status().isOk())
+			.andExpect(view().name("trainers/trainersList"));
+	}
+	
+	@WithMockUser(value = "spring")
+	@Test
+	void testShowLastNameTrainersList() throws Exception {
+		given(this.trainerService.findTrainersByLastName("Sartori")).willReturn(Lists.newArrayList(this.trainer));
+		
+		mockMvc.perform(get("/trainers/find").param("lastName", "Sartori"))
 			.andExpect(status().isOk())
 			.andExpect(view().name("trainers/trainersList"));
 	}
