@@ -91,4 +91,69 @@ public class TrainingControllerTests {
 		.andExpect(model().attributeHasFieldErrors("training", "tipoPista"))
 		.andExpect(view().name("trainings/createOrUpdateTrainingForm"));
 	}
+	
+	@WithMockUser(value = "spring")
+	@Test
+	void testShowTraining() throws Exception {
+		mockMvc.perform(get("/trainings/{trainingId}", this.TEST_TRAINING_ID))
+		.andExpect(status().isOk())
+		.andExpect(model().attribute("training", hasProperty("description", is(training.getDescription()))))
+		.andExpect(model().attribute("training", hasProperty("date", is(training.getDate()))))
+		.andExpect(model().attribute("training", hasProperty("pista", is(training.getPista()))))
+		.andExpect(model().attribute("training", hasProperty("tipoPista", is(training.getTipoPista()))))
+		.andExpect(view().name("trainings/trainingDetails"));
+	}
+
+	@WithMockUser(value = "spring")
+        @Test
+	void testShowTrainings() throws Exception {
+		given(this.trainingService.findTrainings()).willReturn(Lists.newArrayList(this.training));
+		mockMvc.perform(get("/trainings"))
+				.andExpect(status().isOk())
+				.andExpect(model().attributeExists("trainings")).andExpect(view().name("trainings/trainingsList"));
+	}
+
+    @WithMockUser(value = "spring")
+	@Test
+	void testInitUpdateForm() throws Exception {
+		mockMvc.perform(get("/trainings/{petId}/edit", TEST_TRAINING_ID))
+				.andExpect(status().isOk()).andExpect(model().attributeExists("training"))
+				.andExpect(view().name("trainings/createOrUpdateTrainingForm"));
+	}
+    
+    @WithMockUser(value = "spring")
+	@Test
+	void testProcessUpdateFormSuccess() throws Exception {
+		mockMvc.perform(post("/trainings/{trainingId}/edit", TEST_TRAINING_ID)
+							.with(csrf())
+							.param("description", "Descripcion")
+							.param("date", "2020/05/03")
+							.param("pista", "2")
+							.param("tipoPista", "AGILIDAD"))
+				.andExpect(status().is3xxRedirection())
+				.andExpect(view().name("redirect:/trainings/{trainingId}"));
+	}
+    
+    @WithMockUser(value = "spring")
+	@Test
+	void testProcessUpdateFormHasErrors() throws Exception {
+		mockMvc.perform(post("/trainings/{trainingId}/edit", TEST_TRAINING_ID)
+							.with(csrf())
+							.param("description", "Descripcion")
+							.param("date", "2015/02/12"))
+				.andExpect(model().attributeHasErrors("training")).andExpect(status().isOk())
+				.andExpect(view().name("trainings/createOrUpdateTrainingForm"));
+	}
+    
+    @WithMockUser(value = "spring")
+	@Test
+	void testProcessDeleteFormSuccess() throws Exception {
+		given(this.trainingService.findTrainingById(TEST_TRAINING_ID)).willReturn(this.training);
+		mockMvc.perform(post("/trainings/{trainingId}/delete", TEST_TRAINING_ID)
+							.with(csrf()))
+				.andExpect(status().is3xxRedirection())
+				.andExpect(view().name("redirect:/trainings"));
+	}
+	
+	
 }

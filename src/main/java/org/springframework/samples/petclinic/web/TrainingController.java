@@ -69,7 +69,7 @@ public class TrainingController {
 		return "trainings/trainingsList";
 	}
 	
-	@GetMapping(value = "/trainings/{trainingId}/delete")
+	@PostMapping(value = "/trainings/{trainingId}/delete")
 	public String processDeleteTrainingForm(@PathVariable("trainingId") int trainingId) {
 		Training training = this.trainingService.findTrainingById(trainingId);
 		this.trainingService.deleteTraining(training);
