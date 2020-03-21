@@ -1,9 +1,9 @@
 package org.springframework.samples.petclinic.web;
 
+import java.util.Map;
+import javax.validation.Valid;
 import java.util.Optional;
-
 import javax.websocket.server.PathParam;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.model.Daycare;
 import org.springframework.samples.petclinic.service.DaycareService;
@@ -21,6 +21,8 @@ public class DaycareController {
 	
 	@Autowired
 	private DaycareService daycareService;
+  
+  private static final String VIEWS_DAYCARE_CREATE_OR_UPDATE_FORM = "daycare/createOrUpdateDaycareForm";
 
 	@GetMapping
 	public String listDaycare(@PathVariable int petId, ModelMap modelMap) {
@@ -43,9 +45,48 @@ public class DaycareController {
 		}
 		return view;
 	}
+  
+  @GetMapping(value = "/new")
+	public String initTrainingCreationForm(Map<String, Object> model) {
+		Daycare daycare = new Daycare();
+		model.put("daycare", daycare);
+		return VIEWS_DAYCARE_CREATE_OR_UPDATE_FORM;
+	}
 	
-	@GetMapping("/daycares/{daycareId}")
-	public ModelAndView showTrainer(@PathVariable("daycareId") int daycareId) {
+	@PostMapping(value = "/new")
+	public String processCreationForm(@Valid Daycare daycare, BindingResult result) {
+		if (result.hasErrors()) {
+			return VIEWS_DAYCARE_CREATE_OR_UPDATE_FORM;
+		}
+		else {
+			this.daycareService.saveDaycare(daycare);
+			
+			return "redirect:/daycare/" + daycare.getId();
+		}
+	}
+	
+	@GetMapping(value = "/{daycareId}/edit")
+	public String initUpdateDaycareForm(@PathVariable("daycareId") int daycareId, Model model) {
+		Daycare daycare = this.daycareService.findDaycareById(daycareId);
+		model.addAttribute(daycare);
+		return VIEWS_DAYCARE_CREATE_OR_UPDATE_FORM;
+	}
+
+	@PostMapping(value = "/{daycareId}/edit")
+	public String processUpdateDaycareForm(@Valid Daycare daycare, BindingResult result,
+			@PathVariable("daycareId") int daycareId) {
+		if (result.hasErrors()) {
+			return VIEWS_DAYCARE_CREATE_OR_UPDATE_FORM;
+		}
+		else {
+			daycare.setId(daycareId);
+			this.daycareService.saveDaycare(daycare);
+			return "redirect:/daycare/{daycareId}";
+		}
+	}
+	
+	@GetMapping("/{daycareId}")
+	public ModelAndView showDaycare(@PathVariable("daycareId") int daycareId) {
 		ModelAndView mav = new ModelAndView("trainers/trainerDetails");
 		mav.addObject(this.daycareService.findDaycareById(daycareId));
 		return mav;

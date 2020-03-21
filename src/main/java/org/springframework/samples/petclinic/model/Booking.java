@@ -22,8 +22,8 @@ public class Booking extends BaseEntity{
         this.description = description;
     }
 
-    public String getDate() {
-        return this.description;
+    public LocalDate getDate() {
+        return this.date;
     }
 
     public void setDate(LocalDate date) {

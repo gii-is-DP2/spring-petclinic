@@ -1,7 +1,8 @@
 package org.springframework.samples.petclinic.service;
 
+import java.util.Collection;
+import org.springframework.dao.DataAccessException;
 import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.model.Daycare;
 import org.springframework.samples.petclinic.repository.springdatajpa.DaycareRepository;
@@ -12,19 +13,24 @@ import org.springframework.transaction.annotation.Transactional;
 public class DaycareService {
 	
 	@Autowired
-	DaycareRepository daycareRepo;
+	DaycareRepository daycareRepository;
 	
-	@Transactional(readOnly=true)
-	public Optional<Daycare> findDaycareById(int id) {
-		return daycareRepo.findById(id);
+
+	@Transactional(readOnly = true)
+	public Daycare findDaycareById(int id) throws DataAccessException {
+		return this.daycareRepository.findById(id).get();
 	}
 	
-	public Iterable<Daycare> findDaycaresByPetId(int petId) {
-		return daycareRepo.findByPetId(petId);
+	@Transactional
+	public void saveDaycare(Daycare daycare) throws DataAccessException {
+		this.daycareRepository.save(daycare);		
 	}
-	
-	public void delete(Daycare daycare) {
-		daycareRepo.delete(daycare);
+  
+  public void delete(Daycare daycare) {
+		daycareRepository.delete(daycare);
 	}
-	
+  
+  	public Iterable<Daycare> findDaycaresByPetId(int petId) {
+		return daycareRepository.findByPetId(petId);
+	}
 }
