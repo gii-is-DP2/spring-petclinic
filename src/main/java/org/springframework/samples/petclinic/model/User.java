@@ -10,6 +10,8 @@ import lombok.Data;
 @Entity
 @Table(name = "users")
 public class User{
+	
+	//Agregar restriccion de unique
 	@Id
 	String username;
 	

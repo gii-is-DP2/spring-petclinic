@@ -33,4 +33,9 @@ public class TrainingService {
 	public void saveTraining(Training training) throws DataAccessException {
 		this.trainingRepository.save(training);		
 	}
+	
+	@Transactional
+	public void deleteTraining(Training training) throws DataAccessException {
+		this.trainingRepository.delete(training);
+	}
 }

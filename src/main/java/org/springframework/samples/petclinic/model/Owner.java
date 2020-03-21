@@ -64,6 +64,7 @@ public class Owner extends Person {
 	private Set<Pet> pets;
 	
 	//
+	//Agregar restriccion de UNIQUE
 	@OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "username", referencedColumnName = "username")
 	private User user;
