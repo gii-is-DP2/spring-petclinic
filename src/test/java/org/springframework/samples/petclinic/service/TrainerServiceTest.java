@@ -94,7 +94,7 @@ public class TrainerServiceTest {
 	
 	@Test
 	@Transactional
-	public void shouldInsertOwner() {
+	public void shouldInsertTrainer() {
 		Trainer trainer = new Trainer();
 		trainer.setFirstName("Sam");
 		trainer.setLastName("Schultz");
