@@ -27,5 +27,7 @@
             <td><b><c:out value="${training.tipoPista}"/></b></td>
         </tr>
     </table>
+    
+   	<a class="btn btn-default" href='<spring:url value="/trainings/delete/${training.id}" htmlEscape="true"/>'>Cancel training</a>
 
 </petclinic:layout>

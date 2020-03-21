@@ -67,4 +67,11 @@ public class TrainingController {
 		return "trainings/trainingsList";
 	}
 	
+	@GetMapping(value = "/trainings/delete/{trainingId}")
+	public String processDeletionForm(@PathVariable("trainingId") int trainingId) {
+		Training training = this.trainingService.findTrainingById(trainingId);
+		this.trainingService.deleteTraining(training);
+		return "redirect:/trainings";
+	}
+	
 }
