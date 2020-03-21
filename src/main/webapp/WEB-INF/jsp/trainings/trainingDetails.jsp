@@ -28,6 +28,7 @@
         </tr>
     </table>
     
-   	<a class="btn btn-default" href='<spring:url value="/trainings/delete/${training.id}" htmlEscape="true"/>'>Cancel training</a>
+   	<a class="btn btn-default" href='<spring:url value="/trainings/${training.id}/edit" htmlEscape="true"/>'>Edit training</a>
+   	<a class="btn btn-default" href='<spring:url value="/trainings/${training.id}/delete" htmlEscape="true"/>'>Cancel training</a>
 
 </petclinic:layout>

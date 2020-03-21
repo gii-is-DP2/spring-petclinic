@@ -6,9 +6,11 @@ import java.util.Map;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.samples.petclinic.model.Owner;
 import org.springframework.samples.petclinic.model.Training;
 import org.springframework.samples.petclinic.service.TrainingService;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -67,11 +69,30 @@ public class TrainingController {
 		return "trainings/trainingsList";
 	}
 	
-	@GetMapping(value = "/trainings/delete/{trainingId}")
-	public String processDeletionForm(@PathVariable("trainingId") int trainingId) {
+	@GetMapping(value = "/trainings/{trainingId}/delete")
+	public String processDeleteTrainingForm(@PathVariable("trainingId") int trainingId) {
 		Training training = this.trainingService.findTrainingById(trainingId);
 		this.trainingService.deleteTraining(training);
 		return "redirect:/trainings";
 	}
-	
+
+	@GetMapping(value = "/trainings/{trainingId}/edit")
+	public String initUpdateTrainingForm(@PathVariable("trainingId") int trainingId, Model model) {
+		Training training = this.trainingService.findTrainingById(trainingId);
+		model.addAttribute(training);
+		return VIEWS_TRAINING_CREATE_OR_UPDATE_FORM;
+	}
+
+	@PostMapping(value = "/trainings/{trainingId}/edit")
+	public String processUpdateTrainingForm(@Valid Training training, BindingResult result,
+			@PathVariable("trainingId") int ownerId) {
+		if (result.hasErrors()) {
+			return VIEWS_TRAINING_CREATE_OR_UPDATE_FORM;
+		}
+		else {
+			training.setId(ownerId);
+			this.trainingService.saveTraining(training);
+			return "redirect:/trainings/{trainingId}";
+		}
+	}
 }
