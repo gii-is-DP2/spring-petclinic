@@ -8,6 +8,6 @@ import org.springframework.stereotype.Service;
 @DataJpaTest(includeFilters = @ComponentScan.Filter(Service.class))
 public class TrainningServiceTest {
 	
-	@Autowired
-	private TrainingService trainningService;
+	//@Autowired
+	//private TrainningService trainningService;
 }
