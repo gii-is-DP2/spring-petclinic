@@ -42,15 +42,23 @@ public class UserController {
 	private static final String VIEWS_OWNER_CREATE_FORM = "users/createOwnerForm";
 
 	private final OwnerService ownerService;
+	
+	private final OwnerValidator ownerValidator;
 
 	@Autowired
-	public UserController(OwnerService clinicService) {
-		this.ownerService = clinicService;
+	public UserController(OwnerService ownerService, UserService userService) {
+		this.ownerService = ownerService;
+		this.ownerValidator = new OwnerValidator(userService);
 	}
 
 	@InitBinder
 	public void setAllowedFields(WebDataBinder dataBinder) {
 		dataBinder.setDisallowedFields("id");
+	}
+	
+	@InitBinder("owner")
+	public void initOwnerBinder(WebDataBinder dataBinder) {
+		dataBinder.addValidators(this.ownerValidator);
 	}
 
 	@GetMapping(value = "/users/new")
