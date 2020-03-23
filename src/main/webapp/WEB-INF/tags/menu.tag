@@ -28,9 +28,9 @@
 				</petclinic:menuItem>
 
 				<petclinic:menuItem active="${name eq 'owners'}" url="/owners/find"
-					title="find owners">
+					title="owners">
 					<span class="glyphicon glyphicon-search" aria-hidden="true"></span>
-					<span>Find owners</span>
+					<span>Owners</span>
 				</petclinic:menuItem>
 
 				<petclinic:menuItem active="${name eq 'vets'}" url="/vets"
@@ -80,7 +80,7 @@
 						</a>
 						<ul class="dropdown-menu">
 							<li><a href="<c:url value="/login" />">Login</a></li>
-							<li><a href="<c:url value="/users/new" />">Register</a></li>
+							<li><a href="<c:url value="/owners/new" />">Register</a></li>
 						</ul>
 					</sec:authorize>
 					<sec:authorize access="isAuthenticated()">
