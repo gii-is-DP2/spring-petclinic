@@ -9,10 +9,10 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "daycare")
+@Table(name = "daycares")
 public class Daycare extends Booking{
 	
-	private Integer aforo;
+	private Integer capacity;
 	
 	@ManyToOne
 	@JoinColumn(name = "pet_id")
