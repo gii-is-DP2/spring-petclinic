@@ -3,6 +3,7 @@ package org.springframework.samples.petclinic.web;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import javax.validation.Valid;
@@ -12,6 +13,7 @@ import org.springframework.samples.petclinic.model.Hairdressing;
 import org.springframework.samples.petclinic.model.Pet;
 import org.springframework.samples.petclinic.model.PetType;
 import org.springframework.samples.petclinic.model.TipoCuidado;
+import org.springframework.samples.petclinic.model.Visit;
 import org.springframework.samples.petclinic.service.HairdressingService;
 import org.springframework.samples.petclinic.service.PetService;
 import org.springframework.stereotype.Controller;
@@ -24,7 +26,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-@RequestMapping("/hairdressing")
+
 public class HairdressingController {
 	
 	@Autowired
@@ -41,59 +43,107 @@ public class HairdressingController {
 		return res;
 	}
 	
-	@ModelAttribute("mascotas")
-	public List<Integer> populateMascotas() {
-		List<Integer> res = new ArrayList<Integer>();
-		res.add(petService.findPetById(1).getId());
-		res.add(petService.findPetById(2).getId());
-		return res;
-	}
-		
-	@GetMapping("/list")
-	public String listHairdressingAppointments(ModelMap modelMap) {
-		String vista = "hairdressing/listHairdressings";
-		Iterable<Hairdressing> hairdressings = hairdressingService.findAll();
-		modelMap.addAttribute("hairdressings", hairdressings);
-		return vista;
-	}
+//	@ModelAttribute("mascotas")
+//	public List<Integer> populateMascotas() {
+//		List<Integer> res = new ArrayList<Integer>();
+//		res.add(petService.findPetById(1).getId());
+//		res.add(petService.findPetById(2).getId());
+//		return res;
+//	}
+//		
+//	@GetMapping("/list")
+//	public String listHairdressingAppointments(ModelMap modelMap) {
+//		String vista = "hairdressing/listHairdressings";
+//		Iterable<Hairdressing> hairdressings = hairdressingService.findAll();
+//		modelMap.addAttribute("hairdressings", hairdressings);
+//		return vista;
+//	}
+//	
+//	@GetMapping(path="/new")
+//	public String crearAppointment(ModelMap modelMap) {
+//		String view = "hairdressing/editHairdressing";
+//		modelMap.addAttribute("hairdressing", new Hairdressing());
+//		return view;
+//	}
+//	
+//	@PostMapping(path = "/save")
+//	public String salvarHairdressing(@Valid Hairdressing hairdressing, BindingResult result, ModelMap modelMap) {
+//		String view = "/hairdressing/listHairdressings";
+//		System.out.println("\n\n\n\n" + hairdressing + "\n\n\n\n");
+//		if(result.hasErrors()) {
+//			return "hairdressing/editHairdressing";
+//		}else {
+//			
+//			hairdressingService.save(hairdressing);
+////			modelMap.addAttribute("message", "Appointment succesfully saved!");
+////			view = listHairdressingAppointments(modelMap);
+//			return view;
+//		}
+//		
+//	}
 	
-	@GetMapping(path="/new")
-	public String crearAppointment(ModelMap modelMap) {
-		String view = "hairdressing/editHairdressing";
-		modelMap.addAttribute("hairdressing", new Hairdressing());
-		return view;
-	}
+//	@GetMapping(path="/delete/{hairdressingId}")
+//	public String borrarHairdressing(@PathVariable("hairdressingId") int hairdressingId, ModelMap modelMap) {
+//		String view = "hairdressing/listHairdressings";
+//		Optional<Hairdressing> hairdressing = hairdressingService.findHairdressingById(hairdressingId);
+//		if(hairdressing.isPresent()) {
+//			hairdressingService.delete(hairdressing.get());
+//			modelMap.addAttribute("message", "Appointment succesfully deleted!");
+//		}else {
+//			modelMap.addAttribute("message", "Event not found!");
+//		}
+//		
+//		return this.listHairdressingAppointments(modelMap);
+//	}
 	
-	@PostMapping(path = "/save")
-	public String salvarHairdressing(@Valid Hairdressing hairdressing, BindingResult result, ModelMap modelMap) {
-		String view = "/hairdressing/listHairdressings";
-		System.out.println("\n\n\n\n" + hairdressing + "\n\n\n\n");
-		if(result.hasErrors()) {
-			return "hairdressing/editHairdressing";
-		}else {
+	@ModelAttribute("hairdressing")
+	public Hairdressing loadPetWithHairdressing(@PathVariable("petId") int petId) {
+		Pet pet = this.petService.findPetById(petId);
+		Hairdressing hairdressing = new Hairdressing();
+		pet.addHairdressing(hairdressing);
+		return hairdressing;
+	}
+
+	// Spring MVC calls method loadPetWithVisit(...) before initNewVisitForm is called
+	@GetMapping(value = "/owners/*/pets/{petId}/hairdressing/new")
+	public String initNewHairdressingForm(@PathVariable("petId") int petId, Map<String, Object> model) {
+		return "pets/createOrUpdateHairdressingForm";
+	}
+
+	// Spring MVC calls method loadPetWithVisit(...) before processNewVisitForm is called
+	@PostMapping(value = "/owners/{ownerId}/pets/{petId}/hairdressing/new")
+	public String processNewHairdressingForm(@PathVariable("petId") int petId, @PathVariable("ownerId") int ownerId, @Valid Hairdressing hairdressing, BindingResult result) {
+		System.out.println("\n\n\n\n he entrado en el segundo new \n\n\n\n");
+		if (result.hasErrors()) {
+			return "pets/createOrUpdateHairdressingForm";
+		}
+		else {
 			
-			hairdressingService.save(hairdressing);
-//			modelMap.addAttribute("message", "Appointment succesfully saved!");
-//			view = listHairdressingAppointments(modelMap);
-			return view;
+			System.out.println(hairdressing);
+			System.out.println(hairdressing.getDescription());
+			System.out.println(hairdressing.getCuidado());
+			System.out.println(hairdressing.getDate());
+			System.out.println(hairdressing.getId());
+			System.out.println(hairdressing.getPet());
+			
+			
+			this.petService.saveHairdressing(hairdressing);
+			System.out.println(hairdressing.getId());
+			return "redirect:/owners/"+ ownerId;
 		}
-		
+	}
+
+	@GetMapping(value = "/owners/*/pets/{petId}/hairdressings")
+	public String showHairdressings(@PathVariable int petId, Map<String, Object> model) {
+		model.put("hairdressings", this.petService.findPetById(petId).getHairdressings());
+		return "hairdressingList";
 	}
 	
-	@GetMapping(path="/delete/{hairdressingId}")
-	public String borrarHairdressing(@PathVariable("hairdressingId") int hairdressingId, ModelMap modelMap) {
-		String view = "hairdressing/listHairdressings";
-		Optional<Hairdressing> hairdressing = hairdressingService.findHairdressingById(hairdressingId);
-		if(hairdressing.isPresent()) {
-			hairdressingService.delete(hairdressing.get());
-			modelMap.addAttribute("message", "Appointment succesfully deleted!");
-		}else {
-			modelMap.addAttribute("message", "Event not found!");
-		}
+	@GetMapping(value = "/owners/{ownerId}/pets/{petId}/hairdressing/{hairdressingId}/delete")
+	public String deleteHairdressing(@PathVariable("ownerId") int ownerId, @PathVariable int hairdressingId) {
 		
-		return this.listHairdressingAppointments(modelMap);
+		hairdressingService.delete(hairdressingId);
+		return "redirect:/owners/"+ ownerId;
 	}
-	
-//	@GetMapping(path="/update/{hairdressingId}")
 	
 }

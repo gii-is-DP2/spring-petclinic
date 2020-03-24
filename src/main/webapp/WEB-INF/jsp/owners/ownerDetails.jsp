@@ -86,6 +86,36 @@
                                 </spring:url>
                                 <a href="${fn:escapeXml(visitUrl)}">Add Visit</a>
                             </td>
+                            <td>
+                            	<tr>
+                            		<th>Hairdressing Appointment Date</th>
+                            		<th>Description</th>
+                            		<th>Tipo Cuidado</th>
+                        		</tr>
+                        	
+                        		<c:forEach var="hairdressing" items="${pet.hairdressings}">
+                            		<tr>
+                                		<td><petclinic:localDate date="${hairdressing.date}" pattern="yyyy-MM-dd"/></td>
+                                		<td><c:out value="${hairdressing.description}"/></td>
+                                		<td><c:out value="${hairdressing.cuidado}"/></td>
+                                		<td>
+                                		<spring:url value="/owners/{ownerId}/pets/{petId}/hairdressing/{hairdressingId}/delete" var="hairdressingUrl">
+                                    		<spring:param name="ownerId" value="${owner.id}"/>
+                                    		<spring:param name="petId" value="${pet.id}"/>
+                                    		<spring:param name="hairdressingId" value="${hairdressing.id}"/>
+                                		</spring:url>
+                                		<a href="${fn:escapeXml(hairdressingUrl)}">Delete Appointment</a>
+                                		</td>
+                            		</tr>
+                        		</c:forEach>
+                            </td>
+                            <td>
+                                <spring:url value="/owners/{ownerId}/pets/{petId}/hairdressing/new" var="hairdressingUrl">
+                                    <spring:param name="ownerId" value="${owner.id}"/>
+                                    <spring:param name="petId" value="${pet.id}"/>
+                                </spring:url>
+                                <a href="${fn:escapeXml(hairdressingUrl)}">Add Hairdressing Appointment</a>
+                            </td>
                         </tr>
                     </table>
                 </td>

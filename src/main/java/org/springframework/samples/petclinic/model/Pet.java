@@ -62,6 +62,9 @@ public class Pet extends NamedEntity {
 
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "pet", fetch = FetchType.EAGER)
 	private Set<Visit> visits;
+	
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "pet", fetch = FetchType.EAGER)
+	private Set<Hairdressing> hairdressings;
 
 	public void setBirthDate(LocalDate birthDate) {
 		this.birthDate = birthDate;
@@ -107,6 +110,38 @@ public class Pet extends NamedEntity {
 	public void addVisit(Visit visit) {
 		getVisitsInternal().add(visit);
 		visit.setPet(this);
+	}
+	
+	protected Set<Hairdressing> getHairdressingsInternal() {
+		if (this.hairdressings == null) {
+			this.hairdressings = new HashSet<>();
+		}
+		return this.hairdressings;
+	}
+
+	protected void setHairdressingsInternal(Set<Hairdressing> hairdressings) {
+		this.hairdressings = hairdressings;
+	}
+
+	public List<Hairdressing> getHairdressings() {
+		List<Hairdressing> sortedHairdressings = new ArrayList<>(getHairdressingsInternal());
+		PropertyComparator.sort(sortedHairdressings, new MutableSortDefinition("date", false, false));
+		return Collections.unmodifiableList(sortedHairdressings);
+	}
+
+	public void addHairdressing(Hairdressing hairdressing) {
+		getHairdressingsInternal().add(hairdressing);
+		hairdressing.setPet(this);
+	}
+
+	public void deleteHairdressing(Integer id) {	
+		Set<Hairdressing> hairdressings = this.getHairdressingsInternal();
+		for (Hairdressing h  : hairdressings) {
+			if (h.getId() == id) {
+				hairdressings.remove(h);
+			}
+		}
+		
 	}
 
 }

@@ -28,7 +28,7 @@ public class HairdressingService {
 	}
 	
 	@Transactional(readOnly=true)
-	public Pet findPetById(int id){
+	public Pet findByPetId(int id){
 		return petRepo.findById(id);
 	}
 	
@@ -38,8 +38,14 @@ public class HairdressingService {
 	}
 	
 	@Transactional
-	public void delete(Hairdressing hairdressing) {
-		hairdressingRepo.delete(hairdressing);
+	public void delete(int hairdressingId) {
+		Hairdressing hairdressing = this.findHairdressingById(hairdressingId).get();
+		Pet pet = hairdressing.getPet();
+		pet.deleteHairdressing(hairdressing.getId());
+		hairdressingRepo.deleteById(hairdressingId);
+		
 	}
+
+	
 	
 }
