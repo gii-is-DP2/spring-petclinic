@@ -26,8 +26,10 @@
 	            <petclinic:inputField label="Date" name="date" />
 	            <petclinic:inputField label="Description" name="description" />
 	            <petclinic:inputField label="Pista" name="pista" />
-	            <petclinic:inputField label="Tipo pista" name="tipoPista" />
-	        </div>
+				<div class="control-group">
+                    <petclinic:selectField name="tipoPista" label="Tipo pista" names="${tipoPistas}" size="3"/>
+                </div>	        
+            </div>
 	        <div class="form-group">
 	            <div class="col-sm-offset-2 col-sm-10">
 	                <c:choose>
