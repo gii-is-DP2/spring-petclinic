@@ -96,39 +96,34 @@ public class HairdressingController {
 //		return this.listHairdressingAppointments(modelMap);
 //	}
 	
-	@ModelAttribute("hairdressing")
-	public Hairdressing loadPetWithHairdressing(@PathVariable("petId") int petId) {
-		Pet pet = this.petService.findPetById(petId);
-		Hairdressing hairdressing = new Hairdressing();
-		pet.addHairdressing(hairdressing);
-		return hairdressing;
-	}
+	//@ModelAttribute("hairdressing")
+	//public Hairdressing loadPetWithHairdressing(@PathVariable("petId") int petId) {
+		//Pet pet = this.petService.findPetById(petId);
+		//Hairdressing hairdressing = new Hairdressing();
+		//pet.addHairdressing(hairdressing);
+		//return hairdressing;
+	//}
 
 	// Spring MVC calls method loadPetWithVisit(...) before initNewVisitForm is called
 	@GetMapping(value = "/owners/*/pets/{petId}/hairdressing/new")
 	public String initNewHairdressingForm(@PathVariable("petId") int petId, Map<String, Object> model) {
+		Pet pet = this.petService.findPetById(petId);
+		Hairdressing hairdressing = new Hairdressing();
+		pet.addHairdressing(hairdressing);
+		model.put("hairdressing", hairdressing);
 		return "pets/createOrUpdateHairdressingForm";
 	}
 
 	// Spring MVC calls method loadPetWithVisit(...) before processNewVisitForm is called
 	@PostMapping(value = "/owners/{ownerId}/pets/{petId}/hairdressing/new")
 	public String processNewHairdressingForm(@PathVariable("petId") int petId, @PathVariable("ownerId") int ownerId, @Valid Hairdressing hairdressing, BindingResult result) {
-		System.out.println("\n\n\n\n he entrado en el segundo new \n\n\n\n");
+		Pet pet = this.petService.findPetById(petId);
+		hairdressing.setPet(pet);
 		if (result.hasErrors()) {
 			return "pets/createOrUpdateHairdressingForm";
 		}
 		else {
-			
-			System.out.println(hairdressing);
-			System.out.println(hairdressing.getDescription());
-			System.out.println(hairdressing.getCuidado());
-			System.out.println(hairdressing.getDate());
-			System.out.println(hairdressing.getId());
-			System.out.println(hairdressing.getPet());
-			
-			
 			this.petService.saveHairdressing(hairdressing);
-			System.out.println(hairdressing.getId());
 			return "redirect:/owners/"+ ownerId;
 		}
 	}
@@ -141,7 +136,6 @@ public class HairdressingController {
 	
 	@GetMapping(value = "/owners/{ownerId}/pets/{petId}/hairdressing/{hairdressingId}/delete")
 	public String deleteHairdressing(@PathVariable("ownerId") int ownerId, @PathVariable int hairdressingId) {
-		
 		hairdressingService.delete(hairdressingId);
 		return "redirect:/owners/"+ ownerId;
 	}
