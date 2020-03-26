@@ -77,15 +77,19 @@ public class DaycareController {
 	}
 	
 	@GetMapping(value = "/owners/{ownerId}/pets/{petId}/daycares/{daycareId}/edit")
-	public String initUpdateDaycareForm(@PathVariable("daycareId") int daycareId, Model model) {
+	public String initUpdateDaycareForm(@PathVariable("petId") int petId, @PathVariable("daycareId") int daycareId, Model model) {
 		Daycare daycare = this.daycareService.findDaycareById(daycareId);
+		Pet pet = this.petService.findPetById(petId);
+		daycare.setPet(pet);
 		model.addAttribute(daycare);
 		return "daycares/createOrUpdateDaycareForm";
 	}
 
 	@PostMapping(value = "/owners/{ownerId}/pets/{petId}/daycares/{daycareId}/edit")
-	public String processUpdateDaycareForm(@Valid Daycare daycare, BindingResult result,
+	public String processUpdateDaycareForm(@PathVariable("petId") int petId, @Valid Daycare daycare, BindingResult result,
 			@PathVariable("daycareId") int daycareId) {
+		Pet pet = this.petService.findPetById(petId);
+		daycare.setPet(pet);
 		if (result.hasErrors()) {
 			return "daycares/createOrUpdateDaycareForm";
 		}
