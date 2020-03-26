@@ -13,8 +13,4 @@ import lombok.Data;
 public class Daycare extends Booking{
 	
 	private Integer capacity;
-	
-	@ManyToOne
-	@JoinColumn(name = "pet_id")
-	private Pet pet;
 }

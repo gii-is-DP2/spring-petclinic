@@ -38,29 +38,35 @@ public class DaycareController {
 		dataBinder.setDisallowedFields("id");
 	}
 	
-	@ModelAttribute("daycare")
-	public Daycare loadPetWithDaycare(@PathVariable("petId") int petId) {
-		Pet pet = this.petService.findPetById(petId);
-		Daycare daycare = new Daycare();
-		pet.addDaycare(daycare);
-		return daycare;
-	}
+	//@ModelAttribute("daycare")
+	//public Daycare loadPetWithDaycare(@PathVariable("petId") int petId) {
+	//	Pet pet = this.petService.findPetById(petId);
+	//	Daycare daycare = new Daycare();
+	//	pet.addDaycare(daycare);
+	//	return daycare;
+	//}
 	
 	@GetMapping(value= "/owners/{ownerId}/pets/{petId}/deleteDaycare/{daycareId}")
-	public String deleteDaycare(@PathVariable("daycareId") final int daycareId, final Pet pet, final ModelMap model) {
-		Daycare daycare = this.daycareService.findDaycareById(daycareId);
-		pet.deleteDaycare(daycare);
-		this.daycareService.deleteDaycare(daycare);
-		return "redirect:/owners/{ownerId}";
+	public String deleteDaycare(@PathVariable("ownerId") int ownerId, @PathVariable("daycareId") final int daycareId, final Pet pet, final ModelMap model) {
+		System.out.println("DELETE");
+		this.daycareService.delete(daycareId);
+		System.out.println("END DELETE");
+		return "redirect:/owners/" + ownerId;
 	}
   
 	@GetMapping(value = "/owners/*/pets/{petId}/daycares/new")
-	public String initNewDaycareForm(@PathVariable("petId") int petId) {
+	public String initNewDaycareForm(@PathVariable("petId") int petId, Map<String, Object> model) {
+		Pet pet = this.petService.findPetById(petId);
+		Daycare daycare = new Daycare();
+		pet.addDaycare(daycare);
+		model.put("daycare", daycare);
 		return "daycares/createOrUpdateDaycareForm";
 	}
 	
 	@PostMapping(value = "/owners/{ownerId}/pets/{petId}/daycares/new")
-	public String processNewDaycareForm(@Valid Daycare daycare, BindingResult result) {
+	public String processNewDaycareForm(@PathVariable("petId") int petId, @Valid Daycare daycare, BindingResult result) {
+		Pet pet = this.petService.findPetById(petId);
+		daycare.setPet(pet);
 		if (result.hasErrors()) {
 			return "daycares/createOrUpdateDaycareForm";
 		}

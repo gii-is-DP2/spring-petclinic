@@ -134,8 +134,13 @@ public class Pet extends NamedEntity {
 		daycare.setPet(this);
 	}
 
-	public void deleteDaycare(final Daycare daycare) {
-		this.getDaycaresInternal().remove(daycare);	
+	public void deleteDaycare(int daycareId) {
+		Set<Daycare> daycares = this.getDaycaresInternal();
+		for (Daycare d : daycares) {
+			if (d.getId() == daycareId) {
+				daycares.remove(d);
+			}
+		}
 	}
 
 }

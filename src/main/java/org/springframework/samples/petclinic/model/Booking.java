@@ -2,6 +2,8 @@ package org.springframework.samples.petclinic.model;
 
 import java.time.LocalDate;
 
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
 import javax.validation.constraints.Future;
 import javax.validation.constraints.NotEmpty;
@@ -20,6 +22,10 @@ public class Booking extends BaseEntity{
     @DateTimeFormat(pattern = "yyyy/MM/dd")
 	@Future(message = "Date should be on future")
     private LocalDate date;
+	
+	@ManyToOne
+	@JoinColumn(name = "pet_id")
+	private Pet pet;
 
     public String getDescription() {
         return this.description;
@@ -36,4 +42,12 @@ public class Booking extends BaseEntity{
     public void setDate(LocalDate date) {
         this.date = date;
     }
+    
+    public Pet getPet() {
+		return this.pet;
+	}
+
+	public void setPet(Pet pet) {
+		this.pet = pet;
+	}
 }

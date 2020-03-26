@@ -5,6 +5,7 @@ import java.util.Collection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.samples.petclinic.model.Daycare;
+import org.springframework.samples.petclinic.model.Pet;
 import org.springframework.samples.petclinic.repository.springdatajpa.DaycareRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,8 +31,11 @@ public class DaycareService {
 	}
   
 	@Transactional
-	public void deleteDaycare(final Daycare daycare) throws DataAccessException{
-		this.daycareRepository.delete(daycare);
+	public void delete(int daycareId) throws DataAccessException{
+		Daycare daycare = this.findDaycareById(daycareId);
+		Pet pet = daycare.getPet();
+		pet.deleteDaycare(daycare.getId());
+		this.daycareRepository.deleteById(daycareId);
 	}
   
 	@Transactional
