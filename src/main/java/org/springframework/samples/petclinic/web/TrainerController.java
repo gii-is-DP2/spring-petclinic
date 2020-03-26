@@ -64,6 +64,8 @@ public class TrainerController {
 	@GetMapping(value = "/trainers")
 	public String initFindForm(Map<String, Object> model) {
 		model.put("trainer", new Trainer());
+		Collection<Trainer> results = this.trainerService.findTrainers();
+		model.put("trainers", results);
 		return "trainers/trainersList";
 	}
 	

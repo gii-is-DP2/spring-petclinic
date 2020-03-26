@@ -45,15 +45,23 @@ public class OwnerController {
 	private static final String VIEWS_OWNER_CREATE_OR_UPDATE_FORM = "owners/createOrUpdateOwnerForm";
 
 	private final OwnerService ownerService;
+	
+	private final OwnerValidator ownerValidator;
 
 	@Autowired
 	public OwnerController(OwnerService ownerService, UserService userService, AuthoritiesService authoritiesService) {
 		this.ownerService = ownerService;
+		this.ownerValidator = new OwnerValidator(userService);
 	}
 
 	@InitBinder
 	public void setAllowedFields(WebDataBinder dataBinder) {
 		dataBinder.setDisallowedFields("id");
+	}
+	
+	@InitBinder("owner")
+	public void initOwnerBinder(WebDataBinder dataBinder) {
+		dataBinder.addValidators(this.ownerValidator);
 	}
 
 	@GetMapping(value = "/owners/new")
@@ -72,7 +80,7 @@ public class OwnerController {
 			//creating owner, user and authorities
 			this.ownerService.saveOwner(owner);
 			
-			return "redirect:/owners/" + owner.getId();
+			return "redirect:/";
 		}
 	}
 

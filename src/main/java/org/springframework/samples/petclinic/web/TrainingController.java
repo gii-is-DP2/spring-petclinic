@@ -1,5 +1,6 @@
 package org.springframework.samples.petclinic.web;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 
@@ -7,6 +8,8 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.model.Owner;
+import org.springframework.samples.petclinic.model.PetType;
+import org.springframework.samples.petclinic.model.TipoPista;
 import org.springframework.samples.petclinic.model.Training;
 import org.springframework.samples.petclinic.service.TrainingService;
 import org.springframework.stereotype.Controller;
@@ -15,6 +18,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.ModelAndView;
@@ -29,6 +33,12 @@ public class TrainingController {
 	@Autowired
 	public TrainingController(TrainingService trainingService) {
 		this.trainingService = trainingService;
+	}
+	
+	@ModelAttribute("tipoPistas")
+	public Collection<TipoPista> populateTipoPistas() {
+		TipoPista[] tipos = TipoPista.class.getEnumConstants();
+		return Arrays.asList(tipos);
 	}
 	
 	@InitBinder
