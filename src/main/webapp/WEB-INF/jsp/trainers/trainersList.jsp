@@ -9,8 +9,9 @@
 <petclinic:layout pageName="trainers">
     <h2>Trainers</h2>
     
-    <form:form modelAttribute="trainer" action="/trainers/find" method="get" class="form-horizontal"
-               id="search-trainer-form">
+    <a class="btn btn-default" href='<spring:url value="/trainers/new" htmlEscape="true"/>'>Add Trainer</a>
+    
+    <form:form modelAttribute="trainer" action="/trainers/find" method="get" class="form-horizontal" id="search-trainer-form">
         <div class="form-group">
             <div class="control-group" id="lastName">
                 <label class="col-sm-2 control-label">Last name </label>
@@ -25,10 +26,7 @@
                 <button type="submit" class="btn btn-default">Find Trainer</button>
             </div>
         </div>
-
     </form:form>
-    
-	<a class="btn btn-default" href='<spring:url value="/trainers/new" htmlEscape="true"/>'>Add Trainer</a>
 
     <table id="trainersTable" class="table table-striped">
         <thead>
