@@ -38,19 +38,9 @@ public class DaycareController {
 		dataBinder.setDisallowedFields("id");
 	}
 	
-	//@ModelAttribute("daycare")
-	//public Daycare loadPetWithDaycare(@PathVariable("petId") int petId) {
-	//	Pet pet = this.petService.findPetById(petId);
-	//	Daycare daycare = new Daycare();
-	//	pet.addDaycare(daycare);
-	//	return daycare;
-	//}
-	
 	@GetMapping(value= "/owners/{ownerId}/pets/{petId}/deleteDaycare/{daycareId}")
 	public String deleteDaycare(@PathVariable("ownerId") int ownerId, @PathVariable("daycareId") final int daycareId, final Pet pet, final ModelMap model) {
-		System.out.println("DELETE");
 		this.daycareService.delete(daycareId);
-		System.out.println("END DELETE");
 		return "redirect:/owners/" + ownerId;
 	}
   
@@ -94,11 +84,8 @@ public class DaycareController {
 			return "daycares/createOrUpdateDaycareForm";
 		}
 		else {
-			System.out.println("hola");
 			daycare.setId(daycareId);
-			// Creo que es en la siguiente linea donde peta:
 			daycareService.saveDaycare(daycare);
-			System.out.println("ase");
 			return "redirect:/owners/{ownerId}";
 		}
 	}
