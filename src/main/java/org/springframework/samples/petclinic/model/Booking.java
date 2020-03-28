@@ -20,7 +20,6 @@ public class Booking extends BaseEntity{
 
 	@NotNull(message="must not be empty")
     @DateTimeFormat(pattern = "yyyy/MM/dd")
-	@Future(message = "Date should be on future")
     private LocalDate date;
 	
 	@ManyToOne

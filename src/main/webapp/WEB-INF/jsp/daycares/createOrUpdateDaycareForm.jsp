@@ -20,17 +20,18 @@
             <div class="form-group has-feedback">
                 <petclinic:inputField label="Date" name="date"/>
                 <petclinic:inputField label="Description" name="description"/>
-                <petclinic:inputField label="Capacity" name="capacity"/>
             </div>
             <div class="form-group">
             <div class="col-sm-offset-2 col-sm-10">
                 <c:choose>
                     <c:when test="${daycare['new']}">
                         <input type="hidden" name="petId" value="${daycare.pet.id}"/>
+                        <input type="hidden" name="capacity" value="10"/>
                         <button class="btn btn-default" type="submit">Add Daycare</button>
                     </c:when>
                     <c:otherwise>
                     	<input type="hidden" name="petId" value="${daycare.pet.id}"/>
+                    	<input type="hidden" name="capacity" value="10"/>
                         <button class="btn btn-default" type="submit">Update Daycare</button>
                     </c:otherwise>
                 </c:choose>
