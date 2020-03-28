@@ -19,7 +19,9 @@ import org.springframework.samples.petclinic.service.PetService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -40,6 +42,20 @@ public class HairdressingController {
 		List<TipoCuidado> res = new ArrayList<TipoCuidado>();
 		res.add(TipoCuidado.ESTETICA);
 		res.add(TipoCuidado.PELUQUERIA);
+		return res;
+	}
+	
+	@ModelAttribute("horasDisponibles")
+	public Collection<String> populateHorasDisponibles() {
+		List<String> res = new ArrayList<String>();
+		res.add("6:00");
+		res.add("6:30");
+		res.add("7:00");
+		res.add("7:30");
+		res.add("8:00");
+		res.add("8:30");
+		res.add("9:00");
+		res.add("9:30");
 		return res;
 	}
 	
@@ -103,7 +119,12 @@ public class HairdressingController {
 		//pet.addHairdressing(hairdressing);
 		//return hairdressing;
 	//}
-
+	
+	@InitBinder("hairdressing")
+	public void initHairdressingBinder(WebDataBinder dataBinder) {
+		dataBinder.setValidator(new HairdressingValidator());
+	}
+	
 	// Spring MVC calls method loadPetWithVisit(...) before initNewVisitForm is called
 	@GetMapping(value = "/owners/*/pets/{petId}/hairdressing/new")
 	public String initNewHairdressingForm(@PathVariable("petId") int petId, Map<String, Object> model) {
@@ -124,6 +145,7 @@ public class HairdressingController {
 		}
 		else {
 			this.petService.saveHairdressing(hairdressing);
+			System.out.println("\n\n\n\n Estos son los hairdressings que hay: \n\n\n\n"+this.petService.findPetById(petId).getHairdressings()+"\n\n\n\n");
 			return "redirect:/owners/"+ ownerId;
 		}
 	}
@@ -131,6 +153,7 @@ public class HairdressingController {
 	@GetMapping(value = "/owners/*/pets/{petId}/hairdressings")
 	public String showHairdressings(@PathVariable int petId, Map<String, Object> model) {
 		model.put("hairdressings", this.petService.findPetById(petId).getHairdressings());
+		
 		return "hairdressingList";
 	}
 	

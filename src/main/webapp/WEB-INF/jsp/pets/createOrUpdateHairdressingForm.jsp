@@ -38,8 +38,8 @@
             <div class="form-group has-feedback">
                 <petclinic:inputField label="Date" name="date"/>
                 <petclinic:inputField label="Description" name="description"/>
-                <petclinic:selectField label="Tipo de cuidado" name="cuidado" size="2" names="${tiposCuidados}"></petclinic:selectField>
-              	
+                <petclinic:selectField label="Care type" name="cuidado" size="2" names="${tiposCuidados}"></petclinic:selectField>
+              	<petclinic:selectField label="Time" name="time" size="5" names="${horasDisponibles}"></petclinic:selectField>
             </div>
 
             <div class="form-group">
