@@ -134,4 +134,13 @@ public class Pet extends NamedEntity {
 		training.setPet(this);
 	}
 
+	public void removeTraining(int trainingId) {
+		Set<Training> trainings = this.getTrainingsInternal();
+		for (Training t : trainings) {
+			if (t.getId() == trainingId) {
+				trainings.remove(t);
+			}
+		}
+	}
+
 }

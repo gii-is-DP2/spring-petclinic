@@ -134,12 +134,7 @@ public class TrainingController {
 	
 	@GetMapping(value = "/trainings/{trainingId}/delete")
 	public String processDeleteTrainingForm(@PathVariable("trainingId") int trainingId) {
-		Training training = this.trainingService.findTrainingById(trainingId);
-		//Pet pet = training.getPet();
-		//pet.getTrainings().remove(training);
-		//Mirar si falla porque no he modificado la lista de trainings de pet
-		//this.petService.savePet(pet);
-		this.trainingService.deleteTraining(training);
+		this.trainingService.delete(trainingId);
 		return "redirect:/trainings";
 	}
 
