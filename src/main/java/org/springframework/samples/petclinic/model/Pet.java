@@ -59,6 +59,9 @@ public class Pet extends NamedEntity {
 	@ManyToOne
 	@JoinColumn(name = "owner_id")
 	private Owner owner;
+	
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "pet", fetch = FetchType.EAGER)
+	private Set<Training> trainings;
 
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "pet", fetch = FetchType.EAGER)
 	private Set<Visit> visits;
@@ -107,6 +110,28 @@ public class Pet extends NamedEntity {
 	public void addVisit(Visit visit) {
 		getVisitsInternal().add(visit);
 		visit.setPet(this);
+	}
+	
+	protected Set<Training> getTrainingsInternal() {
+		if (this.trainings == null) {
+			this.trainings = new HashSet<>();
+		}
+		return this.trainings;
+	}
+
+	protected void setTrainignsInternal(Set<Training> trainings) {
+		this.trainings = trainings;
+	}
+
+	public List<Training> getTrainings() {
+		List<Training> sortedTrainings = new ArrayList<>(getTrainingsInternal());
+		PropertyComparator.sort(sortedTrainings, new MutableSortDefinition("date", false, false));
+		return Collections.unmodifiableList(sortedTrainings);
+	}
+
+	public void addTraining(Training training) {
+		getTrainingsInternal().add(training);
+		training.setPet(this);
 	}
 
 }
