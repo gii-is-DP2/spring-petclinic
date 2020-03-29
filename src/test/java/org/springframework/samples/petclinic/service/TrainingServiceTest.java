@@ -18,10 +18,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.dao.DataAccessException;
 import org.springframework.samples.petclinic.model.GroundType;
 import org.springframework.samples.petclinic.model.Trainer;
 import org.springframework.samples.petclinic.model.Training;
 import org.springframework.samples.petclinic.repository.springdatajpa.TrainingRepository;
+import org.springframework.samples.petclinic.service.exceptions.BusinessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -86,7 +88,7 @@ public class TrainingServiceTest {
 	
 	@Test
 	@Transactional
-	public void shouldInsertTraining() {
+	public void shouldInsertTraining() throws DataAccessException, BusinessException {
 		Training training = new Training();
 		training.setDescription("Sam");
 		training.setDate(LocalDate.now());
