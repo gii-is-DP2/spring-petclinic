@@ -33,7 +33,7 @@ public class DaycareController {
 	private final DaycareService daycareService;
 	
 	@Autowired
-	public DaycareController(PetService petService,final DaycareService daycareService) {
+	public DaycareController(final PetService petService,final DaycareService daycareService) {
 		this.petService = petService;
 		this.daycareService = daycareService;
 	}
@@ -109,10 +109,22 @@ public class DaycareController {
 			return "daycares/createOrUpdateDaycareForm";
 		}
 		else {
-			daycare.setId(daycareId);
-			daycareService.saveDaycare(daycare);
-			return "redirect:/owners/{ownerId}";
-		}
+            daycareService.delete(daycareId);
+            if(this.daycareService.oneDaycareById(daycare.getDate(), petId)==1){
+                result.rejectValue("date", "", "This daycare already exists");
+                return "daycares/createOrUpdateDaycareForm";
+            } else if(this.daycareService.countDaycareByDate(daycare.getDate())==daycare.getCapacity()) {
+                result.rejectValue("date", "", "Complete capacity. Please, select another date");
+                return "daycares/createOrUpdateDaycareForm";
+
+            } else if(daycare.getDate().isBefore(LocalDate.now())) {
+                result.rejectValue("date", "", "Please, select a future date");
+                return "daycares/createOrUpdateDaycareForm";
+            }
+            daycare.setId(daycareId);
+            daycareService.saveDaycare(daycare);
+            return "redirect:/owners/{ownerId}";
+        }
 	}
 	
 	@GetMapping(value = "/owners/*/pets/{petId}/daycares")

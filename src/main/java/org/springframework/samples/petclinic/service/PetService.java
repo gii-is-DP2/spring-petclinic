@@ -45,7 +45,7 @@ public class PetService {
 	private PetRepository petRepository;
 	
 	private VisitRepository visitRepository;
-		
+	
 	private DaycareRepository daycareRepository;
 
 	@Autowired
