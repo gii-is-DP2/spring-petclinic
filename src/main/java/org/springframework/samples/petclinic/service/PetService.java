@@ -17,13 +17,17 @@ package org.springframework.samples.petclinic.service;
 
 import java.util.Collection;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.samples.petclinic.model.Daycare;
 import org.springframework.samples.petclinic.model.Pet;
 import org.springframework.samples.petclinic.model.PetType;
 import org.springframework.samples.petclinic.model.Visit;
 import org.springframework.samples.petclinic.repository.PetRepository;
 import org.springframework.samples.petclinic.repository.VisitRepository;
+import org.springframework.samples.petclinic.repository.springdatajpa.DaycareRepository;
 import org.springframework.samples.petclinic.service.exceptions.DuplicatedPetNameException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,12 +46,15 @@ public class PetService {
 	
 	private VisitRepository visitRepository;
 	
+	private DaycareRepository daycareRepository;
 
 	@Autowired
 	public PetService(PetRepository petRepository,
-			VisitRepository visitRepository) {
+			VisitRepository visitRepository, DaycareRepository daycareRepository) {
 		this.petRepository = petRepository;
 		this.visitRepository = visitRepository;
+		this.daycareRepository = daycareRepository;
+
 	}
 
 	@Transactional(readOnly = true)
@@ -77,6 +84,11 @@ public class PetService {
 
 	public Collection<Visit> findVisitsByPetId(int petId) {
 		return visitRepository.findByPetId(petId);
+	}
+
+	@Transactional
+	public void saveDaycare(Daycare daycare) throws DataAccessException {
+		daycareRepository.save(daycare);
 	}
 
 }
