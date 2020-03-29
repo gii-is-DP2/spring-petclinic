@@ -14,7 +14,6 @@ import lombok.Data;
 @Data
 public class TrainingDTO {
 	
-	//HE TOCADO AQUI
 	@NotNull(message="must not be empty")
 	private String petName;
 	
@@ -30,7 +29,6 @@ public class TrainingDTO {
 	@NotEmpty(message="must not be empty")
 	private String description;
 
-	@Future
 	@NotNull(message="must not be empty")
     @DateTimeFormat(pattern = "yyyy/MM/dd")
     private LocalDate date;

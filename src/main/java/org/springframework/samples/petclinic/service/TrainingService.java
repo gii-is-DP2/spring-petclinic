@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.temporal.TemporalUnit;
 import java.util.Collection;
 import java.util.function.Function;
 
@@ -34,11 +35,21 @@ public class TrainingService {
 	}
 	
 	@Transactional
-	public void saveTraining(Training training) throws DataAccessException, BusinessException {
-		if (this.existsByDateAndTrainer(training.getDate(), training.getTrainer().getId())) {
+	public void saveTraining(Training training) throws DataAccessException, BusinessException {	
+		Collection<Training> trainings = this.findByDateAndTrainer(training.getDate(), training.getTrainer().getId());
+		trainings.removeIf(t -> t.getId().equals(training.getId()));
+		if (!trainings.isEmpty()) {
 			throw new BusinessException("trainerId", "unique", "The trainer already has another training on that date.");
 		}
+		if (training.getDate().isBefore(LocalDate.now().plusDays(1))) {
+			throw new BusinessException("date", "time", "The selected date must be in the future.");
+		}
 		this.trainingRepository.save(training);
+	}
+	
+	@Transactional(readOnly = true)
+	private Collection<Training> findByDateAndTrainer(LocalDate date, int trainerId) {
+		return this.trainingRepository.findByDateAndTrainer(date, trainerId);
 	}
 	
 	@Transactional
@@ -52,11 +63,5 @@ public class TrainingService {
 	@Transactional
 	public void deleteTraining(Training training) throws DataAccessException {
 		this.trainingRepository.delete(training);
-	}
-	
-	@Transactional(readOnly = true)
-	public boolean existsByDateAndTrainer(LocalDate date, int trainerId) {
-		Collection<Training> trainings = this.trainingRepository.findByDateAndTrainer(date, trainerId);
-		return !trainings.isEmpty();
 	}
 }
