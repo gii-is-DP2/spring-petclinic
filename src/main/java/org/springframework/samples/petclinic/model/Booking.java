@@ -14,6 +14,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 @MappedSuperclass
 public class Booking extends BaseEntity{
 
+
 	@NotEmpty(message="must not be empty")
 	@NotNull(message="must not be empty")
 	private String description;
@@ -49,4 +50,5 @@ public class Booking extends BaseEntity{
 	public void setPet(Pet pet) {
 		this.pet = pet;
 	}
+
 }

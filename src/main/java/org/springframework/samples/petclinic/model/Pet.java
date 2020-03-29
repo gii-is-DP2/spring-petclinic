@@ -64,7 +64,11 @@ public class Pet extends NamedEntity {
 	private Set<Visit> visits;
 	
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "pet", fetch = FetchType.EAGER)
+	private List<Hairdressing> hairdressings;
+
+  @OneToMany(cascade = CascadeType.ALL, mappedBy = "pet", fetch = FetchType.EAGER)
 	private Set<Daycare> daycares;
+
 
 	public void setBirthDate(LocalDate birthDate) {
 		this.birthDate = birthDate;
@@ -112,6 +116,42 @@ public class Pet extends NamedEntity {
 		visit.setPet(this);
 	}
 	
+
+	protected List<Hairdressing> getHairdressingsInternal() {
+		if (this.hairdressings == null) {
+			this.hairdressings = new ArrayList<>();
+		}
+		return this.hairdressings;
+	}
+
+	protected void setHairdressingsInternal(List<Hairdressing> hairdressings) {
+		this.hairdressings = hairdressings;
+	}
+
+	public List<Hairdressing> getHairdressings() {
+		List<Hairdressing> sortedHairdressings = new ArrayList<>(getHairdressingsInternal());
+		System.out.println("sortedHairdressings preordeanmiento: \n\n\n\n\n"+sortedHairdressings);
+		PropertyComparator.sort(sortedHairdressings, new MutableSortDefinition("date", false, false));
+		System.out.println("sortedHairdressings postordeanmiento: \n\n\n\n\n"+sortedHairdressings);
+		return Collections.unmodifiableList(sortedHairdressings);	
+	}
+
+	public void addHairdressing(Hairdressing hairdressing) {
+		getHairdressingsInternal().add(hairdressing);
+		hairdressing.setPet(this);
+	}
+
+	public void deleteHairdressing(Integer id) {	
+		List<Hairdressing> hairdressings = this.getHairdressingsInternal();
+		Hairdressing aux = new Hairdressing();
+		for (Hairdressing h  : hairdressings) {
+			if (h.getId() == id) {
+				aux = h;
+			}
+		}
+		hairdressings.remove(aux);
+		
+
 	protected Set<Daycare> getDaycaresInternal() {
 		if (this.daycares == null) {
 			this.daycares = new HashSet<>();
@@ -141,6 +181,7 @@ public class Pet extends NamedEntity {
 				daycares.remove(d);
 			}
 		}
+
 	}
 
 }
