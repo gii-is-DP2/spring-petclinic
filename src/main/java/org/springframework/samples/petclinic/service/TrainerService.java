@@ -3,7 +3,7 @@ package org.springframework.samples.petclinic.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.samples.petclinic.model.Trainer;
-import org.springframework.samples.petclinic.repository.springdatajpa.TrainerRepository;
+import org.springframework.samples.petclinic.repository.TrainerRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +27,11 @@ public class TrainerService {
 	@Transactional(readOnly = true)
 	public Collection<Trainer> findTrainers() throws DataAccessException {
 		return (Collection<Trainer>) this.trainerRepository.findAll();
+	}
+	
+	@Transactional(readOnly = true)
+	public Collection<Trainer> findTrainersByLastName(String lastName) throws DataAccessException {
+		return (Collection<Trainer>) this.trainerRepository.findByLastName(lastName);
 	}
 	
 	@Transactional

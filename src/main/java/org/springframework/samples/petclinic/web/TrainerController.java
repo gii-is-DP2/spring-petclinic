@@ -6,6 +6,7 @@ import java.util.Map;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.samples.petclinic.model.Owner;
 import org.springframework.samples.petclinic.model.Trainer;
 import org.springframework.samples.petclinic.service.TrainerService;
 import org.springframework.stereotype.Controller;
@@ -61,8 +62,23 @@ public class TrainerController {
 	}
 	
 	@GetMapping(value = "/trainers")
-	public String showTrainersList(Map<String, Object> model) {
+	public String initFindForm(Map<String, Object> model) {
+		model.put("trainer", new Trainer());
 		Collection<Trainer> results = this.trainerService.findTrainers();
+		model.put("trainers", results);
+		return "trainers/trainersList";
+	}
+	
+	@GetMapping(value = "/trainers/find")
+	public String showTrainersList(Trainer trainer, BindingResult result, Map<String, Object> model) {
+		Collection<Trainer> results;
+		
+		if (trainer.getLastName().isEmpty()) {
+			results = this.trainerService.findTrainers();
+		} else {
+			results = this.trainerService.findTrainersByLastName(trainer.getLastName());
+		}
+
 		model.put("trainers", results);
 		return "trainers/trainersList";
 	}

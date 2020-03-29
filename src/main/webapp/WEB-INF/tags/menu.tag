@@ -28,21 +28,15 @@
 				</petclinic:menuItem>
 
 				<petclinic:menuItem active="${name eq 'owners'}" url="/owners/find"
-					title="find owners">
+					title="owners">
 					<span class="glyphicon glyphicon-search" aria-hidden="true"></span>
-					<span>Find owners</span>
+					<span>Owners</span>
 				</petclinic:menuItem>
 
 				<petclinic:menuItem active="${name eq 'vets'}" url="/vets"
 					title="veterinarians">
 					<span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
 					<span>Veterinarians</span>
-				</petclinic:menuItem>
-				
-				<petclinic:menuItem active="${name eq 'error'}" url="/oups"
-					title="trigger a RuntimeException to see how it is handled">
-					<span class="glyphicon glyphicon-warning-sign" aria-hidden="true"></span>
-					<span>Error</span>
 				</petclinic:menuItem>
 				
 				<li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown"> 
@@ -68,12 +62,18 @@
 				</li>
 				
 				<li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown"> 
-					<span class="glyphicon glyphicon-check"></span> Reservations <span class="glyphicon glyphicon-chevron-down"></span></a>
+					<span class="glyphicon glyphicon-check"></span> My reservations <span class="glyphicon glyphicon-chevron-down"></span></a>
 					<ul class="dropdown-menu">
 							<li>
 								<petclinic:menuItem active="${name eq 'trainings'}" url="/trainings" title="trainings">
 									<span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
-									<span>Trainings</span>
+									<span>My trainings</span>
+								</petclinic:menuItem>
+							</li>
+							<li>
+								<petclinic:menuItem active="${name eq 'daycare'}" url="/daycare/new" title="daycare">
+									<span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
+									<span>New Daycare</span>
 								</petclinic:menuItem>
 							</li>
 					</ul>
@@ -86,7 +86,7 @@
 						</a>
 						<ul class="dropdown-menu">
 							<li><a href="<c:url value="/login" />">Login</a></li>
-							<li><a href="<c:url value="/users/new" />">Register</a></li>
+							<li><a href="<c:url value="/owners/new" />">Register</a></li>
 						</ul>
 					</sec:authorize>
 					<sec:authorize access="isAuthenticated()">

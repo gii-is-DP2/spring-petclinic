@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
+import javax.validation.constraints.Future;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
@@ -13,14 +14,16 @@ import org.springframework.format.annotation.DateTimeFormat;
 @MappedSuperclass
 public class Booking extends BaseEntity{
 
-	@NotEmpty
+
+	@NotEmpty(message="must not be empty")
+	@NotNull(message="must not be empty")
 	private String description;
-	
+
 	@NotNull(message="must not be empty")
     @DateTimeFormat(pattern = "yyyy/MM/dd")
     private LocalDate date;
-    
-    @ManyToOne
+	
+	@ManyToOne
 	@JoinColumn(name = "pet_id")
 	private Pet pet;
 
