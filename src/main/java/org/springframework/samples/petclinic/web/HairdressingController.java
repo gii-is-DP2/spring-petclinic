@@ -1,5 +1,6 @@
 package org.springframework.samples.petclinic.web;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -165,8 +166,14 @@ public class HairdressingController {
 	
 	@GetMapping(value = "/owners/{ownerId}/pets/{petId}/hairdressing/{hairdressingId}/delete")
 	public String deleteHairdressing(@PathVariable("ownerId") int ownerId, @PathVariable int hairdressingId) {
-		hairdressingService.delete(hairdressingId);
-		return "redirect:/owners/"+ ownerId;
+		Hairdressing h = hairdressingService.findHairdressingById(hairdressingId).get();
+		if(h.getDate().isEqual(LocalDate.now()) || h.getDate().isEqual(LocalDate.now().plusDays(1))) {
+			return "redirect:/owners/"+ ownerId;
+
+		}else {
+			hairdressingService.delete(hairdressingId);
+			return "redirect:/owners/"+ ownerId;
+		}
 	}
 	
 }
