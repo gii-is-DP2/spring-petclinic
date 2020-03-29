@@ -27,9 +27,9 @@
 	            <petclinic:inputField label="Description" name="description" />
 	            <petclinic:inputField label="Pista" name="pista" />
 				<div class="control-group">
-                    <petclinic:selectField name="tipoPista" label="Tipo pista" names="${tipoPistas}" size="3"/>
-                    <petclinic:selectField name="petName" label="petName" names="${pets}" size="3"/>
-                    <petclinic:selectField name="trainer" label="trainer" names="${trainers}" size="3"/>
+                    <petclinic:selectField name="tipoPista" label="Tipo pista" names="${tipoPistas}" size="${tipoPistas.size()}"/>
+                    <petclinic:selectField name="petName" label="petName" names="${pets}" size="${pets.size()}"/>
+                    <petclinic:selectField name="trainerId" label="trainer" names="${trainers}" itemValue="id" itemLabel="lastName" size="${trainers.size()}"/>
                 </div>	        
             </div>
 	        <div class="form-group">

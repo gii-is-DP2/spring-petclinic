@@ -14,7 +14,7 @@ import lombok.Data;
 @Data
 @Entity
 public class Trainer extends Employee{
-	@OneToMany(cascade = CascadeType.ALL, mappedBy = "trainer", fetch = FetchType.EAGER)
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "trainer", fetch = FetchType.LAZY)
 	private Set<Training> trainings;
 	
 	@Column(name = "specialty")

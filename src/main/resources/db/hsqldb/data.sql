@@ -38,6 +38,7 @@ INSERT INTO authorities VALUES ('fede','owner');
 INSERT INTO owners VALUES (11, 'Federico', 'Sartori', '2335 Independence La.', 'Sartori', '6085555487', 'fede');
 
 INSERT INTO trainer VALUES (1, 'Mario', 'Balotelli', '45', 'mb@mb.com', '45', '45', '45', '45');
+INSERT INTO trainer VALUES (2, 'Charlie', 'Austin', '28', 'chaz@chaz.com', '28', '28', '28', '28');
 
 INSERT INTO vets VALUES (1, 'James', 'Carter');
 INSERT INTO vets VALUES (2, 'Helen', 'Leary');

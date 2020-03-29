@@ -18,7 +18,7 @@ public class TrainingDTO {
 	private String petName;
 	
 	@NotNull(message="must not be empty")
-	private String trainer;
+	private Integer trainerId;
 	
 	@NotNull(message="must not be empty")
 	private TipoPista tipoPista;

@@ -22,6 +22,7 @@ import org.springframework.samples.petclinic.repository.TrainerRepository;
 import org.springframework.samples.petclinic.service.PetService;
 import org.springframework.samples.petclinic.service.TrainerService;
 import org.springframework.samples.petclinic.service.TrainingService;
+import org.springframework.samples.petclinic.service.exceptions.MappingException;
 import org.springframework.samples.petclinic.util.TrainingDTO;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -52,15 +53,12 @@ public class TrainingController {
 		this.trainerService = trainerService;
 	}
 	
-	//HE TOCADO ESTO
 	@ModelAttribute("trainers")
-	public Collection<String> populateTrainers() {
+	public Collection<Trainer> populateTrainers() {
 		List<Trainer> trainers = new ArrayList<Trainer>(this.trainerService.findTrainers());
-		List<String> lastNames = trainers.stream().map(x->x.getLastName()).collect(Collectors.toList());
-		return lastNames;
+		return trainers;
 	}
 	
-	//HE TOCADO ESTO
 	@ModelAttribute("pets")
 	public Collection<String> populatePets() {
 		String owner = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -94,39 +92,56 @@ public class TrainingController {
 			return VIEWS_TRAINING_CREATE_OR_UPDATE_FORM;
 		}
 		else {
+			Training training;
 			
-			Pet pet;
-			Trainer trainer;
-			
-			try{
-				// Integer.parseInt(trainingDTO.getPetId())
-				String owner = SecurityContextHolder.getContext().getAuthentication().getName();
-				pet = this.petService.findPetsByName(trainingDTO.getPetName(), owner);
-			}catch(DataAccessException e){
-				result.rejectValue("pet", "Not existance", "Pet does not exist");
-                return VIEWS_TRAINING_CREATE_OR_UPDATE_FORM;
+			try {
+				training = this.convertToEntity(trainingDTO);
+			} catch (MappingException ex) {
+				result.rejectValue(ex.getEntity(), ex.getError(), ex.getMessage());
+	            return VIEWS_TRAINING_CREATE_OR_UPDATE_FORM;
 			}
 			
-			try{
-				//trainer = this.trainerService.findTrainerByLastName(trainingDTO.getTrainer());
-			}catch(DataAccessException e){
-				result.rejectValue("trainer", "Not existance", "Trainer does not exist");
-                return VIEWS_TRAINING_CREATE_OR_UPDATE_FORM;
-			}
-
-			Training training = new Training();
-			training.setPet(pet);
-			training.setPista(trainingDTO.getPista());
-			training.setTipoPista(trainingDTO.getTipoPista());
-			training.setDescription(trainingDTO.getDescription());
-			training.setDate(trainingDTO.getDate());
-			//pet.addTraining(training);
 			this.trainingService.saveTraining(training);
 			
 			return "redirect:/trainings/" + training.getId();
 		}
 	}
-	
+
+	@GetMapping(value = "/trainings/{trainingId}/edit")
+	public String initUpdateTrainingForm(@PathVariable("trainingId") int trainingId, Model model) {
+		
+		Training training = this.trainingService.findTrainingById(trainingId);
+		
+		TrainingDTO trainingDTO = this.convertToDto(training);
+		
+		model.addAttribute("boton", false);
+		model.addAttribute(trainingDTO);
+		//meter que el atributo "new" sea false, en la variable training
+		return VIEWS_TRAINING_CREATE_OR_UPDATE_FORM;
+	}
+
+	@PostMapping(value = "/trainings/{trainingId}/edit")
+	public String processUpdateTrainingForm(@Valid TrainingDTO trainingDTO, BindingResult result, @PathVariable("trainingId") int trainingId) {
+		if (result.hasErrors()) {
+			return VIEWS_TRAINING_CREATE_OR_UPDATE_FORM;
+		}
+		else {
+			Training training;
+			
+			try {
+				training = this.convertToEntity(trainingDTO);
+				training.setId(trainingId);
+			} catch (MappingException ex) {
+				result.rejectValue(ex.getEntity(), ex.getError(), ex.getMessage());
+	            return VIEWS_TRAINING_CREATE_OR_UPDATE_FORM;
+			}
+						
+			this.trainingService.saveTraining(training);
+			
+			return "redirect:/trainings/{trainingId}";
+		}
+	}
+
 	@GetMapping("/trainings/{trainingId}")
 	public ModelAndView showTraining(@PathVariable("trainingId") int trainingId) {
 		ModelAndView mav = new ModelAndView("trainings/trainingDetails");
@@ -146,56 +161,41 @@ public class TrainingController {
 		this.trainingService.delete(trainingId);
 		return "redirect:/trainings";
 	}
+	
+	private Training convertToEntity(TrainingDTO dto) throws MappingException {
+		Training training = new Training();
+		
+		try {
+			String owner = SecurityContextHolder.getContext().getAuthentication().getName();
+			Pet pet = this.petService.findPetsByName(dto.getPetName(), owner);
+			training.setPet(pet);
+		} catch(DataAccessException e) {
+			throw new MappingException("pet", "Not existance", "Pet does not exist");
+		}
+		
+		try {
+			Trainer trainer = this.trainerService.findTrainerById(dto.getTrainerId());
+			training.setTrainer(trainer);
+		} catch(DataAccessException e) {
+			throw new MappingException("trainer", "Not existance", "Trainer does not exist");
+		}
 
-	@GetMapping(value = "/trainings/{trainingId}/edit")
-	public String initUpdateTrainingForm(@PathVariable("trainingId") int trainingId, Model model) {
+		training.setPista(dto.getPista());
+		training.setTipoPista(dto.getTipoPista());
+		training.setDescription(dto.getDescription());
+		training.setDate(dto.getDate());
 		
-		Training training = this.trainingService.findTrainingById(trainingId);
-		
-		TrainingDTO trainingDTO = new TrainingDTO();
-		trainingDTO.setDate(training.getDate());
-		trainingDTO.setDescription(training.getDescription());
-		trainingDTO.setPista(training.getPista());
-		trainingDTO.setTipoPista(training.getTipoPista());
-		trainingDTO.setPetName(training.getPet().getName());
-		trainingDTO.setTrainer(training.getTrainer().getLastName());
-		
-		model.addAttribute("boton", false);
-		model.addAttribute(trainingDTO);
-		//meter que el atributo "new" sea false, en la variable training
-		return VIEWS_TRAINING_CREATE_OR_UPDATE_FORM;
+		return training;
 	}
 
-	@PostMapping(value = "/trainings/{trainingId}/edit")
-	public String processUpdateTrainingForm(@Valid TrainingDTO trainingDTO, BindingResult result,
-			@PathVariable("trainingId") int trainingId) {
-		if (result.hasErrors()) {
-			return VIEWS_TRAINING_CREATE_OR_UPDATE_FORM;
-		}
-		else {
-			Pet pet;
-			//Trainer trainer;
-			
-			try{
-				String owner = SecurityContextHolder.getContext().getAuthentication().getName();
-				pet = this.petService.findPetsByName(trainingDTO.getPetName(), owner);
-				//pet = this.petService.findPetById(Integer.parseInt(trainingDTO.getPetId()));
-			}catch(DataAccessException e){
-				result.rejectValue("pet", "Not existance", "Pet does not exist");
-                return VIEWS_TRAINING_CREATE_OR_UPDATE_FORM;
-			}
-			
-
-			Training training = this.trainingService.findTrainingById(trainingId);
-			training.setPet(pet);
-			training.setPista(trainingDTO.getPista());
-			training.setTipoPista(trainingDTO.getTipoPista());
-			training.setDescription(trainingDTO.getDescription());
-			training.setDate(trainingDTO.getDate());
-			this.trainingService.saveTraining(training);
-//			training.setId(ownerId);
-//			this.trainingService.saveTraining(training);
-			return "redirect:/trainings/{trainingId}";
-		}
+	private TrainingDTO convertToDto(Training entity) {
+		TrainingDTO dto = new TrainingDTO();
+		dto.setDate(entity.getDate());
+		dto.setDescription(entity.getDescription());
+		dto.setPista(entity.getPista());
+		dto.setTipoPista(entity.getTipoPista());
+		dto.setPetName(entity.getPet().getName());
+		dto.setTrainerId(entity.getTrainer().getId());
+		return dto;
 	}
 }

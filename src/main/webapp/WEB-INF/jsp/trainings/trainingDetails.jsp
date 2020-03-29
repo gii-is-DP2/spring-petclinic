@@ -26,6 +26,14 @@
             <th>Tipo pista</th>
             <td><b><c:out value="${training.tipoPista}"/></b></td>
         </tr>
+        <tr>
+            <th>Pet</th>
+            <td><b><c:out value="${training.pet.name}"/></b></td>
+        </tr>
+        <tr>
+            <th>Trainer</th>
+            <td><b><c:out value="${training.trainer.lastName}"/></b></td>
+        </tr>
     </table>
     
    	<a class="btn btn-default" href='<spring:url value="/trainings/${training.id}/edit" htmlEscape="true"/>'>Edit training</a>
