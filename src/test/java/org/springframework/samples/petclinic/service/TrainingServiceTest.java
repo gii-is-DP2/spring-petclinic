@@ -18,7 +18,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.samples.petclinic.model.TipoPista;
+import org.springframework.samples.petclinic.model.GroundType;
 import org.springframework.samples.petclinic.model.Trainer;
 import org.springframework.samples.petclinic.model.Training;
 import org.springframework.samples.petclinic.repository.springdatajpa.TrainingRepository;
@@ -90,8 +90,8 @@ public class TrainingServiceTest {
 		Training training = new Training();
 		training.setDescription("Sam");
 		training.setDate(LocalDate.now());
-		training.setPista(3);
-		training.setTipoPista(TipoPista.OBEDIENCIA);             
+		training.setGround(3);
+		training.setGroundType(GroundType.OBEDIENCIA);             
                 
 		this.trainingService.saveTraining(training);
 		verify(this.trainingRepository, times(1)).save(training);
@@ -103,8 +103,8 @@ public class TrainingServiceTest {
 		Training training = new Training();
 		training.setDescription("Sam");
 		training.setDate(LocalDate.now());
-		training.setPista(3);
-		training.setTipoPista(TipoPista.OBEDIENCIA);             
+		training.setGround(3);
+		training.setGroundType(GroundType.OBEDIENCIA);             
                 
 		this.trainingService.deleteTraining(training);
 		verify(this.trainingRepository, times(1)).delete(training);

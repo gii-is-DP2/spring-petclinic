@@ -5,7 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.configuration.SecurityConfiguration;
-import org.springframework.samples.petclinic.model.TipoPista;
+import org.springframework.samples.petclinic.model.GroundType;
 import org.springframework.samples.petclinic.model.Training;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -54,8 +54,8 @@ public class TrainingControllerTests {
 		training.setId(this.TEST_TRAINING_ID);
 		training.setDescription("Descripcion");
 		training.setDate(LocalDate.now());
-		training.setPista(3);
-		training.setTipoPista(TipoPista.AGILIDAD);
+		training.setGround(3);
+		training.setGroundType(GroundType.AGILIDAD);
 		given(this.trainingService.findTrainingById(TEST_TRAINING_ID)).willReturn(this.training);
 	}
 	
@@ -99,8 +99,8 @@ public class TrainingControllerTests {
 		.andExpect(status().isOk())
 		.andExpect(model().attribute("training", hasProperty("description", is(training.getDescription()))))
 		.andExpect(model().attribute("training", hasProperty("date", is(training.getDate()))))
-		.andExpect(model().attribute("training", hasProperty("pista", is(training.getPista()))))
-		.andExpect(model().attribute("training", hasProperty("tipoPista", is(training.getTipoPista()))))
+		.andExpect(model().attribute("training", hasProperty("pista", is(training.getGround()))))
+		.andExpect(model().attribute("training", hasProperty("tipoPista", is(training.getGroundType()))))
 		.andExpect(view().name("trainings/trainingDetails"));
 	}
 
