@@ -1,5 +1,6 @@
 package org.springframework.samples.petclinic.web;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -52,6 +53,14 @@ public class TrainingController {
 	}
 	
 	//HE TOCADO ESTO
+	@ModelAttribute("trainers")
+	public Collection<String> populateTrainers() {
+		List<Trainer> trainers = new ArrayList<Trainer>(this.trainerService.findTrainers());
+		List<String> lastNames = trainers.stream().map(x->x.getLastName()).collect(Collectors.toList());
+		return lastNames;
+	}
+	
+	//HE TOCADO ESTO
 	@ModelAttribute("pets")
 	public Collection<String> populatePets() {
 		String owner = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -74,8 +83,8 @@ public class TrainingController {
 	@GetMapping(value = "/trainings/new")
 	public String initTrainingCreationForm(Map<String, Object> model) {
 		TrainingDTO trainingDTO = new TrainingDTO();
-		// Insertar la variable del modelo aqui para que coja el boton create
 		model.put("trainingDTO", trainingDTO);
+		model.put("boton", true);
 		return VIEWS_TRAINING_CREATE_OR_UPDATE_FORM;
 	}
 	
@@ -87,7 +96,7 @@ public class TrainingController {
 		else {
 			
 			Pet pet;
-			//Trainer trainer;
+			Trainer trainer;
 			
 			try{
 				// Integer.parseInt(trainingDTO.getPetId())
@@ -98,12 +107,12 @@ public class TrainingController {
                 return VIEWS_TRAINING_CREATE_OR_UPDATE_FORM;
 			}
 			
-//			try{
-//				trainer = this.trainerService.findTrainerById(Integer.parseInt(trainingDTO.getTrainerId()));
-//			}catch(DataAccessException e){
-//				result.rejectValue("trainer", "Not existance", "Trainer does not exist");
-//                return VIEWS_TRAINING_CREATE_OR_UPDATE_FORM;
-//			}
+			try{
+				//trainer = this.trainerService.findTrainerByLastName(trainingDTO.getTrainer());
+			}catch(DataAccessException e){
+				result.rejectValue("trainer", "Not existance", "Trainer does not exist");
+                return VIEWS_TRAINING_CREATE_OR_UPDATE_FORM;
+			}
 
 			Training training = new Training();
 			training.setPet(pet);
@@ -148,9 +157,10 @@ public class TrainingController {
 		trainingDTO.setDescription(training.getDescription());
 		trainingDTO.setPista(training.getPista());
 		trainingDTO.setTipoPista(training.getTipoPista());
-		
 		trainingDTO.setPetName(training.getPet().getName());
+		trainingDTO.setTrainer(training.getTrainer().getLastName());
 		
+		model.addAttribute("boton", false);
 		model.addAttribute(trainingDTO);
 		//meter que el atributo "new" sea false, en la variable training
 		return VIEWS_TRAINING_CREATE_OR_UPDATE_FORM;

@@ -38,4 +38,10 @@ public class TrainerService {
 	public void saveTrainer(Trainer trainer) throws DataAccessException {
 		this.trainerRepository.save(trainer);		
 	}
+
+//	@Transactional
+//	public Trainer findTrainerByLastName(String trainer) {
+//		// TODO Auto-generated method stub
+//		return this.trainerRepository.findTrainerByLastName(trainer);
+//	}
 }

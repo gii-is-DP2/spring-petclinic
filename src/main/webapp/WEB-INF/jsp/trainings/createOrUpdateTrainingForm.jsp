@@ -18,9 +18,7 @@
     </jsp:attribute>
 	<jsp:body>
 	    <h2>
-	    	Valor:
-	    	${training['new']}
-	        <c:if test="${training['new']}">Add </c:if> Training
+	        <c:if test="${boton}">Add </c:if> Training
 	    </h2>
 	    <form:form modelAttribute="trainingDTO" class="form-horizontal"
 				id="add-training-form">
@@ -31,12 +29,13 @@
 				<div class="control-group">
                     <petclinic:selectField name="tipoPista" label="Tipo pista" names="${tipoPistas}" size="3"/>
                     <petclinic:selectField name="petName" label="petName" names="${pets}" size="3"/>
+                    <petclinic:selectField name="trainer" label="trainer" names="${trainers}" size="3"/>
                 </div>	        
             </div>
 	        <div class="form-group">
 	            <div class="col-sm-offset-2 col-sm-10">
 	                <c:choose>
-	                    <c:when test="${training['new']}">
+	                    <c:when test="${boton}">
 	                        <button class="btn btn-default" type="submit">Add Training</button>
 	                    </c:when>
 	                    <c:otherwise>
