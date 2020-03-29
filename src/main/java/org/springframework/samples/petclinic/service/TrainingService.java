@@ -5,10 +5,13 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.samples.petclinic.model.Pet;
 import org.springframework.samples.petclinic.model.Training;
 import org.springframework.samples.petclinic.repository.springdatajpa.TrainingRepository;
+import org.springframework.samples.petclinic.service.exceptions.BusinessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.Collection;
+import java.util.function.Function;
 
 @Service
 public class TrainingService {
@@ -31,8 +34,11 @@ public class TrainingService {
 	}
 	
 	@Transactional
-	public void saveTraining(Training training) throws DataAccessException {
-		this.trainingRepository.save(training);		
+	public void saveTraining(Training training) throws DataAccessException, BusinessException {
+		if (this.existsByDateAndTrainer(training.getDate(), training.getTrainer().getId())) {
+			throw new BusinessException("trainerId", "unique", "The trainer already has another training on that date.");
+		}
+		this.trainingRepository.save(training);
 	}
 	
 	@Transactional
@@ -46,5 +52,11 @@ public class TrainingService {
 	@Transactional
 	public void deleteTraining(Training training) throws DataAccessException {
 		this.trainingRepository.delete(training);
+	}
+	
+	@Transactional(readOnly = true)
+	public boolean existsByDateAndTrainer(LocalDate date, int trainerId) {
+		Collection<Training> trainings = this.trainingRepository.findByDateAndTrainer(date, trainerId);
+		return !trainings.isEmpty();
 	}
 }

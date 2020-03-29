@@ -18,6 +18,7 @@ import org.springframework.samples.petclinic.model.Training;
 import org.springframework.samples.petclinic.service.PetService;
 import org.springframework.samples.petclinic.service.TrainerService;
 import org.springframework.samples.petclinic.service.TrainingService;
+import org.springframework.samples.petclinic.service.exceptions.BusinessException;
 import org.springframework.samples.petclinic.service.exceptions.MappingException;
 import org.springframework.samples.petclinic.util.TrainingDTO;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -95,8 +96,12 @@ public class TrainingController {
 				result.rejectValue(ex.getEntity(), ex.getError(), ex.getMessage());
 	            return VIEWS_TRAINING_CREATE_OR_UPDATE_FORM;
 			}
-			
-			this.trainingService.saveTraining(training);
+			try {
+				this.trainingService.saveTraining(training);
+			} catch (BusinessException ex) {
+				result.rejectValue(ex.getField(), ex.getCode(), ex.getMessage());
+				return VIEWS_TRAINING_CREATE_OR_UPDATE_FORM;
+			}
 			
 			return "redirect:/trainings/" + training.getId();
 		}
@@ -131,7 +136,12 @@ public class TrainingController {
 	            return VIEWS_TRAINING_CREATE_OR_UPDATE_FORM;
 			}
 						
-			this.trainingService.saveTraining(training);
+			try {
+				this.trainingService.saveTraining(training);
+			} catch (BusinessException ex) {
+				result.rejectValue(ex.getField(), ex.getCode(), ex.getMessage());
+				return VIEWS_TRAINING_CREATE_OR_UPDATE_FORM;
+			}
 			
 			return "redirect:/trainings/{trainingId}";
 		}
