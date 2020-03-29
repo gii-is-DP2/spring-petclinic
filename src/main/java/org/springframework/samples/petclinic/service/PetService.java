@@ -1,3 +1,4 @@
+
 /*
  * Copyright 2002-2013 the original author or authors.
  *
@@ -16,6 +17,7 @@
 package org.springframework.samples.petclinic.service;
 
 import java.util.Collection;
+import java.util.List;
 
 import javax.validation.Valid;
 
@@ -73,6 +75,11 @@ public class PetService {
 		visitRepository.save(visit);
 	}
 	
+  @Transactional(readOnly = true)
+	public List<Pet> findPetsByOwner(String Owner) throws DataAccessException {
+		return petRepository.findPetsByOwner(Owner);
+	}
+  
 	@Transactional
 	public void saveHairdressing(Hairdressing hairdressing) throws DataAccessException {
 		hairdressingRepository.save(hairdressing);
@@ -105,5 +112,11 @@ public class PetService {
 	public void saveDaycare(Daycare daycare) throws DataAccessException {
 		daycareRepository.save(daycare);
 	}
+  
+  @Transactional(readOnly = true)
+	public Pet findPetsByName(String Name, String Owner) throws DataAccessException {
+		return petRepository.findPetsByName(Name, Owner);
+	}
+
 
 }

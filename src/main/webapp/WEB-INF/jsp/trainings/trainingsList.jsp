@@ -15,8 +15,10 @@
         <tr>
             <th>Date</th>
             <th>Description</th>
-            <th>Pista</th>
-            <th>Tipo pista</th>
+            <th>Training Ground</th>
+            <th>Training Ground Type</th>
+            <th>Pet</th>
+            <th>Trainer</th>
         </tr>
         </thead>
         <tbody>
@@ -32,10 +34,16 @@
                     <c:out value="${training.description}"/>
                 </td>
                 <td>
-                    <c:out value="${training.pista}"/>
+                    <c:out value="${training.ground}"/>
                 </td>
                 <td>
-                    <c:out value="${training.tipoPista}"/>
+                    <c:out value="${training.groundType}"/>
+                </td>
+                <td>
+                    <c:out value="${training.pet.name}"/>
+                </td>
+                <td>
+                    <c:out value="${training.trainer.firstName}  ${training.trainer.lastName}"/>
                 </td>
             </tr>
         </c:forEach>

@@ -15,6 +15,8 @@
  */
 package org.springframework.samples.petclinic.model;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.springframework.beans.support.MutableSortDefinition;
 import org.springframework.beans.support.PropertyComparator;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -56,11 +58,14 @@ public class Pet extends NamedEntity {
 	@JoinColumn(name = "type_id")
 	private PetType type;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "owner_id")
 	private Owner owner;
+	
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "pet", fetch = FetchType.LAZY)
+	private Set<Training> trainings;
 
-	@OneToMany(cascade = CascadeType.ALL, mappedBy = "pet", fetch = FetchType.EAGER)
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "pet", fetch = FetchType.LAZY)
 	private Set<Visit> visits;
 	
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "pet", fetch = FetchType.EAGER)
@@ -116,6 +121,35 @@ public class Pet extends NamedEntity {
 		visit.setPet(this);
 	}
 	
+	protected Set<Training> getTrainingsInternal() {
+		if (this.trainings == null) {
+			this.trainings = new HashSet<>();
+		}
+		return this.trainings;
+	}
+
+	protected void setTrainignsInternal(Set<Training> trainings) {
+		this.trainings = trainings;
+	}
+
+	public List<Training> getTrainings() {
+		List<Training> sortedTrainings = new ArrayList<>(getTrainingsInternal());
+		PropertyComparator.sort(sortedTrainings, new MutableSortDefinition("date", false, false));
+		return Collections.unmodifiableList(sortedTrainings);
+	}
+
+	public void addTraining(Training training) {
+		getTrainingsInternal().add(training);
+		training.setPet(this);
+	}
+
+	public void removeTraining(int trainingId) {
+		Set<Training> trainings = this.getTrainingsInternal();
+		for (Training t : trainings) {
+			if (t.getId() == trainingId) {
+				trainings.remove(t);
+			}
+		}
 
 	protected List<Hairdressing> getHairdressingsInternal() {
 		if (this.hairdressings == null) {

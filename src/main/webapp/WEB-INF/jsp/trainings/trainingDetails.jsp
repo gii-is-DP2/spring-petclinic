@@ -19,16 +19,32 @@
             <td><b><c:out value="${training.description}"/></b></td>
         </tr>
         <tr>
-            <th>Pista</th>
-            <td><b><c:out value="${training.pista}"/></b></td>
+            <th>Training Ground</th>
+            <td><b><c:out value="${training.ground}"/></b></td>
         </tr>
         <tr>
-            <th>Tipo pista</th>
-            <td><b><c:out value="${training.tipoPista}"/></b></td>
+            <th>Training Ground Type</th>
+            <td><b><c:out value="${training.groundType}"/></b></td>
+        </tr>
+        <tr>
+            <th>Pet</th>
+            <td><b><c:out value="${training.pet.name}"/></b></td>
+        </tr>
+        <tr>
+            <th>Trainer</th>
+            <td><b><c:out value="${training.trainer.firstName}  ${training.trainer.lastName}"/></b></td>
         </tr>
     </table>
     
    	<a class="btn btn-default" href='<spring:url value="/trainings/${training.id}/edit" htmlEscape="true"/>'>Edit training</a>
-   	<a class="btn btn-default" href='<spring:url value="/trainings/${training.id}/delete" htmlEscape="true"/>'>Cancel training</a>
+   	
+   	
+   	
+   	<spring:url value="/trainings/{trainingId}/delete" var="trainingUrl">
+   		<spring:param name="trainingId" value="${training.id }"></spring:param>
+   	</spring:url>
+   	
+   	
+   	<a class="btn btn-default" href="${fn:escapeXml(trainingUrl)}">Cancel training</a>
 
 </petclinic:layout>
