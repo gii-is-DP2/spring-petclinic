@@ -1,4 +1,4 @@
-package org.springframework.samples.petclinic.configuration;
+﻿package org.springframework.samples.petclinic.configuration;
 
 import javax.sql.DataSource;
 
@@ -35,11 +35,15 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 		http.authorizeRequests()
 				.antMatchers("/resources/**","/webjars/**","/h2-console/**").permitAll()
 				.antMatchers(HttpMethod.GET, "/","/oups").permitAll()
+				.antMatchers("/users/new").permitAll()
+				.antMatchers("/hairdressing").permitAll()
+				.antMatchers("/hairdressing/**").hasAnyAuthority("admin")
 				.antMatchers("/owners/new").permitAll()
 				.antMatchers("/admin/**").hasAnyAuthority("admin")
 				.antMatchers("/owners/**").hasAnyAuthority("owner","admin")				
 				.antMatchers("/vets/**").authenticated()
-				.antMatchers("/trainers/**").hasAnyAuthority("admin")
+				.antMatchers("/trainers/**").hasAnyAuthority("admin", "owner")
+				.antMatchers("/daycare/**").hasAnyAuthority("admin")
 				.antMatchers("/trainings/**").hasAnyAuthority("owner", "admin")
 				.anyRequest().denyAll()
 				.and()
