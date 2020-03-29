@@ -2,6 +2,7 @@ package org.springframework.samples.petclinic.util;
 
 import java.time.LocalDate;
 
+import javax.validation.constraints.Future;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
@@ -29,6 +30,7 @@ public class TrainingDTO {
 	@NotEmpty(message="must not be empty")
 	private String description;
 
+	@Future
 	@NotNull(message="must not be empty")
     @DateTimeFormat(pattern = "yyyy/MM/dd")
     private LocalDate date;
