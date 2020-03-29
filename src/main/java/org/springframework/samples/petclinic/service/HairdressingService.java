@@ -50,11 +50,9 @@ public class HairdressingService {
 		Pet pet = hairdressing.getPet();
 		pet.deleteHairdressing(hairdressing.getId());
 		hairdressingRepo.deleteById(hairdressingId);
-		
 	}
 
 	public int countHairdressingsByDateAndTime(LocalDate date, String time) {
-		
 		return hairdressingRepo.countHairdressingsByDateAndTime(date, time);
 	}
 
