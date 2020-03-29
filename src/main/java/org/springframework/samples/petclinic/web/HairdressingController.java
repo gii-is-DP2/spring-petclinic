@@ -144,9 +144,15 @@ public class HairdressingController {
 			return "pets/createOrUpdateHairdressingForm";
 		}
 		else {
-			this.petService.saveHairdressing(hairdressing);
-			System.out.println("\n\n\n\n Estos son los hairdressings que hay: \n\n\n\n"+this.petService.findPetById(petId).getHairdressings()+"\n\n\n\n");
-			return "redirect:/owners/"+ ownerId;
+			if (hairdressingService.countHairdressingsByDateAndTime(hairdressing.getDate(), hairdressing.getTime()) != 0){
+				result.rejectValue("time", "", "This time isn't available, please select another");
+				return "pets/createOrUpdateHairdressingForm";
+				
+			}else {
+				this.petService.saveHairdressing(hairdressing);
+				System.out.println("\n\n\n\n Estos son los hairdressings que hay: \n\n\n\n"+this.petService.findPetById(petId).getHairdressings()+"\n\n\n\n");
+				return "redirect:/owners/"+ ownerId;
+			}
 		}
 	}
 

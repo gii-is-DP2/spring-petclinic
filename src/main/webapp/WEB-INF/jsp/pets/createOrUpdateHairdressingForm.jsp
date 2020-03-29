@@ -58,7 +58,7 @@
                 <th>Description</th>
                 <th>Tipo de cuidado</th>
             </tr>
-            <c:forEach var="hairdressing" items="${hairdressing.pet.visits}">
+            <c:forEach var="hairdressing" items="${hairdressing.pet.hairdressings}">
                 <c:if test="${!hairdressing['new']}">
                     <tr>
                         <td><petclinic:localDate date="${hairdressing.date}" pattern="yyyy/MM/dd"/></td>
