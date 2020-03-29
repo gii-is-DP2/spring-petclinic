@@ -30,4 +30,9 @@ public class Training extends Booking{
 	@Column(name="pista")
 	@NotNull(message="must not be empty")
 	private Integer pista;
+	
+    @Override
+    public int hashCode() {
+        return 31;
+    }
 }

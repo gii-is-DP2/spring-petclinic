@@ -13,7 +13,8 @@ import lombok.Data;
 
 @Data
 @Entity
-public class Trainer extends Employee{
+public class Trainer extends Employee {
+	
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "trainer", fetch = FetchType.LAZY)
 	private Set<Training> trainings;
 	
@@ -29,6 +30,4 @@ public class Trainer extends Employee{
 	public String toString() {
 		return "Trainer [specialty=" + specialty + ", firstName=" + firstName + ", lastName=" + lastName + "]";
 	}
-	
-	
 }

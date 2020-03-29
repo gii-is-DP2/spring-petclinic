@@ -60,7 +60,6 @@ public class Pet extends NamedEntity {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "owner_id")
-	@Fetch(value = FetchMode.JOIN)  
 	private Owner owner;
 	
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "pet", fetch = FetchType.LAZY)

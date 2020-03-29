@@ -37,7 +37,7 @@ public class TrainingService {
 	
 	@Transactional
 	public void delete(int trainingId) throws DataAccessException {
-		Training training = this.findTrainingById(trainingId);	
+		Training training = this.findTrainingById(trainingId);
 		Pet pet = training.getPet();
 		pet.removeTraining(training.getId());
 		this.trainingRepository.deleteById(trainingId);
