@@ -23,13 +23,13 @@ public class Training extends Booking{
 	@JoinColumn(name = "trainer_id")
 	private Trainer trainer;
 	
-	@Column(name="tipoPista")
+	@Column(name="groundType")
 	@NotNull(message="must not be empty")
-	private TipoPista tipoPista;
+	private GroundType groundType;
 	
-	@Column(name="pista")
+	@Column(name="ground")
 	@NotNull(message="must not be empty")
-	private Integer pista;
+	private Integer ground;
 	
     @Override
     public int hashCode() {

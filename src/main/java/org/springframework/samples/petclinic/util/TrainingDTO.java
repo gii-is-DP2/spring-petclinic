@@ -6,7 +6,7 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.samples.petclinic.model.TipoPista;
+import org.springframework.samples.petclinic.model.GroundType;
 
 import lombok.Data;
 
@@ -21,10 +21,10 @@ public class TrainingDTO {
 	private Integer trainerId;
 	
 	@NotNull(message="must not be empty")
-	private TipoPista tipoPista;
+	private GroundType groundType;
 
 	@NotNull(message="must not be empty")
-	private Integer pista;
+	private Integer ground;
 	
 	@NotEmpty(message="must not be empty")
 	private String description;

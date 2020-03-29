@@ -25,9 +25,9 @@
 	        <div class="form-group has-feedback">
 	            <petclinic:inputField label="Date" name="date" />
 	            <petclinic:inputField label="Description" name="description" />
-	            <petclinic:inputField label="Pista" name="pista" />
+	            <petclinic:inputField label="Ground" type="number" minValue="1" name="ground" />
 				<div class="control-group">
-                    <petclinic:selectField name="tipoPista" label="Tipo pista" names="${tipoPistas}" size="${tipoPistas.size()}"/>
+                    <petclinic:selectField name="groundType" label="Ground Type" names="${groundTypes}" size="${groundTypes.size()}"/>
                     <petclinic:selectField name="petName" label="petName" names="${pets}" size="${pets.size()}"/>
                     <petclinic:selectField name="trainerId" label="trainer" names="${trainers}" itemValue="id" itemLabel="lastName" size="${trainers.size()}"/>
                 </div>	        

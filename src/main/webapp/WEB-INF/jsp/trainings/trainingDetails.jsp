@@ -19,12 +19,12 @@
             <td><b><c:out value="${training.description}"/></b></td>
         </tr>
         <tr>
-            <th>Pista</th>
-            <td><b><c:out value="${training.pista}"/></b></td>
+            <th>Training Ground</th>
+            <td><b><c:out value="${training.ground}"/></b></td>
         </tr>
         <tr>
-            <th>Tipo pista</th>
-            <td><b><c:out value="${training.tipoPista}"/></b></td>
+            <th>Training Ground Type</th>
+            <td><b><c:out value="${training.groundType}"/></b></td>
         </tr>
         <tr>
             <th>Pet</th>
@@ -32,7 +32,7 @@
         </tr>
         <tr>
             <th>Trainer</th>
-            <td><b><c:out value="${training.trainer.lastName}"/></b></td>
+            <td><b><c:out value="${training.trainer.firstName}  ${training.trainer.lastName}"/></b></td>
         </tr>
     </table>
     

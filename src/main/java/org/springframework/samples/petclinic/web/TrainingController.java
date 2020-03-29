@@ -8,17 +8,13 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.validation.Valid;
-import javax.websocket.server.PathParam;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
-import org.springframework.samples.petclinic.model.Owner;
+import org.springframework.samples.petclinic.model.GroundType;
 import org.springframework.samples.petclinic.model.Pet;
-import org.springframework.samples.petclinic.model.PetType;
-import org.springframework.samples.petclinic.model.TipoPista;
 import org.springframework.samples.petclinic.model.Trainer;
 import org.springframework.samples.petclinic.model.Training;
-import org.springframework.samples.petclinic.repository.TrainerRepository;
 import org.springframework.samples.petclinic.service.PetService;
 import org.springframework.samples.petclinic.service.TrainerService;
 import org.springframework.samples.petclinic.service.TrainingService;
@@ -29,7 +25,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -67,10 +62,10 @@ public class TrainingController {
 		return names;
 	}
 	
-	@ModelAttribute("tipoPistas")
-	public Collection<TipoPista> populateTipoPistas() {
-		TipoPista[] tipos = TipoPista.class.getEnumConstants();
-		return Arrays.asList(tipos);
+	@ModelAttribute("groundTypes")
+	public Collection<GroundType> populateGroundTypes() {
+		GroundType[] types = GroundType.class.getEnumConstants();
+		return Arrays.asList(types);
 	}
 	
 	@InitBinder
@@ -180,8 +175,8 @@ public class TrainingController {
 			throw new MappingException("trainer", "Not existance", "Trainer does not exist");
 		}
 
-		training.setPista(dto.getPista());
-		training.setTipoPista(dto.getTipoPista());
+		training.setGround(dto.getGround());
+		training.setGroundType(dto.getGroundType());
 		training.setDescription(dto.getDescription());
 		training.setDate(dto.getDate());
 		
@@ -192,8 +187,8 @@ public class TrainingController {
 		TrainingDTO dto = new TrainingDTO();
 		dto.setDate(entity.getDate());
 		dto.setDescription(entity.getDescription());
-		dto.setPista(entity.getPista());
-		dto.setTipoPista(entity.getTipoPista());
+		dto.setGround(entity.getGround());
+		dto.setGroundType(entity.getGroundType());
 		dto.setPetName(entity.getPet().getName());
 		dto.setTrainerId(entity.getTrainer().getId());
 		return dto;
