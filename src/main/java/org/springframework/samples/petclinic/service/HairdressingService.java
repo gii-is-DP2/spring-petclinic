@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.samples.petclinic.model.Hairdressing;
 import org.springframework.samples.petclinic.model.Pet;
 import org.springframework.samples.petclinic.repository.HairdressingRepository;
@@ -15,10 +16,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class HairdressingService {
 	
-	HairdressingRepository hairdressingRepo;
+	private final HairdressingRepository hairdressingRepo;
 	@Autowired
 	PetRepository petRepo;
-	
 	@Autowired
 	public HairdressingService(HairdressingRepository hairdressingRepository) {
 		this.hairdressingRepo = hairdressingRepository;
@@ -30,8 +30,8 @@ public class HairdressingService {
 	}
 	
 	@Transactional(readOnly=true)
-	public Optional<Hairdressing> findHairdressingById(int id){
-		return hairdressingRepo.findById(id);
+	public Hairdressing findHairdressingById(int id) throws DataAccessException{
+		return hairdressingRepo.findById(id).get();
 	}
 	
 	@Transactional(readOnly=true)
@@ -46,15 +46,13 @@ public class HairdressingService {
 	
 	@Transactional
 	public void delete(int hairdressingId) {
-		Hairdressing hairdressing = this.findHairdressingById(hairdressingId).get();
+		Hairdressing hairdressing = this.findHairdressingById(hairdressingId);
 		Pet pet = hairdressing.getPet();
 		pet.deleteHairdressing(hairdressing.getId());
 		hairdressingRepo.deleteById(hairdressingId);
-		
 	}
 
 	public int countHairdressingsByDateAndTime(LocalDate date, String time) {
-		
 		return hairdressingRepo.countHairdressingsByDateAndTime(date, time);
 	}
 
