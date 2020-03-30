@@ -156,12 +156,12 @@ public class HairdressingController {
 		}
 	}
 
-	@GetMapping(value = "/owners/*/pets/{petId}/hairdressings")
-	public String showHairdressings(@PathVariable int petId, Map<String, Object> model) {
-		model.put("hairdressings", this.petService.findPetById(petId).getHairdressings());
-		
-		return "hairdressingList";
-	}
+//	@GetMapping(value = "/owners/*/pets/{petId}/hairdressings")
+//	public String showHairdressings(@PathVariable int petId, Map<String, Object> model) {
+//		model.put("hairdressings", this.petService.findPetById(petId).getHairdressings());
+//		
+//		return "hairdressingList";
+//	}
 	
 	@GetMapping(value = "/owners/{ownerId}/pets/{petId}/hairdressing/{hairdressingId}/delete")
 	public String deleteHairdressing(@PathVariable("ownerId") int ownerId, @PathVariable int hairdressingId) {

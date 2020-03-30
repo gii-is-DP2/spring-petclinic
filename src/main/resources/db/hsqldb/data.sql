@@ -62,3 +62,5 @@ INSERT INTO visits(id,pet_id,visit_date,description) VALUES (2, 8, '2013-01-02',
 INSERT INTO visits(id,pet_id,visit_date,description) VALUES (3, 8, '2013-01-03', 'neutered');
 INSERT INTO visits(id,pet_id,visit_date,description) VALUES (4, 7, '2013-01-04', 'spayed');
 
+INSERT INTO hairdressings VALUES (1, '2021-01-01', 'Pelado a mi mascota', 0, '9:00', 1);
+INSERT INTO hairdressings VALUES (99, '2022-02-02', 'TEST', 0, '7:00',1);
