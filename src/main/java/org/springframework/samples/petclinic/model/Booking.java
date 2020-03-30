@@ -33,10 +33,6 @@ public class Booking extends BaseEntity{
 	@NotNull(message="must not be empty")
     @DateTimeFormat(pattern = "yyyy/MM/dd")
     private LocalDate date;
-	
-	@ManyToOne
-	@JoinColumn(name = "pet_id")
-	private Pet pet;
 
     public String getDescription() {
         return this.description;

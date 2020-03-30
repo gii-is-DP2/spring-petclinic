@@ -150,6 +150,7 @@ public class Pet extends NamedEntity {
 				trainings.remove(t);
 			}
 		}
+	}
 
 	protected List<Hairdressing> getHairdressingsInternal() {
 		if (this.hairdressings == null) {
@@ -184,6 +185,7 @@ public class Pet extends NamedEntity {
 			}
 		}
 		hairdressings.remove(aux);
+	}
 		
 
 	protected Set<Daycare> getDaycaresInternal() {
@@ -217,5 +219,4 @@ public class Pet extends NamedEntity {
 		}
 
 	}
-
 }
