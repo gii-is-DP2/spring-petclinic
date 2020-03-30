@@ -70,6 +70,15 @@ public class TrainingControllerTests {
 	
 	@BeforeEach
 	void setup() {
+		
+		training = new Training();
+		training.setId(this.TEST_TRAINING_ID);
+		training.setDescription("Descripcion");
+		training.setDate(LocalDate.now());
+		training.setGround(3);
+		training.setGroundType(GroundType.AGILIDAD);
+		
+		trainer = new Trainer();
 		trainer.setDni("12345678A");
 		trainer.setDescription("descripsao");
 		trainer.setEmail("entrenador@us.es");
@@ -82,16 +91,12 @@ public class TrainingControllerTests {
 		Set<Training> trainings = new HashSet<Training>();
 		trainings.add(training);
 		trainer.setTrainings(trainings);
+
+		pet = new Pet();
+		pet.setId(TEST_PET_ID);
+		pet.addTraining(training);
 		
-		training = new Training();
-		training.setId(this.TEST_TRAINING_ID);
-		training.setDescription("Descripcion");
-		training.setDate(LocalDate.now());
-		training.setGround(3);
-		training.setGroundType(GroundType.AGILIDAD);
-		training.setTrainer(trainer);
-		training.setPet(pet);
-		
+		trainingDTO = new TrainingDTO();
 		trainingDTO.setDate(training.getDate());
 		trainingDTO.setDescription(training.getDescription());
 		trainingDTO.setGround(training.getGround());
@@ -99,13 +104,13 @@ public class TrainingControllerTests {
 		trainingDTO.setPetName(pet.getName());
 		trainingDTO.setTrainerId(this.TEST_TRAINER_ID);
 		
-		
-		pet = new Pet();
-		pet.setId(TEST_PET_ID);
-		pet.addTraining(training);
 		Owner owner = new Owner();
 		owner.setId(TEST_OWNER_ID);
 		owner.addPet(pet);
+		
+		training.setTrainer(trainer);
+		training.setPet(pet);
+		
 		given(this.petService.findPetById(TEST_PET_ID)).willReturn(this.pet);
 		given(this.trainingService.findTrainingById(TEST_TRAINING_ID)).willReturn(this.training);
 		given(this.trainerService.findTrainerById(TEST_TRAINER_ID)).willReturn(this.trainer);
@@ -114,7 +119,7 @@ public class TrainingControllerTests {
 	@WithMockUser(value = "spring")
     @Test
     void testInitCreationForm() throws Exception {
-		mockMvc.perform(get("/trainings/new")).andExpect(status().isOk()).andExpect(model().attributeExists("training"))
+		mockMvc.perform(get("/trainings/new")).andExpect(status().isOk()).andExpect(model().attributeExists("trainingDTO"))
 			.andExpect(view().name("trainings/createOrUpdateTrainingForm"));
 	}
 	
@@ -137,16 +142,14 @@ public class TrainingControllerTests {
 	void testProcessCreationFormErrors() throws Exception {
 		mockMvc.perform(post("/trainings/new", this.TEST_OWNER_ID)
 				.param("description", "Descripcion")
-				.param("date", "2020/01/06")
 				.param("ground", "3")
 				.param("groundType", "AGILIDAD")
 				.param("petName","Leo")
 				.param("trainerId", "1")
 				.with(csrf()))
 		.andExpect(status().isOk())
-		.andExpect(model().attributeHasErrors("training"))
-		.andExpect(model().attributeHasFieldErrors("training", "pista"))
-		.andExpect(model().attributeHasFieldErrors("training", "tipoPista"))
+		.andExpect(model().attributeHasErrors("trainingDTO"))
+		.andExpect(model().attributeHasFieldErrors("trainingDTO", "date"))
 		.andExpect(view().name("trainings/createOrUpdateTrainingForm"));
 	}
 	
@@ -157,8 +160,8 @@ public class TrainingControllerTests {
 		.andExpect(status().isOk())
 		.andExpect(model().attribute("training", hasProperty("description", is(training.getDescription()))))
 		.andExpect(model().attribute("training", hasProperty("date", is(training.getDate()))))
-		.andExpect(model().attribute("training", hasProperty("pista", is(training.getGround()))))
-		.andExpect(model().attribute("training", hasProperty("tipoPista", is(training.getGroundType()))))
+		.andExpect(model().attribute("training", hasProperty("ground", is(training.getGround()))))
+		.andExpect(model().attribute("training", hasProperty("groundType", is(training.getGroundType()))))
 		.andExpect(view().name("trainings/trainingDetails"));
 	}
 
@@ -174,7 +177,8 @@ public class TrainingControllerTests {
     @WithMockUser(value = "spring")
 	@Test
 	void testInitUpdateForm() throws Exception {
-		mockMvc.perform(get("/trainings/{trainingId}/edit", TEST_TRAINING_ID))
+    	
+		mockMvc.perform(get("/trainings/{trainingId}/edit", this.TEST_TRAINING_ID))
 				.andExpect(status().isOk()).andExpect(model().attributeExists("trainingDTO"))
 				.andExpect(view().name("trainings/createOrUpdateTrainingForm"));
 	}
@@ -201,15 +205,14 @@ public class TrainingControllerTests {
 							.with(csrf())
 							.param("description", "Descripcion")
 							.param("date", "2015/02/12"))
-				.andExpect(model().attributeHasErrors("training")).andExpect(status().isOk())
+				.andExpect(model().attributeHasErrors("trainingDTO")).andExpect(status().isOk())
 				.andExpect(view().name("trainings/createOrUpdateTrainingForm"));
 	}
     
     @WithMockUser(value = "spring")
 	@Test
 	void testProcessDeleteFormSuccess() throws Exception {
-		given(this.trainingService.findTrainingById(TEST_TRAINING_ID)).willReturn(this.training);
-		mockMvc.perform(post("/trainings/{trainingId}/delete", TEST_TRAINING_ID)
+		mockMvc.perform(get("/trainings/{trainingId}/delete", TEST_TRAINING_ID)
 							.with(csrf()))
 				.andExpect(status().is3xxRedirection())
 				.andExpect(view().name("redirect:/trainings"));
