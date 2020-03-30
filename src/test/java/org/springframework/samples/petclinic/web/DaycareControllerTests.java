@@ -157,10 +157,10 @@ void testShowDaycares() throws Exception {
 	@Test
 	void testProcessDeleteFormSuccess() throws Exception {
 		given(this.daycareService.findDaycareById(TEST_DAYCARE_ID)).willReturn(this.daycare);
-		mockMvc.perform(post( "/owners/{ownerId}/pets/{petId}/deleteDaycare/{daycareId}", TEST_DAYCARE_ID, this.TEST_PET_ID, this.TEST_OWNER_ID)
+		mockMvc.perform(get( "/owners/{ownerId}/pets/{petId}/deleteDaycare/{daycareId}", TEST_OWNER_ID, this.TEST_PET_ID, this.TEST_DAYCARE_ID)
 							.with(csrf()))
-				.andExpect(status().is2xxSuccessful());
-//				.andExpect(view().name("redirect:/owners/ownerDetails"));
+				.andExpect(status().is3xxRedirection())
+				.andExpect(view().name("redirect:/owners/"+ TEST_OWNER_ID));
 	}
 	
 	
