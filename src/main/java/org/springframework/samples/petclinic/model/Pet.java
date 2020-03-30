@@ -217,5 +217,6 @@ public class Pet extends NamedEntity {
 				break;
 			}
 		}
+		daycares.remove(aux);
 	}
 }
