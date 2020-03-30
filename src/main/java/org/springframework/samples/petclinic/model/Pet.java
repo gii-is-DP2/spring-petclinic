@@ -182,6 +182,7 @@ public class Pet extends NamedEntity {
 		for (Hairdressing h  : hairdressings) {
 			if (h.getId() == id) {
 				aux = h;
+				break;
 			}
 		}
 		hairdressings.remove(aux);
@@ -212,11 +213,13 @@ public class Pet extends NamedEntity {
 
 	public void deleteDaycare(int daycareId) {
 		List<Daycare> daycares = this.getDaycaresInternal();
+		Daycare aux = new Daycare();
 		for (Daycare d : daycares) {
 			if (d.getId() == daycareId) {
-				daycares.remove(d);
+				aux=d;
+				break;
 			}
 		}
-
+		daycares.remove(aux);
 	}
 }
