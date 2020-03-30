@@ -52,17 +52,17 @@ public class HairdressingServiceTest {
 //	findHairdressingById
 	@Test
 	void shouldFindHairDressingWithId() {
-		int id = 1;
-//		Hairdressing hairdressing = new Hairdressing();
-//		hairdressing.setId(id);
-//		hairdressing.setDescription("TEST");
-//		
-//		when(this.hairdressingRepository.findById(id)).thenReturn(Optional.of(hairdressing));
+		int id = 2;
+		Hairdressing hairdressing = new Hairdressing();
+		hairdressing.setId(id);
+		hairdressing.setDescription("TEST");
 		
-		Hairdressing found = this.hairdressingService.findHairdressingById(id).get();
-		verify(this.hairdressingRepository, times(1)).findById(id);
-		assertThat(found).isNotNull();
-		assertThat(found.getDate().equals(LocalDate.of(2021, 01, 01)));
+		when(this.hairdressingRepository.findById(id)).thenReturn(Optional.of(hairdressing));
+
+        Hairdressing foundhairdressing = this.hairdressingService.findHairdressingById(id).orElse(null);
+        verify(this.hairdressingRepository, times(1)).findById(id);
+        assertThat(foundhairdressing).isNotNull();
+        assertThat(foundhairdressing.getDescription()).isEqualTo(hairdressing.getDescription());
 	}
 
 	// findByPetId
@@ -75,7 +75,8 @@ public class HairdressingServiceTest {
 	@Test
 	@Transactional
 	void shouldSave() {
-		Pet pet = petService.findPetById(1);
+		Pet pet = new Pet();
+		pet.setId(27);
 		Hairdressing hairdressing = new Hairdressing();
 
 		hairdressing.setId(98);
@@ -86,17 +87,17 @@ public class HairdressingServiceTest {
 		hairdressing.setTime("9.00");
 
 		hairdressingService.save(hairdressing);
-		Hairdressing hairdressingSaved = hairdressingService.findHairdressingById(hairdressing.getId()).orElse(null);
-		assertThat(hairdressingSaved.equals(hairdressing));
+		verify(this.hairdressingRepository, times(1)).save(hairdressing);
 	}
 
 	// delete
 	@Test
 	@Transactional
 	void shouldDelete() {
-		int id = 99;
+		int id = 54;
 		Hairdressing hairdressing = new Hairdressing();
-		Pet pet = hairdressing.getPet();
+		Pet pet = new Pet();
+		pet.setId(id);
 		hairdressing.setCuidado(TipoCuidado.ESTETICA);
 		hairdressing.setDate(LocalDate.of(2024, 04, 04));
 		hairdressing.setDescription("TESTO");
@@ -106,9 +107,8 @@ public class HairdressingServiceTest {
 		
 		when(hairdressingRepository.findById(id)).thenReturn(Optional.of(hairdressing));
 		
-		hairdressingService.delete(hairdressing.getId());
-		assertThat(!pet.getHairdressings().contains(hairdressing));
-		verify(this.hairdressingRepository, times(1)).deleteById(hairdressing.getId());
+		hairdressingService.delete(id);
+		verify(this.hairdressingRepository, times(1)).deleteById(id);
 	}
 
 	// countHairdressingsByDateAndTime
