@@ -23,12 +23,5 @@
             <td><b><c:out value="${daycare.description}"/></b></td>
         </tr>
     </table>
-    
-    <spring:url value="/owners/{ownerId}/pets/{petId}/daycares/{daycareId}/edit" var="editUrl">
-        <spring:param name="daycareId" value="${daycare.id}"/>
-        <spring:param name="ownerId" value="${owner.id}"/>
-        <spring:param name="petId" value="${pet.id}"/>
-    </spring:url>
-    <a href="${fn:escapeXml(editUrl)}" class="btn btn-default">Edit Daycare</a>
 
 </petclinic:layout>

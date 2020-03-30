@@ -70,12 +70,6 @@
 									<span>My trainings</span>
 								</petclinic:menuItem>
 							</li>
-							<li>
-								<petclinic:menuItem active="${name eq 'daycare'}" url="/daycare/new" title="daycare">
-									<span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
-									<span>New Daycare</span>
-								</petclinic:menuItem>
-							</li>
 					</ul>
 				</li>
 				
