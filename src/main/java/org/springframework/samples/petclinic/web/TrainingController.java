@@ -21,6 +21,8 @@ import org.springframework.samples.petclinic.service.TrainingService;
 import org.springframework.samples.petclinic.service.exceptions.BusinessException;
 import org.springframework.samples.petclinic.service.exceptions.MappingException;
 import org.springframework.samples.petclinic.util.TrainingDTO;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -156,8 +158,15 @@ public class TrainingController {
 	
 	@GetMapping(value = "/trainings")
 	public String showTrainingsList(Map<String, Object> model) {
-		Collection<Training> results = this.trainingService.findTrainings();
-		model.put("trainings", results);
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		if (auth.getAuthorities().stream().map(x -> x.getAuthority()).anyMatch(x -> x.equals("admin"))) {
+			Collection<Training> results = this.trainingService.findTrainings();
+			model.put("trainings", results);
+		} else {
+			Collection<Training> results = this.trainingService.findTrainingsByUser(auth.getName());
+			model.put("trainings", results);
+		}
+		
 		return "trainings/trainingsList";
 	}
 	
