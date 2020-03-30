@@ -30,8 +30,8 @@ public class HairdressingService {
 	}
 	
 	@Transactional(readOnly=true)
-	public Optional<Hairdressing> findHairdressingById(int id){
-		return hairdressingRepo.findById(id);
+	public Hairdressing findHairdressingById(int id){
+		return hairdressingRepo.findById(id).get();
 	}
 	
 	@Transactional(readOnly=true)
@@ -46,7 +46,7 @@ public class HairdressingService {
 	
 	@Transactional
 	public void delete(int hairdressingId) {
-		Hairdressing hairdressing = this.findHairdressingById(hairdressingId).get();
+		Hairdressing hairdressing = this.findHairdressingById(hairdressingId);
 		Pet pet = hairdressing.getPet();
 		pet.deleteHairdressing(hairdressing.getId());
 		hairdressingRepo.deleteById(hairdressingId);

@@ -59,7 +59,7 @@ public class HairdressingServiceTest {
 		
 		when(this.hairdressingRepository.findById(id)).thenReturn(Optional.of(hairdressing));
 
-        Hairdressing foundhairdressing = this.hairdressingService.findHairdressingById(id).orElse(null);
+        Hairdressing foundhairdressing = this.hairdressingService.findHairdressingById(id);
         verify(this.hairdressingRepository, times(1)).findById(id);
         assertThat(foundhairdressing).isNotNull();
         assertThat(foundhairdressing.getDescription()).isEqualTo(hairdressing.getDescription());
