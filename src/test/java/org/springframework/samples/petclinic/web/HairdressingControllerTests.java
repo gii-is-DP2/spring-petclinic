@@ -2,35 +2,35 @@ package org.springframework.samples.petclinic.web;
 
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
-import static org.mockito.BDDMockito.given;
-
-import java.time.LocalDate;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.FilterType;
 import org.springframework.samples.petclinic.configuration.SecurityConfiguration;
 import org.springframework.samples.petclinic.model.Hairdressing;
 import org.springframework.samples.petclinic.model.Pet;
 import org.springframework.samples.petclinic.model.TipoCuidado;
+import org.springframework.test.web.servlet.MockMvc;
+
+import static org.mockito.BDDMockito.given;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
+import org.springframework.samples.petclinic.service.HairdressingService;
 import org.springframework.samples.petclinic.service.PetService;
 import org.springframework.security.config.annotation.web.WebSecurityConfigurer;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.web.servlet.MockMvc;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(controllers = HairdressingController.class,
+import java.time.LocalDate;
+
+@WebMvcTest(controllers=HairdressingController.class,
 excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = WebSecurityConfigurer.class),
 excludeAutoConfiguration= SecurityConfiguration.class)
-public class HairdressingControllerTest {
+
+public class HairdressingControllerTests {
 
 	private static final int HAIRDRESSING_ID = 99;
 
@@ -41,6 +41,9 @@ public class HairdressingControllerTest {
 	@MockBean
 	private PetService petService;
 	
+	@MockBean
+	private HairdressingService hairdressingService;
+	
 	@Autowired
 	private HairdressingController hairdressingController;
 
@@ -50,7 +53,7 @@ public class HairdressingControllerTest {
 	private Pet pet;
 
 	@BeforeEach
-	void SetUp() {
+	void setUp() {
 		Hairdressing hairdressing = new Hairdressing();
 		pet = new Pet();
 
@@ -70,7 +73,7 @@ public class HairdressingControllerTest {
 
 	@WithMockUser(value = "spring")
 	@Test
-	private void testInitNewHairdressingForm() throws Exception {
+	public void testInitNewHairdressingForm() throws Exception {
 		mockMvc.perform(get("/owners/*/pets/{petId}/hairdressing/new", PET_ID)).andExpect(status().isOk())
 				.andExpect(model().attributeExists("hairdressing"))
 				.andExpect(view().name("pets/createOrUpdateHairdressingForm"));
@@ -78,7 +81,7 @@ public class HairdressingControllerTest {
 
 	@WithMockUser(value = "spring")
 	@Test
-	private void testProcessNewHairdressingForm() throws Exception {
+	public void testProcessNewHairdressingForm() throws Exception {
 		mockMvc.perform(post("/owners/{ownerId}/pets/{petId}/hairdressing/new", OWNER_ID, PET_ID).with(csrf())
 				.param("date", "2024-04-04").param("description", "TESTO").param("type", "ESTETICA")
 				.param("time", "6:00")).andExpect(status().is3xxRedirection())
@@ -86,13 +89,13 @@ public class HairdressingControllerTest {
 	}
 
 	@WithMockUser(value = "spring")
-	private void testDeleteHairdressing() throws Exception {
+	public void testDeleteHairdressing() throws Exception {
 
 	}
 	
 	@WithMockUser(value = "spring")
 	@Test
-	private void testPopulateTiposCuidado() throws Exception {
+	public void testPopulateTiposCuidado() throws Exception {
 		
 	}
 }
