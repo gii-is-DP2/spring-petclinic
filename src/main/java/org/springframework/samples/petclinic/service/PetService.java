@@ -1,3 +1,4 @@
+
 /*
  * Copyright 2002-2013 the original author or authors.
  *
@@ -16,14 +17,21 @@
 package org.springframework.samples.petclinic.service;
 
 import java.util.Collection;
+import java.util.List;
+
+import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.samples.petclinic.model.Hairdressing;
+import org.springframework.samples.petclinic.model.Daycare;
 import org.springframework.samples.petclinic.model.Pet;
 import org.springframework.samples.petclinic.model.PetType;
 import org.springframework.samples.petclinic.model.Visit;
+import org.springframework.samples.petclinic.repository.HairdressingRepository;
 import org.springframework.samples.petclinic.repository.PetRepository;
 import org.springframework.samples.petclinic.repository.VisitRepository;
+import org.springframework.samples.petclinic.repository.springdatajpa.DaycareRepository;
 import org.springframework.samples.petclinic.service.exceptions.DuplicatedPetNameException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,12 +50,19 @@ public class PetService {
 	
 	private VisitRepository visitRepository;
 	
+	private HairdressingRepository hairdressingRepository;
+  
+  private DaycareRepository daycareRepository;
+	
 
 	@Autowired
 	public PetService(PetRepository petRepository,
-			VisitRepository visitRepository) {
+			VisitRepository visitRepository, HairdressingRepository hairdressingRepository, DaycareRepository daycareRepository) {
 		this.petRepository = petRepository;
 		this.visitRepository = visitRepository;
+		this.hairdressingRepository = hairdressingRepository;
+    this.daycareRepository = daycareRepository;
+
 	}
 
 	@Transactional(readOnly = true)
@@ -58,6 +73,16 @@ public class PetService {
 	@Transactional
 	public void saveVisit(Visit visit) throws DataAccessException {
 		visitRepository.save(visit);
+	}
+	
+  @Transactional(readOnly = true)
+	public List<Pet> findPetsByOwner(String Owner) throws DataAccessException {
+		return petRepository.findPetsByOwner(Owner);
+	}
+  
+	@Transactional
+	public void saveHairdressing(Hairdressing hairdressing) throws DataAccessException {
+		hairdressingRepository.save(hairdressing);
 	}
 
 	@Transactional(readOnly = true)
@@ -78,5 +103,20 @@ public class PetService {
 	public Collection<Visit> findVisitsByPetId(int petId) {
 		return visitRepository.findByPetId(petId);
 	}
+	
+	public Collection<Hairdressing> findHairdressingsByPetId(int petId) {
+		return hairdressingRepository.findByPetId(petId);
+	}
+
+	@Transactional
+	public void saveDaycare(Daycare daycare) throws DataAccessException {
+		daycareRepository.save(daycare);
+	}
+  
+  @Transactional(readOnly = true)
+	public Pet findPetsByName(String Name, String Owner) throws DataAccessException {
+		return petRepository.findPetsByName(Name, Owner);
+	}
+
 
 }

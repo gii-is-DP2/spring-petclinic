@@ -1,0 +1,21 @@
+﻿Nivel de acabado
+El equipo aspira a un nivel de 8 puntos con una aplicación de nivel 2.
+
+
+Justificación de nivel
+Tras el primer sprint redactamos las historias de usuario que implementaría el sistema, las cuales, en consenso, repartimos entre las distintas parejas de trabajo.
+En un principio se repartieron las historias de forma que cada subgrupo trabajara sobre servicios independientes de los otros y que en conjunto se realizaran el 66% de las historias de usuario. 
+El grupo empezó a trabajar adecuadamente por parejas en sus respectivas tareas y aunque debido al virus el porcentaje de historias de usuario requeridas pasó a ser de un 50% el grupo ha intentado mantener el ritmo, habiendo finalmente completado un porcentaje algo superior al 50% pero menor que el 66%.
+Cuando las tareas individuales fueron acabadas, cada subgrupo revisó que todas sus historias fueron completadas correctamente. Tras esto se puso todo lo realizado en común y entre todos los integrantes se revisó que todo funcionase como debía. 
+Finalmente se procedió a hacer la documentación del sprint sin que esta tarea fuera asignada ya que se realizó de manera grupal al acabar el sprint.
+
+
+
+
+Retrospectiva
+En general, el equipo de desarrollo ha realizado el Sprint con ciertos inconvenientes por falta de conocimiento del framework y los tests a implementar que fueron solventados gracias a la cooperación de todo el grupo.
+El trabajo en parejas ha resultado útil a la hora de resolver dudas de manera rápida, y la corrección por parejas nos ha ayudado a detectar problemas con relativa facilidad.
+No se ha computado el número de horas y al llevar tanto tiempo trabajando en el sprint es difícil dictaminar una media del esfuerzo realizado , pese a ello se han estimado unas 20 horas de trabajo por persona. 
+Subgrupo de Jose y Alonso - La adaptación al framework fue algo dificultosa al principio y empleamos mucho tiempo en entender cómo funcionaba realmente antes de poder implementar correctamente. Por otro lado, la división de historias de usuarios por parejas  ha sido muy útil a la hora de consultarnos dudas y repartirnos tareas al ser un "grupo" de trabajo pequeño en el que la coordinación es mucho más sencilla. 
+Subgrupo de Enrique y Antonio - Por parte de nuestro subgrupo se ha trabajado bien, de manera independiente pero apoyándonos mutuamente. Uno de nosotros se encargó de la parte de implementación mientras que el otro se ha encargado de la parte de los tests. Así mismo, cuando ni entre los dos podíamos resolver algún problema, hemos acudido al resto del grupo y entre todos hemos sacado el trabajo adelante. En definitiva consideramos que se ha trabajado bien y poco a poco nos vamos adaptando al framework. Además algunos problemas se resolvieron en una tutoría con la tutora.
+Subgrupo de David, Federico e Ian - En nuestro grupo decidimos dividirnos el trabajo en base a user stories. Esto es, nuestras stories fueron asignadas a uno de nosotros tres, y esa persona se encargó de hacerlas realidad, tanto a nivel de modelo (tuvimos que hacer cambios en Trainer y Training), de servicio, de controlador, de vista y de testing. El trabajo fue distribuido de forma equitativa.  No surgieron inconvenientes mayores, y cualquier duda que le surgió a un integrante pudo ser resuelta dentro del subgrupo con la ayuda de los otros dos. Consideramos que el ritmo de trabajo fue bueno y constante, comenzando el desarrollo del sprint en fecha, haciendo que no se nos acumulara una gran carga de trabajo sobre el final del mismo. La comunicación dentro del subgrupo fue fluida y sin inconvenientes, que es una de las ventajas de habernos dividido en grupos de trabajo pequeños.

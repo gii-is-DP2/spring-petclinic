@@ -24,10 +24,12 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.validation.Valid;
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotEmpty;
 
@@ -57,15 +59,17 @@ public class Owner extends Person {
 
 	@Column(name = "telephone")
 	@NotEmpty
-	@Digits(fraction = 0, integer = 10)
+	@Digits(fraction = 1, integer = 10, message = "The telephone must have between 1 and 10 digits.")
 	private String telephone;
 
-	@OneToMany(cascade = CascadeType.ALL, mappedBy = "owner")
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "owner", fetch = FetchType.LAZY)
 	private Set<Pet> pets;
 	
 	//
-	@OneToOne(cascade = CascadeType.ALL)
+	//Agregar restriccion de UNIQUE
+	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "username", referencedColumnName = "username")
+	@Valid
 	private User user;
 	//
 	

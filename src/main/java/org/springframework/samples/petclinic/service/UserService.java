@@ -44,4 +44,9 @@ public class UserService {
 		user.setEnabled(true);
 		userRepository.save(user);
 	}
+	
+	@Transactional(readOnly = true)
+	public boolean exists(String username) throws DataAccessException {
+		return userRepository.existsById(username);
+	}
 }
