@@ -1,11 +1,13 @@
 package org.springframework.samples.petclinic.web;
 
+
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
+import static org.mockito.BDDMockito.given;
 
 import java.time.LocalDate;
 
@@ -25,29 +27,32 @@ import org.springframework.security.config.annotation.web.WebSecurityConfigurer;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
-@WebMvcTest(controllers = HairdressingController.class, excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, 
-classes = WebSecurityConfigurer.class), excludeAutoConfiguration = SecurityConfiguration.class)
+@WebMvcTest(controllers = HairdressingController.class,
+excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = WebSecurityConfigurer.class),
+excludeAutoConfiguration= SecurityConfiguration.class)
 public class HairdressingControllerTest {
-
-	@Autowired
-	private HairdressingController hairdressingController;
-
-	@MockBean
-	private PetService petService;
-
-	@Autowired
-	private MockMvc mockMvc;
 
 	private static final int HAIRDRESSING_ID = 99;
 
 	private static final int PET_ID = 1;
 
 	private static final int OWNER_ID = 1;
+	
+	@MockBean
+	private PetService petService;
+	
+	@Autowired
+	private HairdressingController hairdressingController;
+
+	@Autowired
+	private MockMvc mockMvc;
+	
+	private Pet pet;
 
 	@BeforeEach
 	void SetUp() {
-		Pet pet = petService.findPetById(PET_ID);
 		Hairdressing hairdressing = new Hairdressing();
+		pet = new Pet();
 
 		hairdressing.setId(HAIRDRESSING_ID);
 		hairdressing.setCuidado(TipoCuidado.PELUQUERIA);
@@ -55,6 +60,12 @@ public class HairdressingControllerTest {
 		hairdressing.setPet(pet);
 		hairdressing.setDate(LocalDate.of(2022, 02, 02));
 		hairdressing.setTime("9.00");
+		
+		pet.setBirthDate(LocalDate.now());
+		pet.setId(PET_ID);
+		pet.setName("elpotro");
+		
+		given(this.petService.findPetById(PET_ID)).willReturn(this.pet);
 	}
 
 	@WithMockUser(value = "spring")
@@ -77,5 +88,11 @@ public class HairdressingControllerTest {
 	@WithMockUser(value = "spring")
 	private void testDeleteHairdressing() throws Exception {
 
+	}
+	
+	@WithMockUser(value = "spring")
+	@Test
+	private void testPopulateTiposCuidado() throws Exception {
+		
 	}
 }
