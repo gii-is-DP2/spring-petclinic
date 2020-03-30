@@ -166,7 +166,7 @@ public class HairdressingController {
 	
 	@GetMapping(value = "/owners/{ownerId}/pets/{petId}/hairdressing/{hairdressingId}/delete")
 	public String deleteHairdressing(@PathVariable("ownerId") int ownerId, @PathVariable int hairdressingId) {
-		Hairdressing h = hairdressingService.findHairdressingById(hairdressingId).get();
+		Hairdressing h = hairdressingService.findHairdressingById(hairdressingId);
 		if(h.getDate().isEqual(LocalDate.now()) || h.getDate().isEqual(LocalDate.now().plusDays(1))) {
 			return "redirect:/owners/"+ ownerId;
 
