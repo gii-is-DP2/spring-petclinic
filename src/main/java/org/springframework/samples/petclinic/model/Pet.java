@@ -68,11 +68,11 @@ public class Pet extends NamedEntity {
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "pet", fetch = FetchType.LAZY)
 	private Set<Visit> visits;
 	
-	@OneToMany(cascade = CascadeType.ALL, mappedBy = "pet", fetch = FetchType.EAGER)
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "pet", fetch = FetchType.LAZY)
 	private List<Hairdressing> hairdressings;
 
-  @OneToMany(cascade = CascadeType.ALL, mappedBy = "pet", fetch = FetchType.EAGER)
-	private Set<Daycare> daycares;
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "pet", fetch = FetchType.LAZY)
+	private List<Daycare> daycares;
 
 
 	public void setBirthDate(LocalDate birthDate) {
@@ -188,14 +188,14 @@ public class Pet extends NamedEntity {
 	}
 		
 
-	protected Set<Daycare> getDaycaresInternal() {
+	protected List<Daycare> getDaycaresInternal() {
 		if (this.daycares == null) {
-			this.daycares = new HashSet<>();
+			this.daycares = new ArrayList<Daycare>();
 		}
 		return this.daycares;
 	}
 	
-	protected void setDaycaresInternal(final Set<Daycare> daycares) {
+	protected void setDaycaresInternal(final List<Daycare> daycares) {
 		this.daycares = daycares;
 	}
 	
@@ -211,7 +211,7 @@ public class Pet extends NamedEntity {
 	}
 
 	public void deleteDaycare(int daycareId) {
-		Set<Daycare> daycares = this.getDaycaresInternal();
+		List<Daycare> daycares = this.getDaycaresInternal();
 		for (Daycare d : daycares) {
 			if (d.getId() == daycareId) {
 				daycares.remove(d);
