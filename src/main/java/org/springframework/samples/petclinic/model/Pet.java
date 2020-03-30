@@ -165,9 +165,7 @@ public class Pet extends NamedEntity {
 
 	public List<Hairdressing> getHairdressings() {
 		List<Hairdressing> sortedHairdressings = new ArrayList<>(getHairdressingsInternal());
-		System.out.println("sortedHairdressings preordeanmiento: \n\n\n\n\n"+sortedHairdressings);
 		PropertyComparator.sort(sortedHairdressings, new MutableSortDefinition("date", false, false));
-		System.out.println("sortedHairdressings postordeanmiento: \n\n\n\n\n"+sortedHairdressings);
 		return Collections.unmodifiableList(sortedHairdressings);	
 	}
 
@@ -187,7 +185,6 @@ public class Pet extends NamedEntity {
 		hairdressings.remove(aux);
 	}
 		
-
 	protected List<Daycare> getDaycaresInternal() {
 		if (this.daycares == null) {
 			this.daycares = new ArrayList<Daycare>();
@@ -217,6 +214,5 @@ public class Pet extends NamedEntity {
 				daycares.remove(d);
 			}
 		}
-
 	}
 }

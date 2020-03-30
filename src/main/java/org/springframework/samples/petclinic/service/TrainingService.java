@@ -34,6 +34,11 @@ public class TrainingService {
 		return (Collection<Training>) this.trainingRepository.findAll();
 	}
 	
+	@Transactional(readOnly = true)
+	public Collection<Training> findTrainingsByUser(String user) throws DataAccessException {
+		return (Collection<Training>) this.trainingRepository.findByUser(user);
+	}
+	
 	@Transactional
 	public void saveTraining(Training training) throws DataAccessException, BusinessException {	
 		Collection<Training> trainings = this.findByDateAndTrainer(training.getDate(), training.getTrainer().getId());

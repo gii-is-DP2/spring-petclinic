@@ -88,7 +88,7 @@
             	<tr>
                 	<td><petclinic:localDate date="${visit.date}" pattern="yyyy-MM-dd"/></td>
                     <td><c:out value="${visit.description}"/></td>
-                    <td>Delete</td>
+                    <td></td>
                 </tr>
            </c:forEach>
 		</table>
