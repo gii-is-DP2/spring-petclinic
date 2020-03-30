@@ -7,10 +7,12 @@ import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.mock;
 
 import java.time.LocalDate;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import javax.transaction.Transactional;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,10 +30,7 @@ public class HairdressingServiceTest {
 	@Autowired
 	private HairdressingService hairdressingService;
 
-	@Autowired
-	private PetService petService;
-	
-	@Autowired
+	@Autowired	
 	private HairdressingRepository hairdressingRepository;
 
 //	findAll
@@ -40,19 +39,12 @@ public class HairdressingServiceTest {
 	@BeforeEach
 	public void initMocks() {
 		hairdressingRepository = mock(HairdressingRepository.class);
-		hairdressingService = mock(HairdressingService.class);
+		hairdressingService = new HairdressingService(hairdressingRepository);
 	}
 	
-	
-	void shouldfindAll() {
-		Iterable<Hairdressing> hairdressing = hairdressingService.findAll();
-//		assertThat();
-	}
-
-//	findHairdressingById
 	@Test
 	void shouldFindHairDressingWithId() {
-		int id = 2;
+		int id = 1;
 		Hairdressing hairdressing = new Hairdressing();
 		hairdressing.setId(id);
 		hairdressing.setDescription("TEST");
@@ -64,14 +56,14 @@ public class HairdressingServiceTest {
         assertThat(foundhairdressing).isNotNull();
         assertThat(foundhairdressing.getDescription()).isEqualTo(hairdressing.getDescription());
 	}
-
-	// findByPetId
+	
 	@Test
-	void shouldFindByPetId() {
-		Pet pet = hairdressingService.findByPetId(3);
+	void shouldNotFindHairDressingWithId() {
+		int id = 1;
+		when(this.hairdressingRepository.findById(id)).thenReturn(Optional.empty());
+		Assertions.assertThrows(NoSuchElementException.class, () -> this.hairdressingService.findHairdressingById(id));
 	}
 
-	// save
 	@Test
 	@Transactional
 	void shouldSave() {
@@ -90,7 +82,6 @@ public class HairdressingServiceTest {
 		verify(this.hairdressingRepository, times(1)).save(hairdressing);
 	}
 
-	// delete
 	@Test
 	@Transactional
 	void shouldDelete() {
@@ -111,7 +102,6 @@ public class HairdressingServiceTest {
 		verify(this.hairdressingRepository, times(1)).deleteById(id);
 	}
 
-	// countHairdressingsByDateAndTime
 	@Test
 	void shouldCountHairdressingByDateAndTime() {
 		int count = hairdressingService.countHairdressingsByDateAndTime(LocalDate.of(2021, 01, 01), "9:01");

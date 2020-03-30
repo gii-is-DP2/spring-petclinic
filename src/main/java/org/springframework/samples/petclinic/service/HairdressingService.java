@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.samples.petclinic.model.Hairdressing;
 import org.springframework.samples.petclinic.model.Pet;
 import org.springframework.samples.petclinic.repository.HairdressingRepository;
@@ -15,10 +16,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class HairdressingService {
 	
-	HairdressingRepository hairdressingRepo;
+	private final HairdressingRepository hairdressingRepo;
 	@Autowired
 	PetRepository petRepo;
-	
 	@Autowired
 	public HairdressingService(HairdressingRepository hairdressingRepository) {
 		this.hairdressingRepo = hairdressingRepository;
@@ -30,7 +30,7 @@ public class HairdressingService {
 	}
 	
 	@Transactional(readOnly=true)
-	public Hairdressing findHairdressingById(int id){
+	public Hairdressing findHairdressingById(int id) throws DataAccessException{
 		return hairdressingRepo.findById(id).get();
 	}
 	
