@@ -22,6 +22,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.samples.petclinic.model.GroundType;
 import org.springframework.samples.petclinic.model.Trainer;
 import org.springframework.samples.petclinic.model.Training;
+import org.springframework.samples.petclinic.repository.TrainerRepository;
 import org.springframework.samples.petclinic.repository.springdatajpa.TrainingRepository;
 import org.springframework.samples.petclinic.service.exceptions.BusinessException;
 import org.springframework.stereotype.Service;
@@ -32,11 +33,15 @@ public class TrainingServiceTest {
 	
 	private TrainingService trainingService;
 	private TrainingRepository trainingRepository;
+	private TrainerService trainerService;
+	private TrainerRepository trainerRepository;
 	
 	@BeforeEach
 	public void initMocks() {
 		this.trainingRepository = mock(TrainingRepository.class);
 		this.trainingService = new TrainingService(this.trainingRepository);
+		this.trainerRepository = mock(TrainerRepository.class);
+		this.trainerService = new TrainerService(this.trainerRepository);
 	}
 	
 	@Test
@@ -89,11 +94,15 @@ public class TrainingServiceTest {
 	@Test
 	@Transactional
 	public void shouldInsertTraining() throws DataAccessException, BusinessException {
+		Trainer trainer = new Trainer();
+		trainer.setId(1);
+		
 		Training training = new Training();
 		training.setDescription("Sam");
-		training.setDate(LocalDate.now());
+		training.setDate(LocalDate.now().plusDays(2));
 		training.setGround(3);
-		training.setGroundType(GroundType.OBEDIENCIA);             
+		training.setGroundType(GroundType.OBEDIENCIA); 
+		training.setTrainer(trainer);
                 
 		this.trainingService.saveTraining(training);
 		verify(this.trainingRepository, times(1)).save(training);
@@ -111,6 +120,7 @@ public class TrainingServiceTest {
 		this.trainingService.deleteTraining(training);
 		verify(this.trainingRepository, times(1)).delete(training);
 	}
+	
 	
 	
 }

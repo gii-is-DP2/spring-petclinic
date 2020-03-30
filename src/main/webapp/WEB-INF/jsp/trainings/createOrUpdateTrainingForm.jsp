@@ -28,8 +28,8 @@
 	            <petclinic:inputField label="Ground" type="number" minValue="1" name="ground" />
 				<div class="control-group">
                     <petclinic:selectField name="groundType" label="Ground Type" names="${groundTypes}" size="${groundTypes.size()}"/>
-                    <petclinic:selectField name="petName" label="petName" names="${pets}" size="${pets.size()}"/>
-                    <petclinic:selectField name="trainerId" label="trainer" names="${trainers}" itemValue="id" itemLabel="lastName" size="${trainers.size()}"/>
+                    <petclinic:selectField name="petName" label="Pet Name" names="${pets}" size="${pets.size()}"/>
+                    <petclinic:selectField name="trainerId" label="Trainer" names="${trainers}" itemValue="id" itemLabel="lastName" size="${trainers.size()}"/>
                 </div>	        
             </div>
 	        <div class="form-group">
