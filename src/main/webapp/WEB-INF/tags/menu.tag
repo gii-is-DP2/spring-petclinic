@@ -65,10 +65,18 @@
 					<span class="glyphicon glyphicon-check"></span> Reservations <span class="glyphicon glyphicon-chevron-down"></span></a>
 					<ul class="dropdown-menu">
 							<li>
-								<petclinic:menuItem active="${name eq 'trainings'}" url="/trainings" title="trainings">
-									<span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
-									<span>Trainings</span>
-								</petclinic:menuItem>
+								<sec:authorize access="hasAuthority('admin')">
+									<petclinic:menuItem active="${name eq 'trainings'}" url="/trainings" title="trainings">
+										<span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
+										<span>Trainings</span>
+									</petclinic:menuItem>
+								</sec:authorize>
+								<sec:authorize access="hasAuthority('owner')">
+									<petclinic:menuItem active="${name eq 'trainings'}" url="/trainings/user" title="trainings">
+										<span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
+										<span>Trainings</span>
+									</petclinic:menuItem>
+								</sec:authorize>
 							</li>
 					</ul>
 				</li>
