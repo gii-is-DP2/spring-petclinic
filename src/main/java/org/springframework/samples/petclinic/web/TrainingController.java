@@ -158,17 +158,14 @@ public class TrainingController {
 	
 	@GetMapping(value = "/trainings")
 	public String showTrainingsList(Map<String, Object> model) {
-		Collection<Training> results = this.trainingService.findTrainings();
-		model.put("trainings", results);
-		
-		return "trainings/trainingsList";
-	}
-	
-	@GetMapping(value = "/trainings/user")
-	public String showUserTrainingsList(Map<String, Object> model) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		Collection<Training> results = this.trainingService.findTrainingsByUser(auth.getName());
-		model.put("trainings", results);
+		if (auth.getAuthorities().stream().map(x -> x.getAuthority()).anyMatch(x -> x.equals("admin"))) {
+			Collection<Training> results = this.trainingService.findTrainings();
+			model.put("trainings", results);
+		} else {
+			Collection<Training> results = this.trainingService.findTrainingsByUser(auth.getName());
+			model.put("trainings", results);
+		}
 		
 		return "trainings/trainingsList";
 	}
