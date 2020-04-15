@@ -20,9 +20,11 @@ import java.util.Collection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.DataAccessException;
+import org.springframework.samples.petclinic.model.Authorities;
 import org.springframework.samples.petclinic.model.Owner;
 import org.springframework.samples.petclinic.model.Pet;
 import org.springframework.samples.petclinic.model.PetType;
+import org.springframework.samples.petclinic.model.User;
 import org.springframework.samples.petclinic.model.Vet;
 import org.springframework.samples.petclinic.model.Visit;
 import org.springframework.samples.petclinic.repository.OwnerRepository;
@@ -69,11 +71,19 @@ public class OwnerService {
 	@Transactional
 	public void saveOwner(Owner owner) throws DataAccessException {
 		//creating owner
+		//Authorities auth = this.authoritiesService.findByAuthority("owner");
+		//owner.getUser().addAuthority(auth);
 		ownerRepository.save(owner);		
 		//creating user
-		userService.saveUser(owner.getUser());
+		Authorities auth = this.authoritiesService.findByAuthority("owner");
+		//System.out.println(owner.getUser().getAuthorities());
+		//System.out.println("antes de agregar");
+		User user = owner.getUser();
+		user.addAuthority(auth);
+		//System.out.println("agregado");
+		userService.saveUser(user);
 		//creating authorities
-		authoritiesService.saveAuthorities(owner.getUser().getUsername(), "owner");
+		// authoritiesService.saveAuthorities(owner.getUser().getUsername(), "owner");
 	}		
 
 }

@@ -45,11 +45,15 @@ public class AuthoritiesService {
 	}
 	
 	@Transactional
-	public void saveAuthorities(String username, String role) throws DataAccessException {
+	public void saveAuthorities(String role) throws DataAccessException {
 		Authorities authority = new Authorities();
-		authority.setUsername(username);
 		authority.setAuthority(role);
 		authoritiesRepository.save(authority);
+	}
+	
+	@Transactional(readOnly = true)
+	public Authorities findByAuthority(String authority) throws DataAccessException {
+		return this.authoritiesRepository.findByAuthority(authority);
 	}
 
 
