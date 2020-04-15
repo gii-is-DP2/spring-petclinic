@@ -21,6 +21,9 @@ import org.springframework.samples.petclinic.service.TrainingService;
 import org.springframework.samples.petclinic.service.exceptions.BusinessException;
 import org.springframework.samples.petclinic.service.exceptions.MappingException;
 import org.springframework.samples.petclinic.util.TrainingDTO;
+import org.springframework.samples.petclinic.web.annotations.IsAdmin;
+import org.springframework.samples.petclinic.web.annotations.IsAuthenticated;
+import org.springframework.samples.petclinic.web.annotations.IsOwner;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -35,6 +38,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.ModelAndView;
 
+@IsAuthenticated
 @Controller
 public class TrainingController {
 	
@@ -156,6 +160,7 @@ public class TrainingController {
 		return mav;
 	}
 	
+	@IsAdmin
 	@GetMapping(value = "/trainings")
 	public String showTrainingsList(Map<String, Object> model) {
 		Collection<Training> results = this.trainingService.findTrainings();
@@ -164,8 +169,9 @@ public class TrainingController {
 		return "trainings/trainingsList";
 	}
 	
+	@IsOwner
 	@GetMapping(value = "/trainings/owner")
-	public String showownerTrainingsList(Map<String, Object> model) {
+	public String showOwnerTrainingsList(Map<String, Object> model) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		Collection<Training> results = this.trainingService.findTrainingsByUser(auth.getName());
 		model.put("trainings", results);

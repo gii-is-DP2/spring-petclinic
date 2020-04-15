@@ -44,7 +44,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 				.antMatchers("/vets/**").authenticated()
 				.antMatchers("/trainers/**").hasAnyAuthority("admin", "owner")
 				.antMatchers("/daycare/**").hasAnyAuthority("admin")
-				.antMatchers("/trainings/**").hasAnyAuthority("owner", "admin")
+				.antMatchers("/trainings/**").hasAnyAuthority("owner", "admin")				
 				.anyRequest().denyAll()
 				.and()
 				 	.formLogin()
@@ -70,10 +70,11 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	        + "from users "
 	        + "where username = ?")
 	      .authoritiesByUsernameQuery(
-	       "select username, authority "
-	        + "from authorities "
-	        + "where username = ?")	      	      
-	      .passwordEncoder(passwordEncoder());	
+	       "select au.user_username as username, auth.authority as authority "
+	        + "from authorities auth "
+	        + "inner join authorities_users au on au.authorities_id = auth.id "
+	        + "where au.user_username = ?")	      	      
+	      .passwordEncoder(passwordEncoder());
 	}
 	
 	@Bean

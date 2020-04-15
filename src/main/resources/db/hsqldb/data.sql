@@ -1,40 +1,54 @@
+-- Authorities
+INSERT INTO authorities VALUES (1,'admin');
+INSERT INTO authorities VALUES (2,'owner');
+
 -- One admin user, named admin1 with passwor 4dm1n and authority admin
 INSERT INTO users(username,password,enabled) VALUES ('admin','admin',TRUE);
-INSERT INTO authorities VALUES ('admin','admin');
+INSERT INTO authorities_users(user_username, authorities_id) VALUES ('admin',1);
 
--- Owners and their respective users and authorities
+-- Owners and their respective users and authorities_users
 INSERT INTO users(username,password,enabled) VALUES ('george','george',TRUE);
-INSERT INTO authorities VALUES ('george','owner');
+INSERT INTO authorities_users(user_username, authorities_id) VALUES ('george',2);
 INSERT INTO owners VALUES (1, 'George', 'Franklin', '110 W. Liberty St.', 'Madison', '6085551023', 'george');
+
 INSERT INTO users(username,password,enabled) VALUES ('betty','betty',TRUE);
-INSERT INTO authorities VALUES ('betty','owner');
+INSERT INTO authorities_users(user_username, authorities_id) VALUES ('betty',2);
 INSERT INTO owners VALUES (2, 'Betty', 'Davis', '638 Cardinal Ave.', 'Sun Prairie', '6085551749', 'betty');
+
 INSERT INTO users(username,password,enabled) VALUES ('eduardo','eduardo',TRUE);
-INSERT INTO authorities VALUES ('eduardo','owner');
+INSERT INTO authorities_users(user_username, authorities_id) VALUES ('eduardo',2);
 INSERT INTO owners VALUES (3, 'Eduardo', 'Rodriquez', '2693 Commerce St.', 'McFarland', '6085558763', 'eduardo');
+
 INSERT INTO users(username,password,enabled) VALUES ('harold','harold',TRUE);
-INSERT INTO authorities VALUES ('harold','owner');
+INSERT INTO authorities_users(user_username, authorities_id) VALUES ('harold',2);
 INSERT INTO owners VALUES (4, 'Harold', 'Davis', '563 Friendly St.', 'Windsor', '6085553198', 'harold');
+
 INSERT INTO users(username,password,enabled) VALUES ('peter','peter',TRUE);
-INSERT INTO authorities VALUES ('peter','owner');
+INSERT INTO authorities_users(user_username, authorities_id) VALUES ('peter',2);
 INSERT INTO owners VALUES (5, 'Peter', 'McTavish', '2387 S. Fair Way', 'Madison', '6085552765', 'peter');
+
 INSERT INTO users(username,password,enabled) VALUES ('jean','jean',TRUE);
-INSERT INTO authorities VALUES ('jean','owner');
+INSERT INTO authorities_users(user_username, authorities_id) VALUES ('jean',2);
 INSERT INTO owners VALUES (6, 'Jean', 'Coleman', '105 N. Lake St.', 'Monona', '6085552654', 'jean');
+
 INSERT INTO users(username,password,enabled) VALUES ('jeff','jeff',TRUE);
-INSERT INTO authorities VALUES ('jeff','owner');
+INSERT INTO authorities_users(user_username, authorities_id) VALUES ('jeff',2);
 INSERT INTO owners VALUES (7, 'Jeff', 'Black', '1450 Oak Blvd.', 'Monona', '6085555387', 'jeff');
+
 INSERT INTO users(username,password,enabled) VALUES ('maria','maria',TRUE);
-INSERT INTO authorities VALUES ('maria','owner');
+INSERT INTO authorities_users(user_username, authorities_id) VALUES ('maria',2);
 INSERT INTO owners VALUES (8, 'Maria', 'Escobito', '345 Maple St.', 'Madison', '6085557683', 'maria');
+
 INSERT INTO users(username,password,enabled) VALUES ('david','david',TRUE);
-INSERT INTO authorities VALUES ('david','owner');
+INSERT INTO authorities_users(user_username, authorities_id) VALUES ('david',2);
 INSERT INTO owners VALUES (9, 'David', 'Schroeder', '2749 Blackhawk Trail', 'Madison', '6085559435', 'david');
+
 INSERT INTO users(username,password,enabled) VALUES ('carlos','carlos',TRUE);
-INSERT INTO authorities VALUES ('carlos','owner');
+INSERT INTO authorities_users(user_username, authorities_id) VALUES ('carlos',2);
 INSERT INTO owners VALUES (10, 'Carlos', 'Estaban', '2335 Independence La.', 'Waunakee', '6085555487', 'carlos');
+
 INSERT INTO users(username,password,enabled) VALUES ('fede','fede',TRUE);
-INSERT INTO authorities VALUES ('fede','owner');
+INSERT INTO authorities_users(user_username, authorities_id) VALUES ('fede',2);
 INSERT INTO owners VALUES (11, 'Federico', 'Sartori', '2335 Independence La.', 'Sartori', '6085555487', 'fede');
 
 INSERT INTO trainer VALUES (1, 'Mario', 'Balotelli', '45', 'mb@mb.com', '45', '45', '45', '45');
