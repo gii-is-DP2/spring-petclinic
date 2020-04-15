@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.model.Owner;
 import org.springframework.samples.petclinic.model.Trainer;
 import org.springframework.samples.petclinic.service.TrainerService;
+import org.springframework.samples.petclinic.web.annotations.IsAdmin;
+import org.springframework.samples.petclinic.web.annotations.IsOwner;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.ModelAndView;
 
+@IsAdmin
 @Controller
 public class TrainerController {
 	
@@ -34,6 +37,7 @@ public class TrainerController {
 	public void setAllowedFields(WebDataBinder dataBinder) {
 		dataBinder.setDisallowedFields("id");
 	}
+	
 	
 	@GetMapping(value = "/trainers/new")
 	public String initTrainerCreationForm(Map<String, Object> model) {

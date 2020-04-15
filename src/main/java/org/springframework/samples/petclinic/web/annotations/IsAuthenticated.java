@@ -7,6 +7,6 @@ import java.lang.annotation.Retention;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 @Retention(RUNTIME)
-@PreAuthorize("hasRole('admin') || hasRole('owner')")
+@PreAuthorize("hasAuthority('admin') || hasAuthority('owner')")
 public @interface IsAuthenticated {
 }
