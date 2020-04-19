@@ -1,8 +1,7 @@
 package org.springframework.samples.petclinic.model;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import lombok.Data;
@@ -12,5 +11,6 @@ import lombok.Data;
 @Table(name = "daycares")
 public class Daycare extends Booking{
 	
+	@Column(name="capacity")
 	private Integer capacity;
 }
