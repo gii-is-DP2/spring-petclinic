@@ -77,6 +77,19 @@
 										<span>Trainings</span>
 									</petclinic:menuItem>
 								</sec:authorize>
+								
+								<sec:authorize access="hasAuthority('admin')">
+									<petclinic:menuItem active="${name eq 'daycares'}" url="/daycares" title="daycares">
+										<span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
+										<span>Daycares</span>
+									</petclinic:menuItem>
+								</sec:authorize>
+								<sec:authorize access="hasAuthority('owner')">
+									<petclinic:menuItem active="${name eq 'daycares'}" url="/daycares/owner" title="daycares">
+										<span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
+										<span>Daycares</span>
+									</petclinic:menuItem>
+								</sec:authorize>
 							</li>
 					</ul>
 				</li>

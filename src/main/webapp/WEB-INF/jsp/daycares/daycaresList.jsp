@@ -9,42 +9,36 @@
 
 <petclinic:layout pageName="daycares">
     <h2>Daycares</h2>
-
+    
+    <c:if test="${owner}">
+    <a class="btn btn-default" href='<spring:url value="/daycares/new" htmlEscape="true"/>'>Add daycare</a>
+	</c:if>
+	
     <table id="daycaresTable" class="table table-striped">
         <thead>
         <tr>
-            <th style="width: 200px;">Description</th>
             <th>Date</th>
-            <th>Capacity</th>
-            <td>
-            	<spring:url value="/daycares/delete/{daycareId}" var="daycareUrl">
-               		<spring:param name="daycareId" value="${daycare.id}"/>
-                </spring:url>
-            	<a href="${fn:escapeXml(daycareUrl)}"></a>
-
+            <th>Description</th>
+            <th>Pet</th>
         </tr>
         </thead>
         <tbody>
         <c:forEach items="${daycares}" var="daycare">
             <tr>
+            	<td>
+                    <spring:url value="/daycares/{daycareId}" var="daycareUrl">
+                        <spring:param name="daycareId" value="${daycare.id}"/>
+                    </spring:url>
+                    <a href="${fn:escapeXml(daycareUrl)}"><c:out value="${daycare.date}"/></a>
+                </td>
                 <td>
                     <c:out value="${daycare.description}"/>
                 </td>
                 <td>
-                    <c:out value="${Date.date}"/>
-                </td>
-                <td>
-                    <c:out value="25"/>
-                </td>
-                <td>
-                    <c:forEach var="pet" items="${owner.pets}">
-                        <c:out value="${pet.name} "/>
-                    </c:forEach>
-                </td>               
+                    <c:out value="${daycare.pet.name}"/>
+                </td>      
             </tr>
         </c:forEach>
         </tbody>
     </table>
-    <br/>
-    <a class="btn btn-default" href='<spring:url value="/daycares/delete" htmlEscape="true"/>'>Delete Visit</a>
 </petclinic:layout>
