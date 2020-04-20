@@ -12,6 +12,8 @@ import org.springframework.samples.petclinic.model.Trainer;
 import org.springframework.samples.petclinic.model.Training;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.BDDMockito.given;
@@ -19,11 +21,15 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
+import org.springframework.samples.petclinic.service.AuthorizationService;
 import org.springframework.samples.petclinic.service.PetService;
 import org.springframework.samples.petclinic.service.TrainerService;
 import org.springframework.samples.petclinic.service.TrainingService;
 import org.springframework.samples.petclinic.util.TrainingDTO;
 import org.springframework.security.config.annotation.web.WebSecurityConfigurer;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.test.context.support.WithMockUser;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -56,6 +62,15 @@ public class TrainingControllerTests {
 	
 	@MockBean
     private TrainerService trainerService;
+	
+	@MockBean
+	private AuthorizationService authorizationService;
+	
+	@MockBean
+	private Authentication auth;
+	
+	@MockBean
+	private SecurityContext securityContext;
 	
 	@Autowired
 	private TrainingController trainingController;
@@ -112,8 +127,12 @@ public class TrainingControllerTests {
 		training.setPet(pet);
 		
 		given(this.petService.findPetById(TEST_PET_ID)).willReturn(this.pet);
+		given(this.petService.findPetsByName(anyString(), anyString())).willReturn(this.pet);
 		given(this.trainingService.findTrainingById(TEST_TRAINING_ID)).willReturn(this.training);
 		given(this.trainerService.findTrainerById(TEST_TRAINER_ID)).willReturn(this.trainer);
+		
+		given(securityContext.getAuthentication()).willReturn(auth);
+		SecurityContextHolder.setContext(securityContext);
 	}
 	
 	@WithMockUser(value = "spring")
@@ -166,10 +185,19 @@ public class TrainingControllerTests {
 	}
 
 	@WithMockUser(value = "spring")
-        @Test
+    @Test
 	void testShowTrainings() throws Exception {
 		given(this.trainingService.findTrainings()).willReturn(Lists.newArrayList(this.training));
 		mockMvc.perform(get("/trainings"))
+				.andExpect(status().isOk())
+				.andExpect(model().attributeExists("trainings")).andExpect(view().name("trainings/trainingsList"));
+	}
+	
+	@WithMockUser(value = "spring")
+    @Test
+	void testShowOwnerTrainings() throws Exception {
+		given(this.trainingService.findTrainings()).willReturn(Lists.newArrayList(this.training));
+		mockMvc.perform(get("/trainings/owner"))
 				.andExpect(status().isOk())
 				.andExpect(model().attributeExists("trainings")).andExpect(view().name("trainings/trainingsList"));
 	}
@@ -178,14 +206,31 @@ public class TrainingControllerTests {
 	@Test
 	void testInitUpdateForm() throws Exception {
     	
+    	given(this.authorizationService.canUserModifyBooking(anyString(), eq(this.TEST_PET_ID))).willReturn(true);
+    	
 		mockMvc.perform(get("/trainings/{trainingId}/edit", this.TEST_TRAINING_ID))
-				.andExpect(status().isOk()).andExpect(model().attributeExists("trainingDTO"))
+				.andExpect(status().isOk())
+				.andExpect(model().attributeExists("trainingDTO"))
 				.andExpect(view().name("trainings/createOrUpdateTrainingForm"));
 	}
     
     @WithMockUser(value = "spring")
 	@Test
+	void testInitUpdateFormUnauthorized() throws Exception {
+    	
+    	given(this.authorizationService.canUserModifyBooking(anyString(), eq(this.TEST_PET_ID))).willReturn(false);
+    	
+		mockMvc.perform(get("/trainings/{trainingId}/edit", this.TEST_TRAINING_ID))
+				.andExpect(status().isOk())
+				.andExpect(view().name("errors/accessDenied"));
+	}
+    
+    @WithMockUser(value = "spring")
+	@Test
 	void testProcessUpdateFormSuccess() throws Exception {
+    	
+    	given(this.authorizationService.canUserModifyBooking(anyString(), eq(this.TEST_PET_ID))).willReturn(true);
+    	
 		mockMvc.perform(post("/trainings/{trainingId}/edit", this.TEST_TRAINING_ID, this.TEST_OWNER_ID)
 							.with(csrf())
 							.param("description", "Descrpcion")
@@ -209,13 +254,40 @@ public class TrainingControllerTests {
 				.andExpect(view().name("trainings/createOrUpdateTrainingForm"));
 	}
     
-    @WithMockUser(value = "spring")
+    @WithMockUser(value = "spring", authorities = "admin")
 	@Test
 	void testProcessDeleteFormSuccess() throws Exception {
+    	
+    	given(this.authorizationService.canUserModifyBooking(anyString(), eq(this.TEST_PET_ID))).willReturn(true);
+    	
 		mockMvc.perform(get("/trainings/{trainingId}/delete", TEST_TRAINING_ID)
 							.with(csrf()))
 				.andExpect(status().is3xxRedirection())
 				.andExpect(view().name("redirect:/trainings"));
+	}
+    
+    @WithMockUser(value = "spring", authorities = "admin")
+	@Test
+	void testProcessDeleteFormUnauthorized() throws Exception {
+    	
+    	given(this.authorizationService.canUserModifyBooking(anyString(), eq(this.TEST_PET_ID))).willReturn(false);
+    	
+		mockMvc.perform(get("/trainings/{trainingId}/delete", TEST_TRAINING_ID)
+							.with(csrf()))
+				.andExpect(status().isOk())
+				.andExpect(view().name("errors/accessDenied"));
+	}
+    
+    @WithMockUser(value = "spring")
+	@Test
+	void testProcessDeleteFormOwnerSuccess() throws Exception {
+    	
+    	given(this.authorizationService.canUserModifyBooking(anyString(), eq(this.TEST_PET_ID))).willReturn(true);
+    	
+		mockMvc.perform(get("/trainings/{trainingId}/delete", TEST_TRAINING_ID)
+							.with(csrf()))
+				.andExpect(status().is3xxRedirection())
+				.andExpect(view().name("redirect:/trainings/owner"));
 	}
 	
 	
