@@ -20,9 +20,11 @@ import java.util.Collection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.DataAccessException;
+import org.springframework.samples.petclinic.model.Authorities;
 import org.springframework.samples.petclinic.model.Owner;
 import org.springframework.samples.petclinic.model.Pet;
 import org.springframework.samples.petclinic.model.PetType;
+import org.springframework.samples.petclinic.model.User;
 import org.springframework.samples.petclinic.model.Vet;
 import org.springframework.samples.petclinic.model.Visit;
 import org.springframework.samples.petclinic.repository.OwnerRepository;
@@ -69,11 +71,12 @@ public class OwnerService {
 	@Transactional
 	public void saveOwner(Owner owner) throws DataAccessException {
 		//creating owner
-		ownerRepository.save(owner);		
-		//creating user
-		userService.saveUser(owner.getUser());
-		//creating authorities
-		authoritiesService.saveAuthorities(owner.getUser().getUsername(), "owner");
+				ownerRepository.save(owner);		
+				//creating user
+				Authorities auth = this.authoritiesService.findByAuthority("owner");
+				User user = owner.getUser();
+				user.addAuthority(auth);
+				userService.saveUser(user);
 	}		
 
 }

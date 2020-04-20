@@ -12,7 +12,7 @@ import org.springframework.samples.petclinic.model.Hairdressing;
 public interface HairdressingRepository extends CrudRepository<Hairdressing, Integer>{
 	Collection<Hairdressing> findByPetId(int id) throws DataAccessException;
 
-	
+	Collection<Hairdressing> findByPetOwnerUserUsername(@Param("user") String user) throws DataAccessException;
 
 	Integer countHairdressingsByDateAndTime(@Param("date") LocalDate date, @Param("time") String time) throws DataAccessException;
 

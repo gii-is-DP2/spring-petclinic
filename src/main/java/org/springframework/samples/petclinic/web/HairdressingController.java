@@ -5,20 +5,26 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.samples.petclinic.model.Hairdressing;
 import org.springframework.samples.petclinic.model.Pet;
-import org.springframework.samples.petclinic.model.PetType;
 import org.springframework.samples.petclinic.model.TipoCuidado;
-import org.springframework.samples.petclinic.model.Visit;
+import org.springframework.samples.petclinic.service.AuthorizationService;
 import org.springframework.samples.petclinic.service.HairdressingService;
 import org.springframework.samples.petclinic.service.PetService;
+import org.springframework.samples.petclinic.service.exceptions.BusinessException;
+import org.springframework.samples.petclinic.service.exceptions.MappingException;
+import org.springframework.samples.petclinic.util.HairdressingDTO;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,14 +32,19 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.ModelAndView;
 
 @Controller
 
 public class HairdressingController {
 	
+	private static final String VIEWS_HAIRDRESSING_CREATE_OR_UPDATE_FORM = "hairdressings/createOrUpdateHairdressingForm";
+	
 	@Autowired
 	private HairdressingService hairdressingService;
+	
+	@Autowired
+	private AuthorizationService authorizationService;
 	
 	@Autowired
 	private PetService petService;
@@ -46,7 +57,7 @@ public class HairdressingController {
 		return res;
 	}
 	
-	@ModelAttribute("horasDisponibles")
+	@ModelAttribute("availableTimes")
 	public Collection<String> populateHorasDisponibles() {
 		List<String> res = new ArrayList<String>();
 		res.add("6:00");
@@ -60,58 +71,15 @@ public class HairdressingController {
 		return res;
 	}
 	
-//	@ModelAttribute("mascotas")
-//	public List<Integer> populateMascotas() {
-//		List<Integer> res = new ArrayList<Integer>();
-//		res.add(petService.findPetById(1).getId());
-//		res.add(petService.findPetById(2).getId());
-//		return res;
-//	}
-//		
-//	@GetMapping("/list")
-//	public String listHairdressingAppointments(ModelMap modelMap) {
-//		String vista = "hairdressing/listHairdressings";
-//		Iterable<Hairdressing> hairdressings = hairdressingService.findAll();
-//		modelMap.addAttribute("hairdressings", hairdressings);
-//		return vista;
-//	}
-//	
-//	@GetMapping(path="/new")
-//	public String crearAppointment(ModelMap modelMap) {
-//		String view = "hairdressing/editHairdressing";
-//		modelMap.addAttribute("hairdressing", new Hairdressing());
-//		return view;
-//	}
-//	
-//	@PostMapping(path = "/save")
-//	public String salvarHairdressing(@Valid Hairdressing hairdressing, BindingResult result, ModelMap modelMap) {
-//		String view = "/hairdressing/listHairdressings";
-//		System.out.println("\n\n\n\n" + hairdressing + "\n\n\n\n");
-//		if(result.hasErrors()) {
-//			return "hairdressing/editHairdressing";
-//		}else {
-//			
-//			hairdressingService.save(hairdressing);
-////			modelMap.addAttribute("message", "Appointment succesfully saved!");
-////			view = listHairdressingAppointments(modelMap);
-//			return view;
-//		}
-//		
-//	}
+	@ModelAttribute("pets")
+	public Collection<String> populatePets() {
+		String owner = SecurityContextHolder.getContext().getAuthentication().getName();
+		List<Pet> pets = this.petService.findPetsByOwner(owner);
+		List<String> names = pets.stream().map(x -> x.getName()).collect(Collectors.toList());
+		return names;
+	}
 	
-//	@GetMapping(path="/delete/{hairdressingId}")
-//	public String borrarHairdressing(@PathVariable("hairdressingId") int hairdressingId, ModelMap modelMap) {
-//		String view = "hairdressing/listHairdressings";
-//		Optional<Hairdressing> hairdressing = hairdressingService.findHairdressingById(hairdressingId);
-//		if(hairdressing.isPresent()) {
-//			hairdressingService.delete(hairdressing.get());
-//			modelMap.addAttribute("message", "Appointment succesfully deleted!");
-//		}else {
-//			modelMap.addAttribute("message", "Event not found!");
-//		}
-//		
-//		return this.listHairdressingAppointments(modelMap);
-//	}
+
 	
 	//@ModelAttribute("hairdressing")
 	//public Hairdressing loadPetWithHairdressing(@PathVariable("petId") int petId) {
@@ -126,53 +94,228 @@ public class HairdressingController {
 		dataBinder.setValidator(new HairdressingValidator());
 	}
 	
-	// Spring MVC calls method loadPetWithVisit(...) before initNewVisitForm is called
-	@GetMapping(value = "/owners/*/pets/{petId}/hairdressing/new")
-	public String initNewHairdressingForm(@PathVariable("petId") int petId, Map<String, Object> model) {
-		Pet pet = this.petService.findPetById(petId);
-		Hairdressing hairdressing = new Hairdressing();
-		pet.addHairdressing(hairdressing);
-		model.put("hairdressing", hairdressing);
-		return "pets/createOrUpdateHairdressingForm";
+//	// Spring MVC calls method loadPetWithVisit(...) before initNewVisitForm is called
+//	@GetMapping(value = "/owners/*/pets/{petId}/hairdressing/new")
+//	public String initNewHairdressingForm(@PathVariable("petId") int petId, Map<String, Object> model) {
+//		Pet pet = this.petService.findPetById(petId);
+//		Hairdressing hairdressing = new Hairdressing();
+//		pet.addHairdressing(hairdressing);
+//		model.put("hairdressing", hairdressing);
+//		return "pets/createOrUpdateHairdressingForm";
+//	}
+//
+//	// Spring MVC calls method loadPetWithVisit(...) before processNewVisitForm is called
+//	@PostMapping(value = "/owners/{ownerId}/pets/{petId}/hairdressing/new")
+//	public String processNewHairdressingForm(@PathVariable("petId") int petId, @PathVariable("ownerId") int ownerId, @Valid Hairdressing hairdressing, BindingResult result) {
+//		Pet pet = this.petService.findPetById(petId);
+//		hairdressing.setPet(pet);
+//		if (result.hasErrors()) {
+//			return "pets/createOrUpdateHairdressingForm";
+//		}
+//		else {
+//			if (hairdressingService.countHairdressingsByDateAndTime(hairdressing.getDate(), hairdressing.getTime()) != 0){
+//				result.rejectValue("time", "", "This time isn't available, please select another");
+//				return "pets/createOrUpdateHairdressingForm";
+//				
+//			}else {
+//				this.petService.saveHairdressing(hairdressing);
+//				System.out.println("\n\n\n\n Estos son los hairdressings que hay: \n\n\n\n"+this.petService.findPetById(petId).getHairdressings()+"\n\n\n\n");
+//				return "redirect:/owners/"+ ownerId;
+//			}
+//		}
+//	}
+//
+////	@GetMapping(value = "/owners/*/pets/{petId}/hairdressings")
+////	public String showHairdressings(@PathVariable int petId, Map<String, Object> model) {
+////		model.put("hairdressings", this.petService.findPetById(petId).getHairdressings());
+////		
+////		return "hairdressingList";
+////	}
+//	
+//	@GetMapping(value = "/owners/{ownerId}/pets/{petId}/hairdressing/{hairdressingId}/delete")
+//	public String deleteHairdressing(@PathVariable("ownerId") int ownerId, @PathVariable int hairdressingId) {
+//		Hairdressing h = hairdressingService.findHairdressingById(hairdressingId);
+//		if(h.getDate().isEqual(LocalDate.now()) || h.getDate().isEqual(LocalDate.now().plusDays(1))) {
+//			return "redirect:/owners/"+ ownerId;
+//
+//		}else {
+//			hairdressingService.delete(hairdressingId);
+//			return "redirect:/owners/"+ ownerId;
+//		}
+//	}
+	@GetMapping(value = "/hairdressings/new")
+	public String initHairdressingCreationForm(Map<String, Object> model) {
+		HairdressingDTO hairdressingDTO = new HairdressingDTO();
+		model.put("hairdressingDTO", hairdressingDTO);
+		model.put("boton", true);
+		return VIEWS_HAIRDRESSING_CREATE_OR_UPDATE_FORM;
 	}
-
-	// Spring MVC calls method loadPetWithVisit(...) before processNewVisitForm is called
-	@PostMapping(value = "/owners/{ownerId}/pets/{petId}/hairdressing/new")
-	public String processNewHairdressingForm(@PathVariable("petId") int petId, @PathVariable("ownerId") int ownerId, @Valid Hairdressing hairdressing, BindingResult result) {
-		Pet pet = this.petService.findPetById(petId);
-		hairdressing.setPet(pet);
+	
+	@PostMapping(value = "/hairdressings/new")
+	public String processCreationForm(@Valid HairdressingDTO hairdressingDTO, BindingResult result) {
+		
 		if (result.hasErrors()) {
-			return "pets/createOrUpdateHairdressingForm";
+			
+			return VIEWS_HAIRDRESSING_CREATE_OR_UPDATE_FORM;
 		}
 		else {
-			if (hairdressingService.countHairdressingsByDateAndTime(hairdressing.getDate(), hairdressing.getTime()) != 0){
-				result.rejectValue("time", "", "This time isn't available, please select another");
-				return "pets/createOrUpdateHairdressingForm";
+			
+			Hairdressing hairdressing;
+			
+			
+			try {
+				hairdressing = this.convertToEntity(hairdressingDTO);
 				
-			}else {
-				this.petService.saveHairdressing(hairdressing);
-				System.out.println("\n\n\n\n Estos son los hairdressings que hay: \n\n\n\n"+this.petService.findPetById(petId).getHairdressings()+"\n\n\n\n");
-				return "redirect:/owners/"+ ownerId;
+			} catch (MappingException ex) {
+				
+				result.rejectValue(ex.getEntity(), ex.getError(), ex.getMessage());
+				
+	            return VIEWS_HAIRDRESSING_CREATE_OR_UPDATE_FORM;
 			}
+			if(!(hairdressing.getDate().isAfter(LocalDate.now()))) {
+				result.rejectValue("date", "", "Please, select a future date");
+				return VIEWS_HAIRDRESSING_CREATE_OR_UPDATE_FORM;
+			}if(hairdressingService.countHairdressingsByDateAndTime(hairdressing.getDate(), hairdressing.getTime()) > 0) {
+				result.rejectValue("time", "", "This time has already been taken. Please, select another time");
+				return VIEWS_HAIRDRESSING_CREATE_OR_UPDATE_FORM;
+			}
+			try {
+				this.hairdressingService.save(hairdressing);
+			
+			} catch (BusinessException ex) {
+				
+				result.rejectValue(ex.getField(), ex.getCode(), ex.getMessage());
+				
+				return VIEWS_HAIRDRESSING_CREATE_OR_UPDATE_FORM;
+			}
+			
+			return "redirect:/hairdressings";
 		}
 	}
 
-//	@GetMapping(value = "/owners/*/pets/{petId}/hairdressings")
-//	public String showHairdressings(@PathVariable int petId, Map<String, Object> model) {
-//		model.put("hairdressings", this.petService.findPetById(petId).getHairdressings());
-//		
-//		return "hairdressingList";
-//	}
+	@GetMapping(value = "/hairdressings/{hairdressingId}/edit")
+	public String initUpdateHairdressingForm(@PathVariable("hairdressingId") int hairdressingId, Model model) {
+		
+		Hairdressing hairdressing = this.hairdressingService.findHairdressingById(hairdressingId);
+		this.authorizeUserAction(hairdressing.getPet().getId());
+		
+		HairdressingDTO hairdressingDTO = this.convertToDto(hairdressing);
+		
+		model.addAttribute("boton", false);
+		model.addAttribute(hairdressingDTO);
+//		meter que el atributo "new" sea false, en la variable hairdressing
+		return VIEWS_HAIRDRESSING_CREATE_OR_UPDATE_FORM;
+	}
+
+	@PostMapping(value = "/hairdressings/{hairdressingId}/edit")
+	public String processUpdateHairdressingForm(@Valid HairdressingDTO hairdressingDTO, BindingResult result, @PathVariable("hairdressingId") int hairdressingId) {
+		if (result.hasErrors()) {
+			return VIEWS_HAIRDRESSING_CREATE_OR_UPDATE_FORM;
+		}
+		else {
+			Hairdressing hairdressing;
+			
+			try {
+				hairdressing = this.convertToEntity(hairdressingDTO);
+				hairdressing.setId(hairdressingId);
+			} catch (MappingException ex) {
+				result.rejectValue(ex.getEntity(), ex.getError(), ex.getMessage());
+	            return VIEWS_HAIRDRESSING_CREATE_OR_UPDATE_FORM;
+			}
+			if(!(hairdressing.getDate().isAfter(LocalDate.now()))) {
+				result.rejectValue("date", "", "Please, select a future date");
+				return VIEWS_HAIRDRESSING_CREATE_OR_UPDATE_FORM;
+			}if(hairdressingService.countHairdressingsByDateAndTime(hairdressing.getDate(), hairdressing.getTime()) > 0) {
+				result.rejectValue("time", "", "This time has already been taken. Please, select another time");
+				return VIEWS_HAIRDRESSING_CREATE_OR_UPDATE_FORM;
+			}
+			try {
+				this.hairdressingService.save(hairdressing);
+			} catch (BusinessException ex) {
+				result.rejectValue(ex.getField(), ex.getCode(), ex.getMessage());
+				return VIEWS_HAIRDRESSING_CREATE_OR_UPDATE_FORM;
+			}
+			
+			return "redirect:/hairdressings/{hairdressingId}";
+		}
+	}
+
+	@GetMapping("/hairdressings/{hairdressingId}")
+	public ModelAndView showHairdressing(@PathVariable("hairdressingId") int hairdressingId, Map<String, Object> model) {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		if (!auth.getAuthorities().stream().map(x -> x.getAuthority()).anyMatch(x -> x.equals("admin"))) {
+			model.put("owner", true);
+		}else {
+			model.put("owner", false);
+		}
+		Hairdressing hairdressing = hairdressingService.findHairdressingById(hairdressingId);
+		this.authorizeUserAction(hairdressing.getPet().getId());
+		ModelAndView mav = new ModelAndView("hairdressings/hairdressingDetails");
+		mav.addObject(this.hairdressingService.findHairdressingById(hairdressingId));
+		return mav;
+	}
 	
-	@GetMapping(value = "/owners/{ownerId}/pets/{petId}/hairdressing/{hairdressingId}/delete")
-	public String deleteHairdressing(@PathVariable("ownerId") int ownerId, @PathVariable int hairdressingId) {
+	@GetMapping(value = "/hairdressings")
+	public String showHairdressigsList(Map<String, Object> model) {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		if (auth.getAuthorities().stream().map(x -> x.getAuthority()).anyMatch(x -> x.equals("admin"))) {
+			Collection<Hairdressing> results = (Collection<Hairdressing>) this.hairdressingService.findAll();
+			model.put("hairdressings", results);
+		} else {
+			Collection<Hairdressing> results = this.hairdressingService.findHairdressingsByUser(auth.getName());
+			System.out.println("···············Las citas por usuario son: " + results + "················");
+			model.put("hairdressings", results);
+		}
+		
+		return "hairdressings/hairdressingsList";
+	}
+	
+	@GetMapping(value = "/hairdressings/{hairdressingId}/delete")
+	public String processDeleteHairdressingForm(@PathVariable("hairdressingId") int hairdressingId) {
 		Hairdressing h = hairdressingService.findHairdressingById(hairdressingId);
 		if(h.getDate().isEqual(LocalDate.now()) || h.getDate().isEqual(LocalDate.now().plusDays(1))) {
-			return "redirect:/owners/"+ ownerId;
+			return "redirect:/hairdressings";
 
 		}else {
 			hairdressingService.delete(hairdressingId);
-			return "redirect:/owners/"+ ownerId;
+			return "redirect:/hairdressings";
+		}
+	}
+	
+	private Hairdressing convertToEntity(HairdressingDTO dto) throws MappingException {
+		Hairdressing hairdressing = new Hairdressing();
+		
+		try {
+			String owner = SecurityContextHolder.getContext().getAuthentication().getName();
+			Pet pet = this.petService.findPetsByName(dto.getPetName(), owner);
+			hairdressing.setPet(pet);
+		} catch(DataAccessException e) {
+			throw new MappingException("pet", "Not existance", "Pet does not exist");
+		}
+		
+		
+
+		hairdressing.setCuidado(dto.getCuidado());
+		hairdressing.setDate(dto.getDate());
+		hairdressing.setDescription(dto.getDescription());
+		hairdressing.setTime(dto.getTime());
+		
+		return hairdressing;
+	}
+
+	private HairdressingDTO convertToDto(Hairdressing entity) {
+		HairdressingDTO dto = new HairdressingDTO();
+		dto.setDate(entity.getDate());
+		dto.setDescription(entity.getDescription());
+		dto.setPetName(entity.getPet().getName());
+
+		return dto;
+	}
+	
+	private void authorizeUserAction(int petId) {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		if (!this.authorizationService.canUserModifyBooking(auth.getName(), petId)) {
+			throw new AccessDeniedException("User canot modify data.");
 		}
 	}
 	
