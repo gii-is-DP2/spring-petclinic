@@ -271,7 +271,8 @@
           		<artifactId>maven-surefire-plugin</artifactId>
 		        <configuration>
 		          	<excludes>
-		            	<exclude>**/*UITest.java</exclude>
+		            	<exclude>**/AddTrainingUITest.java</exclude>
+		            	<exclude>**/LoginUITest.java</exclude>
 		          	</excludes>
 		        </configuration>
 	      </plugin>

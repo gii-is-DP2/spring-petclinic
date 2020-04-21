@@ -7,7 +7,6 @@ import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.hamcrest.CoreMatchers.*;
 import org.openqa.selenium.*;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.support.ui.Select;
@@ -15,11 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.samples.petclinic.model.GroundType;
-import org.springframework.samples.petclinic.model.Owner;
 import org.springframework.samples.petclinic.model.Pet;
 import org.springframework.samples.petclinic.model.Trainer;
 import org.springframework.samples.petclinic.model.Training;
-import org.springframework.samples.petclinic.service.OwnerService;
 import org.springframework.samples.petclinic.service.PetService;
 import org.springframework.samples.petclinic.service.TrainerService;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -44,22 +41,22 @@ public class AddTrainingUITest {
 	private String username;
 	private Training training;
 
-  @BeforeEach
-  public void setUp() throws Exception {
-    driver = new FirefoxDriver();
-    baseUrl = "http://localhost:" + port;
-    driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);    
-  }
+	@BeforeEach
+	public void setUp() throws Exception {
+	    driver = new FirefoxDriver();
+	    baseUrl = "http://localhost:" + port;
+	    driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);    
+	}
 
-  @Test
-  public void testAddTraining() throws Exception {
-    as("fede", "fede").
-    whenIamLoggedIntheSystem().
-    openMyTrainings().
-    addTraining().
-    openMyTrainings().
-    thenTrainingIsInUserTrainingsTable();
-  }
+	@Test
+	public void testAddTraining() throws Exception {
+	    as("fede", "fede").
+	    whenIamLoggedIntheSystem().
+	    openMyTrainings().
+	    addTraining().
+	    openMyTrainings().
+	    thenTrainingIsInUserTrainingsTable();
+	}
   
   	private AddTrainingUITest whenIamLoggedIntheSystem() {	
 		return this;
