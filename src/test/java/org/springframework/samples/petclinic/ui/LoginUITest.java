@@ -44,13 +44,6 @@ public class LoginUITest {
 		thenISeeMyUsernameInTheMenuBar().
 		thenISeeTrainersInTheMenuBar();	
 	}
-	
-	@Test
-	public void testLoginAsOwner() throws Exception {
-		as("fede", "fede").
-		whenIamLoggedIntheSystem().
-		thenISeeMyUsernameInTheMenuBar();	
-	}
 
 	private LoginUITest thenISeeMyUsernameInTheMenuBar() {
 		assertEquals(username.toUpperCase(), driver.findElement(By.xpath("//div[@id='main-navbar']/ul/li[6]/a/strong")).getText());
