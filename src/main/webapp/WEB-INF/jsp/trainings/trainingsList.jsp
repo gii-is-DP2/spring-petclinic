@@ -9,6 +9,7 @@
     <h2>Trainings</h2>
     
 	<a class="btn btn-default" href='<spring:url value="/trainings/new" htmlEscape="true"/>'>Add training</a>
+	<br><br>
 
     <table id="trainingsTable" class="table table-striped">
         <thead>

@@ -15,4 +15,7 @@ public interface TrainingRepository extends CrudRepository<Training, Integer>{
 	
 	@Query("SELECT DISTINCT tr FROM Training tr WHERE tr.pet.owner.user.username = :user")
 	public Collection<Training> findByUser(@Param("user") String user);
+	
+	@Query("SELECT DISTINCT tr FROM Training tr WHERE tr.trainer.id = :trainerId")
+	public Collection<Training> findByTrainer(@Param("trainerId") Integer trainerId);
 }
