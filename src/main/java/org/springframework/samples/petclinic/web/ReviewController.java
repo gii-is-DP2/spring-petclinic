@@ -16,13 +16,33 @@
 package org.springframework.samples.petclinic.web;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
+import org.springframework.samples.petclinic.model.GroundType;
+import org.springframework.samples.petclinic.model.Owner;
 import org.springframework.samples.petclinic.model.Review;
+import org.springframework.samples.petclinic.model.ServiceType;
+import org.springframework.samples.petclinic.model.Trainer;
+import org.springframework.samples.petclinic.model.User;
 import org.springframework.samples.petclinic.service.ReviewService;
+import org.springframework.samples.petclinic.service.UserService;
+import org.springframework.samples.petclinic.service.exceptions.BusinessException;
+import org.springframework.samples.petclinic.service.exceptions.MappingException;
+import org.springframework.samples.petclinic.util.ReviewDTO;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
+
+import javax.validation.Valid;
 
 /**
  * @author Juergen Hoeller
@@ -34,10 +54,20 @@ import java.util.Map;
 public class ReviewController {
 
 	private final ReviewService reviewService;
+	private final UserService userService;
+	
+	private static final String VIEWS_REVIEW_CREATE_FORM = "reviews/createReviewForm";
 
 	@Autowired
-	public ReviewController(ReviewService reviewService) {
+	public ReviewController(ReviewService reviewService, UserService userService) {
 		this.reviewService = reviewService;
+		this.userService = userService;
+	}
+
+	@ModelAttribute("serviceTypes")
+	public Collection<ServiceType> populateServiceTypes() {
+		ServiceType[] types = ServiceType.class.getEnumConstants();
+		return Arrays.asList(types);
 	}
 
 	@GetMapping(value = { "/reviews" })
@@ -45,6 +75,53 @@ public class ReviewController {
 		Collection<Review> reviews = this.reviewService.findReviews();
 		model.put("reviews", reviews);
 		return "reviews/reviewList";
+	}
+
+	@GetMapping(value = "/reviews/new")
+	public String initTrainingCreationForm(Map<String, Object> model) {
+		ReviewDTO dto = new ReviewDTO();
+		model.put("reviewDTO", dto);
+		return VIEWS_REVIEW_CREATE_FORM;
+	}
+	
+	@PostMapping(value = "/reviews/new")
+	public String processCreationForm(@Valid ReviewDTO reviewDTO, BindingResult result) {
+		if (result.hasErrors()) {
+			return VIEWS_REVIEW_CREATE_FORM;
+		}
+		else {
+			Review review;
+			try {
+				review = this.convertToEntity(reviewDTO);
+			} catch (MappingException ex) {
+				result.rejectValue(ex.getEntity(), ex.getError(), ex.getMessage());
+	            return VIEWS_REVIEW_CREATE_FORM;
+			}
+			try {
+				this.reviewService.saveReview(review);
+			} catch (BusinessException ex) {
+				result.rejectValue(ex.getField(), ex.getCode(), ex.getMessage());
+				return VIEWS_REVIEW_CREATE_FORM;
+			}
+			return "redirect:/reviews";
+		}
+	}
+	
+	private Review convertToEntity(ReviewDTO dto) throws MappingException {
+		Review review = new Review();
+		try {
+			String username = SecurityContextHolder.getContext().getAuthentication().getName();
+			User user = this.userService.findByUsername(username);
+			review.setUser(user);
+		} catch(DataAccessException e) {
+			throw new MappingException("user", "Not existance", "User does not exist");
+		}
+		review.setRating(dto.getRating());
+		review.setComments(dto.getComments());
+		review.setServiceType(dto.getServiceType());
+		review.setDate(LocalDate.now());
+		
+		return review;
 	}
 
 }

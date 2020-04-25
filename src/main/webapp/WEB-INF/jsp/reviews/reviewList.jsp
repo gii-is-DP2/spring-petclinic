@@ -18,7 +18,7 @@
     <table id="reviewsTable" class="table table-striped">
         <thead>
 	        <tr>
-	            <th>Owner</th>
+	            <th>User</th>
 	            <th>Date</th>
 	            <th>Service type</th>
 	            <th>Rating</th>
@@ -30,7 +30,7 @@
         <c:forEach items="${reviews}" var="review">
             <tr>
                 <td>
-                    <c:out value="${review.owner.firstName} ${review.owner.lastName}"/>
+                    <c:out value="${review.user.username}"/>
                 </td>
                 <td>
                     <c:out value="${review.date}"/>

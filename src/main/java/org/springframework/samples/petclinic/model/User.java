@@ -43,10 +43,12 @@ public class User{
                 CascadeType.PERSIST,
                 CascadeType.MERGE
             })
-	@JoinTable(name = "authorities_users",
-    joinColumns = { @JoinColumn(name = "user_username") },
+	@JoinTable(name = "authorities_users", joinColumns = { @JoinColumn(name = "user_username") },
     inverseJoinColumns = { @JoinColumn(name = "authorities_id") })
 	private Set<Authorities> authorities;
+	
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "user", fetch = FetchType.LAZY)
+	private Set<Review> reviews;
 	
 	public List<Authorities> getAuthorities() {
 		List<Authorities> authorities = new ArrayList<>(this.getAuthoritiesInternal());
