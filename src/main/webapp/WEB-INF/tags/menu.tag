@@ -39,27 +39,26 @@
 					<span>Veterinarians</span>
 				</petclinic:menuItem>
 				
-				<li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown"> 
-					<span class="glyphicon glyphicon-user"></span> Trainers <span class="glyphicon glyphicon-chevron-down"></span></a>
-					<ul class="dropdown-menu">
-						<sec:authorize access="hasAuthority('admin')">
-							<li>
-								<petclinic:menuItem active="${name eq 'trainers'}" url="/trainers" title="trainers">
-									<span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
-									<span>Trainers</span>
-								</petclinic:menuItem>
-							</li>
-						</sec:authorize>
-						<sec:authorize access="hasAuthority('admin')">
-							<li>
-								<petclinic:menuItem active="${name eq 'addtrainer'}" url="/trainers/new" title="Add trainer">
-									<span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
-									<span>Add Trainer</span>
-								</petclinic:menuItem>
-							</li>
-						</sec:authorize>
-					</ul>
-				</li>
+				<sec:authorize access="hasAuthority('admin')">
+					<li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown"> 
+						<span class="glyphicon glyphicon-user"></span> Trainers <span class="glyphicon glyphicon-chevron-down"></span></a>
+						<ul class="dropdown-menu">
+							
+								<li>
+									<petclinic:menuItem active="${name eq 'trainers'}" url="/trainers" title="trainers">
+										<span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
+										<span>Trainers</span>
+									</petclinic:menuItem>
+								</li>
+								<li>
+									<petclinic:menuItem active="${name eq 'addtrainer'}" url="/trainers/new" title="Add trainer">
+										<span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
+										<span>Add Trainer</span>
+									</petclinic:menuItem>
+								</li>
+						</ul>
+					</li>
+				</sec:authorize>
 				
 				<li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown"> 
 					<span class="glyphicon glyphicon-check"></span> Reservations <span class="glyphicon glyphicon-chevron-down"></span></a>
