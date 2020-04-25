@@ -17,6 +17,6 @@ public class Review extends NamedEntity{
 	@DateTimeFormat(pattern = "yyyy/MM/dd")
 	private LocalDate creation;
 	
-	private Services serviceType;
+	private ServiceType serviceType;
 
 }

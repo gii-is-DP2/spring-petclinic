@@ -1,5 +1,5 @@
 package org.springframework.samples.petclinic.model;
 
-public enum Services {
+public enum ServiceType {
 	TRAINNING, DAYCARE, HAIRDRESSING
 }
