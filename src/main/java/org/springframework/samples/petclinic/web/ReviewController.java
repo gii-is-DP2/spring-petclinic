@@ -22,17 +22,20 @@ import org.springframework.samples.petclinic.model.Owner;
 import org.springframework.samples.petclinic.model.Review;
 import org.springframework.samples.petclinic.model.ServiceType;
 import org.springframework.samples.petclinic.model.Trainer;
+import org.springframework.samples.petclinic.model.Training;
 import org.springframework.samples.petclinic.model.User;
 import org.springframework.samples.petclinic.service.ReviewService;
 import org.springframework.samples.petclinic.service.UserService;
 import org.springframework.samples.petclinic.service.exceptions.BusinessException;
 import org.springframework.samples.petclinic.service.exceptions.MappingException;
 import org.springframework.samples.petclinic.util.ReviewDTO;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import java.time.LocalDate;
@@ -68,6 +71,11 @@ public class ReviewController {
 	public Collection<ServiceType> populateServiceTypes() {
 		ServiceType[] types = ServiceType.class.getEnumConstants();
 		return Arrays.asList(types);
+	}
+	
+	@ModelAttribute("ratings")
+	public Collection<Integer> populateRatings() {
+		return Arrays.asList(new Integer[] {1,2,3,4,5});
 	}
 
 	@GetMapping(value = { "/reviews" })
@@ -122,6 +130,13 @@ public class ReviewController {
 		review.setDate(LocalDate.now());
 		
 		return review;
+	}
+	
+	@GetMapping(value = "/reviews/{reviewId}/delete")
+	public String processDeleteReviewForm(@PathVariable("reviewId") int reviewId) {
+		Review review = this.reviewService.findReviewById(reviewId);
+		this.reviewService.deleteReview(review);
+		return "redirect:/reviews";
 	}
 
 }

@@ -14,10 +14,8 @@
 	    <form:form modelAttribute="reviewDTO" class="form-horizontal" id="add-review-form">
 	        <div class="form-group has-feedback">
 	            <petclinic:inputField label="Comments" name="comments" />
-	            <petclinic:inputField label="Rating" type="number" minValue="1" name="rating" />
-				<div class="control-group">
-                    <petclinic:selectField name="serviceType" label="Service Type" names="${serviceTypes}" size="${serviceTypes.size()}"/>
-                </div>	        
+                <petclinic:selectField name="rating" label="Rating" names="${ratings}" size="${ratings.size()}"/>
+                <petclinic:selectField name="serviceType" label="Service Type" names="${serviceTypes}" size="${serviceTypes.size()}"/>
             </div>
 	        <div class="form-group">
 		        <div class="col-sm-offset-2 col-sm-10">

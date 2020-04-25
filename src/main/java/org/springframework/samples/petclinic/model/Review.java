@@ -15,7 +15,7 @@ import lombok.Data;
 
 @Data
 @Entity
-public class Review extends BaseEntity{
+public class Review extends BaseEntity {
 
 	private String comments;
 	

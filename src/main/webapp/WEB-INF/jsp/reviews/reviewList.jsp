@@ -23,6 +23,9 @@
 	            <th>Service type</th>
 	            <th>Rating</th>
 	            <th>Comments</th>
+                <sec:authorize access="hasAuthority('admin')">
+	                <th></th>
+                </sec:authorize>
         	</tr>
         </thead>
         <tbody>
@@ -46,6 +49,13 @@
                 <td>
                     <c:out value="${review.comments}"/>
                 </td>
+                <sec:authorize access="hasAuthority('admin')">
+	                <td>
+	                	<a href="<spring:url value="/reviews/${review.id}/delete" htmlEscape="true" />">
+	                		<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+	                	</a>
+	                </td>
+                </sec:authorize>
             </tr>
         </c:forEach>
         </tbody>

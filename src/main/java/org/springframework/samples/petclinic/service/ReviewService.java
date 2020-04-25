@@ -1,11 +1,14 @@
 package org.springframework.samples.petclinic.service;
 
 import java.util.Collection;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.samples.petclinic.model.Pet;
 import org.springframework.samples.petclinic.model.Review;
 import org.springframework.samples.petclinic.model.ServiceType;
+import org.springframework.samples.petclinic.model.Training;
 import org.springframework.samples.petclinic.model.User;
 import org.springframework.samples.petclinic.repository.springdatajpa.ReviewRepository;
 import org.springframework.samples.petclinic.service.exceptions.BusinessException;
@@ -16,17 +19,16 @@ import org.springframework.transaction.annotation.Transactional;
 public class ReviewService {
 	@Autowired 
 	private ReviewRepository reviewRepository;
-	private TrainingService trainingService;
-	private HairdressingService hairdressingService;
-	private DaycareService daycareService;
 	
 	@Autowired
-	public ReviewService(ReviewRepository reviewRepository, TrainingService trainingService, HairdressingService hairdressingService, DaycareService daycareService) {
+	public ReviewService(ReviewRepository reviewRepository) {
 		this.reviewRepository = reviewRepository;
-		this.trainingService = trainingService;
-		this.hairdressingService = hairdressingService;
-		this.daycareService = daycareService;
 	}	
+	
+	@Transactional(readOnly = true)
+	public Review findReviewById(int id) throws DataAccessException {
+		return reviewRepository.findById(id);
+	}
 	
 	@Transactional
 	public void saveReview(Review review) throws DataAccessException, BusinessException {
@@ -47,5 +49,9 @@ public class ReviewService {
 	private boolean existsByUsernameAndServiceType(User user, ServiceType type) {
 		Collection<Review> found = this.reviewRepository.findByUsernameAndServiceType(user.getUsername(), type);
 		return found.size() > 0;
+	}
+	@Transactional
+	public void deleteReview(Review review) throws DataAccessException {
+		this.reviewRepository.delete(review);
 	}
 }
