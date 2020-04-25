@@ -1,8 +1,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="petclinic" tagdir="/WEB-INF/tags"%>
-<%@ taglib prefix="sec"
-	uri="http://www.springframework.org/security/tags"%>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags"%>
 <!--  >%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags"%-->
 <%@ attribute name="name" required="true" rtexprvalue="true"
 	description="Name of the active menu: home, owners, vets, trainers or error"%>
@@ -93,23 +92,11 @@
 					</ul>
 				</li>
 				
-				<li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown"> 
-					<span class="glyphicon glyphicon-check"></span> Reviews <span class="glyphicon glyphicon-chevron-down"></span></a>
-					<ul class="dropdown-menu">
-							<li>
-								<petclinic:menuItem active="${name eq 'allreviews'}" url="/reviews" title="allreviews">
-									<span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
-									<span>All reviews</span>
-								</petclinic:menuItem>
-								<sec:authorize access="hasAuthority('owner')">
-									<petclinic:menuItem active="${name eq 'addreview'}" url="/reviews/new" title="addreview">
-										<span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
-										<span>Add review</span>
-									</petclinic:menuItem>
-								</sec:authorize>
-							</li>
-					</ul>
-				</li>
+				<petclinic:menuItem active="${name eq 'reviews'}" url="/reviews"
+					title="owners">
+					<span class="glyphicon glyphicon-star" aria-hidden="true"></span>
+					<span>Reviews</span>
+				</petclinic:menuItem>
 				
 				<li class="dropdown">
 					<sec:authorize access="!isAuthenticated()">

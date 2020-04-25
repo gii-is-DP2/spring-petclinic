@@ -17,14 +17,18 @@ import lombok.Data;
 @Entity
 public class Review extends BaseEntity{
 
-	private String text;
+	private String comments;
 	
 	@DateTimeFormat(pattern = "yyyy/MM/dd")
-	private LocalDate creationDate;
+	private LocalDate date;
 	
 	private ServiceType serviceType;
 
     @Min(value=1, message="must be equal or greater than 1")
     @Max(value=5, message="must be equal or less than 5")  
-	private int stars;
+	private int rating;
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "owner_id")
+	private Owner owner;
 }
