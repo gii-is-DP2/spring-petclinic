@@ -9,19 +9,18 @@
 <petclinic:layout pageName="headers">
 	<jsp:attribute name="customScript">
         <script type="text/javascript">
-									$(function() {
-										$("#date").datepicker({
-											dateFormat : 'yy/mm/dd'
-										});
-									});
-								</script>
+			$(function() {
+				$("#date").datepicker({
+					dateFormat : 'yy/mm/dd'
+				});
+			});
+		</script>
     </jsp:attribute>
 	<jsp:body>
 	    <h2>
 	        <c:if test="${boton}">Add </c:if> Training
 	    </h2>
-	    <form:form modelAttribute="trainingDTO" class="form-horizontal"
-				id="add-training-form">
+	    <form:form modelAttribute="trainingDTO" class="form-horizontal" id="add-training-form">
 	        <div class="form-group has-feedback">
 	            <petclinic:inputField label="Date" name="date" />
 	            <petclinic:inputField label="Description" name="description" />
