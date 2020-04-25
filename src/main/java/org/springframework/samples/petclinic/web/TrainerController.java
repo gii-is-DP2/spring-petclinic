@@ -8,7 +8,9 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.model.Owner;
 import org.springframework.samples.petclinic.model.Trainer;
+import org.springframework.samples.petclinic.model.Training;
 import org.springframework.samples.petclinic.service.TrainerService;
+import org.springframework.samples.petclinic.service.TrainingService;
 import org.springframework.samples.petclinic.web.annotations.IsAdmin;
 import org.springframework.samples.petclinic.web.annotations.IsOwner;
 import org.springframework.stereotype.Controller;
@@ -25,12 +27,14 @@ import org.springframework.web.servlet.ModelAndView;
 public class TrainerController {
 	
 	private static final String VIEWS_TRAINER_CREATE_OR_UPDATE_FORM = "trainers/createOrUpdateTrainerForm";
-	
+
 	private final TrainerService trainerService;
+	private final TrainingService trainingService;
 	
 	@Autowired
-	public TrainerController(TrainerService trainerService) {
+	public TrainerController(TrainerService trainerService, TrainingService trainingService) {
 		this.trainerService = trainerService;
+		this.trainingService = trainingService;
 	}
 	
 	@InitBinder
@@ -85,6 +89,14 @@ public class TrainerController {
 
 		model.put("trainers", results);
 		return "trainers/trainersList";
+	}
+	
+	@IsAdmin
+	@GetMapping(value = "/trainers/{trainerId}/trainings")
+	public String showTrainerTrainingsList(@PathVariable("trainerId") int trainerId, Map<String, Object> model) {
+		Collection<Training> results = this.trainingService.findTrainingsByTrainer(trainerId);
+		model.put("trainings", results);
+		return "trainings/trainingsList";
 	}
 	
 }

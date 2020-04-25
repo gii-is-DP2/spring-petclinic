@@ -38,6 +38,15 @@
             <th>Description</th>
             <td><b><c:out value="${trainer.description}"/></b></td>
         </tr>
+        <tr>
+        	<th>
+        		<spring:url value="/trainers/{trainerId}/trainings" var="trainingsUrl">
+            		<spring:param name="trainerId" value="${trainer.id}"/>
+            	</spring:url>
+            	<a href="${fn:escapeXml(trainingsUrl)}">View trainings</a>
+            </th>
+            <td></td>
+        </tr>
     </table>
 
 </petclinic:layout>
