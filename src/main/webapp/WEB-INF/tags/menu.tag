@@ -93,6 +93,24 @@
 					</ul>
 				</li>
 				
+				<li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown"> 
+					<span class="glyphicon glyphicon-check"></span> Reviews <span class="glyphicon glyphicon-chevron-down"></span></a>
+					<ul class="dropdown-menu">
+							<li>
+								<petclinic:menuItem active="${name eq 'allreviews'}" url="/reviews" title="allreviews">
+									<span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
+									<span>All reviews</span>
+								</petclinic:menuItem>
+								<sec:authorize access="hasAuthority('owner')">
+									<petclinic:menuItem active="${name eq 'addreview'}" url="/reviews/new" title="addreview">
+										<span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
+										<span>Add review</span>
+									</petclinic:menuItem>
+								</sec:authorize>
+							</li>
+					</ul>
+				</li>
+				
 				<li class="dropdown">
 					<sec:authorize access="!isAuthenticated()">
 						<a href="#" class="dropdown-toggle" data-toggle="dropdown"> <span class="glyphicon glyphicon-user"></span>User 
