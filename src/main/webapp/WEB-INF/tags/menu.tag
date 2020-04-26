@@ -70,6 +70,12 @@
 									<span>Trainings</span>
 								</petclinic:menuItem>
 							</li>
+							<li>
+								<petclinic:menuItem active="${name eq 'hairdressings'}" url="/hairdressings" title="hairdressings">
+									<span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
+									<span>Hairdressings</span>
+								</petclinic:menuItem>
+							</li>
 					</ul>
 				</li>
 				

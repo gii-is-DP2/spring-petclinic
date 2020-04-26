@@ -35,7 +35,7 @@
                     <c:out value="${hairdressing.time}"/>
                 </td>
                 <td>
-                    <c:out value="${training.pet}"/>
+                    <c:out value="${hairdressing.pet}"/>
                 </td>
             </tr>
         </c:forEach>
