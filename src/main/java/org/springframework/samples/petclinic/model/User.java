@@ -13,7 +13,9 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+
 import javax.persistence.OneToMany;
+
 import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
 
@@ -43,6 +45,7 @@ public class User{
                 CascadeType.PERSIST,
                 CascadeType.MERGE
             })
+
 	@JoinTable(name = "authorities_users", joinColumns = { @JoinColumn(name = "user_username") },
     inverseJoinColumns = { @JoinColumn(name = "authorities_id") })
 	private Set<Authorities> authorities;
@@ -50,6 +53,7 @@ public class User{
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "user", fetch = FetchType.LAZY)
 	private Set<Review> reviews;
 	
+
 	public List<Authorities> getAuthorities() {
 		List<Authorities> authorities = new ArrayList<>(this.getAuthoritiesInternal());
 		return Collections.unmodifiableList(authorities);
