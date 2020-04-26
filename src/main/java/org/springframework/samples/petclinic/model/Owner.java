@@ -65,13 +65,10 @@ public class Owner extends Person {
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "owner", fetch = FetchType.LAZY)
 	private Set<Pet> pets;
 	
-	//
-	//Agregar restriccion de UNIQUE
 	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "username", referencedColumnName = "username")
 	@Valid
 	private User user;
-	//
 	
 	public String getAddress() {
 		return this.address;

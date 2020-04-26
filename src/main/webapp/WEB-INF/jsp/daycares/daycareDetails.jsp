@@ -22,6 +22,14 @@
             <th>Description</th>
             <td><b><c:out value="${daycare.description}"/></b></td>
         </tr>
+        <tr>
+            <th>Pet</th>
+            <td><b><c:out value="${daycare.pet.name}"/></b></td>
+        </tr>
     </table>
+    <c:if test="${owner}">
+    <a class="btn btn-default" href='<spring:url value="/daycares/${daycare.id}/edit" htmlEscape="true"/>'>Edit daycare</a>
+   	</c:if>
+   	<a class="btn btn-default" href='<spring:url value="/daycares/${daycare.id}/delete" htmlEscape="true"/>'>Cancel daycare</a>
 
 </petclinic:layout>

@@ -2,12 +2,12 @@ package org.springframework.samples.petclinic.service;
 
 import java.time.LocalDate;
 import java.util.Collection;
-import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.samples.petclinic.model.Daycare;
 import org.springframework.samples.petclinic.model.Pet;
+import org.springframework.samples.petclinic.model.Training;
 import org.springframework.samples.petclinic.repository.springdatajpa.DaycareRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +25,11 @@ public class DaycareService {
 	@Transactional(readOnly = true)
 	public Daycare findDaycareById(int id) throws DataAccessException {
 		return this.daycareRepository.findById(id).get();
+	}
+	
+	@Transactional(readOnly = true)
+	public Collection<Daycare> findDaycares() throws DataAccessException {
+		return (Collection<Daycare>) this.daycareRepository.findAll();
 	}
 	
 	@Transactional
@@ -53,5 +58,10 @@ public class DaycareService {
 	@Transactional(readOnly = true)
 	public Integer oneDaycareById(LocalDate localDate, Integer id) throws DataAccessException {
 		return this.daycareRepository.countDaycareByDateAndPetId(localDate, id);
+	}
+
+	@Transactional(readOnly = true)
+	public Collection<Daycare> findDaycaresByUser(String user) throws DataAccessException {
+		return (Collection<Daycare>) this.daycareRepository.findByUser(user);
 	}
 }
