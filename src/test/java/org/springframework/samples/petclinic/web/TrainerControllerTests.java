@@ -15,8 +15,13 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
+import org.springframework.samples.petclinic.service.AuthorizationService;
 import org.springframework.samples.petclinic.service.TrainerService;
+import org.springframework.samples.petclinic.service.TrainingService;
 import org.springframework.security.config.annotation.web.WebSecurityConfigurer;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.test.context.support.WithMockUser;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -38,8 +43,20 @@ public class TrainerControllerTests {
 	@MockBean
 	private TrainerService trainerService;
 	
+	@MockBean
+	private TrainingService trainingService;
+	
 	@Autowired
 	private TrainerController trainerController;
+	
+	@MockBean
+	private AuthorizationService authorizationService;
+	
+	@MockBean
+	private Authentication auth;
+	
+	@MockBean
+	private SecurityContext securityContext;
 	
 	@Autowired
 	private MockMvc mockMvc;
@@ -59,6 +76,9 @@ public class TrainerControllerTests {
 		trainer.setTelephone("095925279");
 		trainer.setDescription("Es una persona muy amable");
 		given(this.trainerService.findTrainerById(TEST_TRAINER_ID)).willReturn(this.trainer);
+	
+		given(securityContext.getAuthentication()).willReturn(auth);
+		SecurityContextHolder.setContext(securityContext);
 	}
 	
 	@WithMockUser(value = "spring")
