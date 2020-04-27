@@ -7,9 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.configuration.SecurityConfiguration;
 import org.springframework.samples.petclinic.model.Trainer;
 import org.springframework.test.web.servlet.MockMvc;
+import static org.mockito.Mockito.*;
 
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.is;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -27,7 +29,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import java.util.ArrayList;
+import java.util.NoSuchElementException;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 
@@ -45,9 +47,6 @@ public class TrainerControllerTests {
 	
 	@MockBean
 	private TrainingService trainingService;
-	
-	@Autowired
-	private TrainerController trainerController;
 	
 	@MockBean
 	private AuthorizationService authorizationService;
@@ -83,14 +82,16 @@ public class TrainerControllerTests {
 	
 	@WithMockUser(value = "spring")
     @Test
-    void testInitCreationForm() throws Exception {
-		mockMvc.perform(get("/trainers/new")).andExpect(status().isOk()).andExpect(model().attributeExists("trainer"))
+    void testInitValidCreationForm() throws Exception {
+		mockMvc.perform(get("/trainers/new"))
+			.andExpect(status().isOk())
+			.andExpect(model().attributeExists("trainer"))
 			.andExpect(view().name("trainers/createOrUpdateTrainerForm"));
 	}
 	
 	@WithMockUser(value = "spring")
 	@Test
-	void testProcessCreationFormSuccess() throws Exception {
+	void testProcessCreationFormSuccess() throws Exception {		
 		mockMvc.perform(post("/trainers/new")
 				.param("firstName", "Federico")
 				.param("lastName", "Sartori")
@@ -102,6 +103,8 @@ public class TrainerControllerTests {
 				.param("specialty", "Deportes")
 				.param("description", "Es una persona muy amable"))
 		.andExpect(status().is3xxRedirection());
+		
+		verify(this.trainerService, times(1)).saveTrainer(any());
 	}
 	
 	@WithMockUser(value = "spring")
@@ -120,6 +123,8 @@ public class TrainerControllerTests {
 		.andExpect(model().attributeHasFieldErrors("trainer", "specialty"))
 		.andExpect(model().attributeHasFieldErrors("trainer", "description"))
 		.andExpect(view().name("trainers/createOrUpdateTrainerForm"));
+	
+		verify(this.trainerService, times(0)).saveTrainer(any());
 	}
 	
 	@WithMockUser(value = "spring")
@@ -136,6 +141,17 @@ public class TrainerControllerTests {
 		.andExpect(model().attribute("trainer", hasProperty("email", is("fedsartori45@gmail.com"))))
 		.andExpect(model().attribute("trainer", hasProperty("description", is("Es una persona muy amable"))))
 		.andExpect(view().name("trainers/trainerDetails"));
+	}
+	
+	@WithMockUser(value = "spring")
+	@Test
+	void testShowInvalidTrainer() throws Exception {
+		given(this.trainerService.findTrainerById(TEST_TRAINER_ID))
+			.willThrow(NoSuchElementException.class);
+		
+		mockMvc.perform(get("/trainers/{trainerId}", this.TEST_TRAINER_ID))
+		.andExpect(status().isOk())
+		.andExpect(view().name("errors/elementNotFound"));
 	}
 	
 	@WithMockUser(value = "spring")
