@@ -31,9 +31,9 @@
             <td><b><c:out value="${hairdressing.pet.owner.user.username}"/></b></td>
         </tr>
     </table>
-    
-   	<a class="btn btn-default" href='<spring:url value="/hairdressings/${hairdressing.id}/edit" htmlEscape="true"/>'>Edit hairdressing</a>
-   	
+    <c:if test="${owner}">
+   		<a class="btn btn-default" href='<spring:url value="/hairdressings/${hairdressing.id}/edit" htmlEscape="true"/>'>Edit hairdressing</a>
+   	</c:if>
    	
    	
    	<spring:url value="/hairdressings/{hairdressingId}/delete" var="hairdressingUrl">

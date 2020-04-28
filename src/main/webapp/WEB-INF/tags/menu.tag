@@ -83,12 +83,18 @@
 										<span>Daycares</span>
 									</petclinic:menuItem>
 								</sec:authorize>
-							</li>
-							<li>
-								<petclinic:menuItem active="${name eq 'hairdressings'}" url="/hairdressings" title="hairdressings">
-									<span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
-									<span>Hairdressings</span>
-								</petclinic:menuItem>
+								<sec:authorize access="hasAuthority('admin')">
+									<petclinic:menuItem active="${name eq 'hairdressings'}" url="/hairdressings" title="hairdressings">
+										<span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
+										<span>Hairdressings</span>
+									</petclinic:menuItem>
+								</sec:authorize>
+								<sec:authorize access="hasAuthority('owner')">
+									<petclinic:menuItem active="${name eq 'hairdressings'}" url="/hairdressings/owner" title="hairdressings">
+										<span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
+										<span>Hairdressings</span>
+									</petclinic:menuItem>
+								</sec:authorize>
 							</li>
 					</ul>
 				</li>
