@@ -5,8 +5,15 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.configuration.SecurityConfiguration;
+import org.springframework.samples.petclinic.model.GroundType;
+import org.springframework.samples.petclinic.model.Pet;
+import org.springframework.samples.petclinic.model.PetType;
 import org.springframework.samples.petclinic.model.Trainer;
+import org.springframework.samples.petclinic.model.Training;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+
 import static org.mockito.Mockito.*;
 
 import static org.hamcrest.Matchers.hasProperty;
@@ -30,6 +37,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import java.time.LocalDate;
+import java.util.Collection;
+import java.util.Map;
 import java.util.NoSuchElementException;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -63,6 +73,8 @@ public class TrainerControllerTests {
 	
 	private Trainer trainer;
 	
+	private Training training;
+	
 	@BeforeEach
 	void setup() {
 		trainer = new Trainer();
@@ -75,6 +87,22 @@ public class TrainerControllerTests {
 		trainer.setSpecialty("Deportes");
 		trainer.setTelephone("095925279");
 		trainer.setDescription("Es una persona muy amable");
+		
+		Pet pet = new Pet();
+		pet.setId(1);
+		pet.setName("Iker");
+		pet.setType(new PetType());
+		pet.setBirthDate(LocalDate.now());
+		
+		training = new Training();
+		this.training.setId(1);
+		this.training.setTrainer(this.trainer);
+		this.training.setDescription("description");
+		this.training.setGround(1);
+		this.training.setGroundType(GroundType.AGILIDAD);
+		this.training.setDate(LocalDate.now());
+		this.training.setPet(pet);
+		
 		given(this.trainerService.findTrainerById(TEST_TRAINER_ID)).willReturn(this.trainer);
 	
 		this.loadAuthContext();
@@ -252,4 +280,31 @@ public class TrainerControllerTests {
 		verify(this.trainerService, times(1)).findTrainersByLastName("Spektor");
 	}
 
+	@WithMockUser(value = "spring")
+	@Test
+	void testShowTrainerTrainingsList() throws Exception {
+		given(this.trainingService.findTrainingsByTrainer(this.TEST_TRAINER_ID))
+			.willReturn(Lists.newArrayList(this.training));
+		
+		mockMvc.perform(get("/trainers/" + this.TEST_TRAINER_ID + "/trainings"))
+			.andExpect(status().isOk())
+			.andExpect(model().attribute("trainings", iterableWithSize(1)))
+			.andExpect(view().name("trainings/trainingsList"));
+		
+		verify(this.trainingService, times(1)).findTrainingsByTrainer(this.TEST_TRAINER_ID);
+	}
+	
+	@WithMockUser(value = "spring")
+	@Test
+	void testShowInvalidTrainerTrainingsList() throws Exception {
+		given(this.trainingService.findTrainingsByTrainer(this.TEST_TRAINER_ID))
+			.willReturn(Lists.newArrayList());
+		
+		mockMvc.perform(get("/trainers/" + this.TEST_TRAINER_ID + "/trainings"))
+			.andExpect(status().isOk())
+			.andExpect(model().attribute("trainings", iterableWithSize(0)))
+			.andExpect(view().name("trainings/trainingsList"));
+		
+		verify(this.trainingService, times(1)).findTrainingsByTrainer(this.TEST_TRAINER_ID);
+	}
 }
