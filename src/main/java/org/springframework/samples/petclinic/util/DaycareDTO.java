@@ -15,7 +15,7 @@ public class DaycareDTO {
 	@NotNull(message="must not be empty")
 	private String petName;
 	
-	@NotNull(message="must not be empty")
+//	@NotNull(message="must not be empty")
 	private Integer capacity;
 	
 	@NotEmpty(message="must not be empty")
