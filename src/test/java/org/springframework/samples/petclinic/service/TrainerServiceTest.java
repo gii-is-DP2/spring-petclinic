@@ -2,109 +2,99 @@ package org.springframework.samples.petclinic.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.NoSuchElementException;
-import java.util.Optional;
+
+import javax.validation.ConstraintViolationException;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.dao.DataAccessException;
 import org.springframework.samples.petclinic.model.Trainer;
-import org.springframework.samples.petclinic.repository.TrainerRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @DataJpaTest(includeFilters = @ComponentScan.Filter(Service.class))
 public class TrainerServiceTest {
 
+	private static final int TRAINER_ID = 1;
+	
+	@Autowired
 	private TrainerService trainerService;
-	private TrainerRepository trainerRepository;
-	
-	@BeforeEach
-	public void initMocks() {
-		this.trainerRepository = mock(TrainerRepository.class);
-		this.trainerService = new TrainerService(this.trainerRepository);
-	}
-	
-	
+			
 	@Test
 	public void shouldFindTrainerById() {
-		Integer trainerId = 1;
-		Trainer trainer = new Trainer();
-		trainer.setId(trainerId);
-		trainer.setFirstName("Federico");
-		when(this.trainerRepository.findById(trainerId)).thenReturn(Optional.of(trainer));
-		
-		Trainer foundTrainer = this.trainerService.findTrainerById(trainerId);
-		verify(this.trainerRepository, times(1)).findById(trainerId);
+		Trainer foundTrainer = this.trainerService.findTrainerById(this.TRAINER_ID);
 		assertThat(foundTrainer).isNotNull();
+		assertThat(foundTrainer.getLastName().equals("Balotelli"));
 	}
 	
 	@Test
 	void shouldNotFindTrainerById() {
-		Integer trainerId = 1;
-		when(this.trainerRepository.findById(trainerId)).thenReturn(Optional.empty());
-		
 		Assertions.assertThrows(NoSuchElementException.class, () -> {
-			this.trainerService.findTrainerById(trainerId);
+			this.trainerService.findTrainerById(45);
 		});
 	}
 	
 	@Test
 	void shouldFindTrainers() {
-		Integer trainer1Id = 1;
-		Trainer trainer1 = new Trainer();
-		trainer1.setId(trainer1Id);
-		trainer1.setFirstName("Federico");
-		Integer trainer2Id = 2;
-		Trainer trainer2 = new Trainer();
-		trainer2.setId(trainer2Id);
-		trainer2.setFirstName("Federico2");
-		Collection<Trainer> trainers = new ArrayList<Trainer>();
-		trainers.add(trainer1);
-		trainers.add(trainer2);
-		
-		when(this.trainerRepository.findAll()).thenReturn(trainers);
-		
 		Collection<Trainer> foundTrainer = this.trainerService.findTrainers();
-		verify(this.trainerRepository, times(1)).findAll();
 		assertThat(foundTrainer.size()).isEqualTo(2);
 	}
 	
 	@Test
-	void shouldFindTrainersByLastName() {
-		Integer trainer1Id = 1;
-		String lastName = "Sartori";
-		Trainer trainer1 = new Trainer();
-		trainer1.setId(trainer1Id);
-		trainer1.setFirstName("Federico");
-		Collection<Trainer> trainers = new ArrayList<Trainer>();
-		trainers.add(trainer1);
+	@Transactional
+	void shouldFindTrainersByLastName() {				
+		Collection<Trainer> foundTrainer = this.trainerService
+												.findTrainersByLastName("Balotelli");
 		
-		when(this.trainerRepository.findByLastName(lastName)).thenReturn(trainers);
-		
-		Collection<Trainer> foundTrainer = this.trainerService.findTrainersByLastName(lastName);
-		verify(this.trainerRepository, times(1)).findByLastName(lastName);
 		assertThat(foundTrainer.size()).isEqualTo(1);
+		assertThat(foundTrainer.iterator().next().getLastName().equals("Balotelli"));
+	}
+	
+	@Test
+	@Transactional
+	void shouldNotFindTrainersByLastName() {
+		Collection<Trainer> foundTrainer = this.trainerService.findTrainersByLastName("Aguero");
+		
+		assertThat(foundTrainer.size()).isEqualTo(0);
 	}
 	
 	@Test
 	@Transactional
 	public void shouldInsertTrainer() {
 		Trainer trainer = new Trainer();
-		trainer.setFirstName("Sam");
-		trainer.setLastName("Schultz");
-		trainer.setDescription("descripcion");
-		trainer.setDni("4545454");
+		trainer.setFirstName("Federico");
+		trainer.setLastName("Sartori");
+		trainer.setDescription("Buena persona.");
+		trainer.setDni("47842798");
 		trainer.setEmail("fedartori@gm.com");
 		trainer.setSalary(45);
-		trainer.setTelephone("4444444444");               
+		trainer.setTelephone("625096668");
+		trainer.setSpecialty("Salto");
+		
+		Integer actualSize = this.trainerService.findTrainers().size();
                 
 		this.trainerService.saveTrainer(trainer);
-		verify(this.trainerRepository, times(1)).save(trainer);
+		
+		Collection<Trainer> foundTrainers = this.trainerService.findTrainers();
+		assertThat(foundTrainers.size()).isEqualTo(actualSize + 1 );
+		assertTrue(foundTrainers.stream().anyMatch(item -> "Federico".equals(item.getFirstName())));
+	}
+	
+	@Test
+	@Transactional
+	public void shouldInsertInvalidTrainer() {
+		Trainer trainer = new Trainer();
+		
+		assertThrows(ConstraintViolationException.class, () -> {
+				this.trainerService.saveTrainer(trainer);
+		});
 	}
 }
