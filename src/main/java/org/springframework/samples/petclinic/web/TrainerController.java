@@ -72,6 +72,8 @@ public class TrainerController {
 	public String initFindForm(Map<String, Object> model) {
 		Collection<Trainer> results = this.trainerService.findTrainers();
 		model.put("trainers", results);
+		Trainer trainer = new Trainer();
+		model.put("trainer", trainer);
 		return "trainers/trainersList";
 	}
 	
