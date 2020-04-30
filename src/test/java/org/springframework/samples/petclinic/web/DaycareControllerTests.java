@@ -35,6 +35,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
+import com.google.common.collect.Lists;
+
 
 @WebMvcTest(controllers = DaycareController.class,
 excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = WebSecurityConfigurer.class),
@@ -145,6 +147,17 @@ public class DaycareControllerTests {
 				.andExpect(view().name("daycares/createOrUpdateDaycareForm"));
 		}
 	 
+	 @WithMockUser(value = "spring")
+		@Test
+		void testInitUpdateFormUnauthorized() throws Exception {
+	    	
+	    	given(this.authorizationService.canUserModifyBooking(anyString(), eq(this.TEST_PET_ID))).willReturn(false);
+	    	
+			mockMvc.perform(get("/daycares/{daycareId}/edit", this.TEST_DAYCARE_ID))
+					.andExpect(status().isOk())
+					.andExpect(view().name("errors/accessDenied"));
+		}
+	
 	@WithMockUser(value = "spring")
 	@Test
 	void testProcessUpdateFormHasErrors() throws Exception {
@@ -179,6 +192,15 @@ public class DaycareControllerTests {
 	}
 	
 	@WithMockUser(value = "spring")
+    @Test
+	void testShowOwnerDaycares() throws Exception {
+		given(this.daycareService.findDaycaresByUser("spring")).willReturn(Lists.newArrayList(this.daycare));
+		mockMvc.perform(get("/trainings/owner"))
+				.andExpect(status().isOk())
+				.andExpect(model().attributeExists("daycares")).andExpect(view().name("daycares/daycaresList"));
+	}
+	
+	@WithMockUser(value = "spring")
 	@Test
 	void testProcessDeleteFormSuccess() throws Exception {
 		given(this.daycareService.findDaycareById(TEST_DAYCARE_ID)).willReturn(this.daycare);
@@ -189,6 +211,19 @@ public class DaycareControllerTests {
 			.andExpect(status().is3xxRedirection())
 			.andExpect(view().name("redirect:/daycares/owner"));
 	}
+	
+	@WithMockUser(value = "spring", authorities = "admin")
+	@Test
+	void testProcessDeleteFormUnauthorized() throws Exception {
+    	
+    	given(this.authorizationService.canUserModifyBooking(anyString(), eq(this.TEST_PET_ID))).willReturn(false);
+    	
+		mockMvc.perform(get("/daycares/{daycareId}/delete", TEST_DAYCARE_ID)
+							.with(csrf()))
+				.andExpect(status().isOk())
+				.andExpect(view().name("errors/accessDenied"));
+	}
+	
 }
 	
 		

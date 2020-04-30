@@ -1,18 +1,13 @@
 package org.springframework.samples.petclinic.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,10 +15,8 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.dao.DataAccessException;
 import org.springframework.samples.petclinic.model.GroundType;
-import org.springframework.samples.petclinic.model.Trainer;
 import org.springframework.samples.petclinic.model.Training;
-import org.springframework.samples.petclinic.repository.TrainerRepository;
-import org.springframework.samples.petclinic.repository.springdatajpa.TrainingRepository;
+import org.springframework.samples.petclinic.model.User;
 import org.springframework.samples.petclinic.service.exceptions.BusinessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,96 +24,167 @@ import org.springframework.transaction.annotation.Transactional;
 @DataJpaTest(includeFilters = @ComponentScan.Filter(Service.class))
 public class TrainingServiceTest {
 	
+	private static final int TRAINING_ID = 1;
+	private static final int TRAINER_ID = 1;
+	private static final int PET_ID = 1;
+	
+	private Training training;
+	private User user;
+	
+	@Autowired
 	private TrainingService trainingService;
-	private TrainingRepository trainingRepository;
+	
+	@Autowired
+	private PetService petService;
+	
+	@Autowired
 	private TrainerService trainerService;
-	private TrainerRepository trainerRepository;
 	
-	@BeforeEach
-	public void initMocks() {
-		this.trainingRepository = mock(TrainingRepository.class);
-		this.trainingService = new TrainingService(this.trainingRepository);
-		this.trainerRepository = mock(TrainerRepository.class);
-		this.trainerService = new TrainerService(this.trainerRepository);
+	private int addTraining(LocalDate date) throws DataAccessException, BusinessException {
+		this.training = new Training();
+		this.training.setDescription("Descripcion");
+		this.training.setDate(date);
+		this.training.setGround(1);
+		this.training.setGroundType(GroundType.OBEDIENCIA);
+		this.training.setPet(this.petService.findPetById(this.PET_ID));
+		this.training.setTrainer(this.trainerService.findTrainerById(this.TRAINER_ID));
+		
+		this.trainingService.saveTraining(training);
+		
+		this.user = this.training.getPet().getOwner().getUser();
+		
+		return training.getId();
 	}
 	
 	@Test
-	public void shouldFindTrainingById() {
-		Integer trainingId = 1;
-		Training training = new Training();
-		training.setId(trainingId);
-		training.setDescription("Descripcion de entrenamiento");
-		when(this.trainingRepository.findById(trainingId)).thenReturn(Optional.of(training));
+	@Transactional
+	public void shouldFindTrainingById() throws DataAccessException, BusinessException {
+		int id = this.addTraining(LocalDate.now().plusDays(5));
+
+		Training foundTraining = this.trainingService.findTrainingById(id);
 		
-		Training foundTraining = this.trainingService.findTrainingById(trainingId);
-		verify(this.trainingRepository, times(1)).findById(trainingId);
 		assertThat(foundTraining).isNotNull();
+		assertThat(foundTraining.getDate()).isEqualTo(training.getDate());
 		assertThat(foundTraining.getDescription()).isEqualTo(training.getDescription());
+		assertThat(foundTraining.getGround()).isEqualTo(training.getGround());
+		assertThat(foundTraining.getGroundType()).isEqualTo(training.getGroundType());
+		assertThat(foundTraining.getId()).isEqualTo(id);
+		assertThat(foundTraining.getPet().getId()).isEqualTo(training.getPet().getId());
+		assertThat(foundTraining.getTrainer().getId()).isEqualTo(training.getTrainer().getId());
 	}
 	
 	@Test
+	@Transactional
 	void shouldNotFindTrainingById() {
-		Integer trainingId = 1;
-		when(this.trainingRepository.findById(trainingId)).thenReturn(Optional.empty());
-		
 		Assertions.assertThrows(NoSuchElementException.class, () -> {
-			this.trainingService.findTrainingById(trainingId);
+			this.trainingService.findTrainingById(this.TRAINING_ID);
 		});
 	}
 	
 	@Test
-	void shouldFindTrainings() {
-		Integer training1Id = 1;
-		Training training1 = new Training();
-		training1.setId(training1Id);
-		training1.setDescription("Descripcion 1");
-		Integer training2Id = 2;
-		Training training2 = new Training();
-		training2.setId(training2Id);
-		training2.setDescription("Descripcion 2");
-		Collection<Training> trainings = new ArrayList<Training>();
-		trainings.add(training1);
-		trainings.add(training2);
-		
-		when(this.trainingRepository.findAll()).thenReturn(trainings);
-		
+	@Transactional
+	void shouldFindTrainings() throws DataAccessException, BusinessException {
+		this.addTraining(LocalDate.now().plusDays(5));
 		Collection<Training> foundTrainings = this.trainingService.findTrainings();
-		verify(this.trainingRepository, times(1)).findAll();
-		assertThat(foundTrainings.size()).isEqualTo(2);
-		assertThat(foundTrainings).contains(training1);
-		assertThat(foundTrainings).contains(training2);
+		assertThat(foundTrainings.size()).isEqualTo(1);
+	}
+	
+	@Test
+	@Transactional
+	void shouldFindTrainingsByUser() throws DataAccessException, BusinessException {
+		this.addTraining(LocalDate.now().plusDays(5));
+		Collection<Training> foundTrainings = this.trainingService.findTrainingsByUser(this.user.getUsername());
+		assertThat(foundTrainings.size()).isEqualTo(1);
+	}
+	
+	@Test
+	@Transactional
+	void shouldNotFindTrainingsByUser() throws DataAccessException, BusinessException {
+		this.addTraining(LocalDate.now().plusDays(5));
+		Collection<Training> foundTrainings = this.trainingService.findTrainingsByUser("fede");
+		assertThat(foundTrainings.size()).isEqualTo(0);
+	}
+	
+	@Test
+	@Transactional
+	void shouldFindTrainingsByTrainer() throws DataAccessException, BusinessException {
+		this.addTraining(LocalDate.now().plusDays(5));
+		Collection<Training> foundTrainings = this.trainingService.findTrainingsByTrainer(this.training.getTrainer().getId());
+		assertThat(foundTrainings.size()).isEqualTo(1);
+	}
+	
+	@Test
+	@Transactional
+	void shouldNotFindTrainingsByTrainer() throws DataAccessException, BusinessException {
+		this.addTraining(LocalDate.now().plusDays(5));
+		Collection<Training> foundTrainings = this.trainingService.findTrainingsByTrainer(45);
+		assertThat(foundTrainings.size()).isEqualTo(0);
 	}
 	
 	@Test
 	@Transactional
 	public void shouldInsertTraining() throws DataAccessException, BusinessException {
-		Trainer trainer = new Trainer();
-		trainer.setId(1);
-		
-		Training training = new Training();
-		training.setDescription("Sam");
-		training.setDate(LocalDate.now().plusDays(2));
-		training.setGround(3);
-		training.setGroundType(GroundType.OBEDIENCIA); 
-		training.setTrainer(trainer);
+		this.addTraining(LocalDate.now().plusDays(5));
+		int previousTrainings = this.trainingService.findTrainings().size();
+		Training newTraining = new Training();
+		newTraining.setDescription("Sam");
+		newTraining.setDate(LocalDate.now().plusDays(2));
+		newTraining.setGround(3);
+		newTraining.setGroundType(GroundType.OBEDIENCIA); 
+		newTraining.setTrainer(this.trainerService.findTrainerById(TRAINER_ID));
+		newTraining.setPet(this.petService.findPetById(PET_ID));
                 
-		this.trainingService.saveTraining(training);
-		verify(this.trainingRepository, times(1)).save(training);
+		this.trainingService.saveTraining(newTraining);
+		
+		Collection<Training> actualTrainings = this.trainingService.findTrainings();
+		assertThat(actualTrainings.size()).isEqualTo(previousTrainings + 1);
 	}
 	
 	@Test
 	@Transactional
-	public void shouldDeleteTraining() {
-		Training training = new Training();
-		training.setDescription("Sam");
-		training.setDate(LocalDate.now());
-		training.setGround(3);
-		training.setGroundType(GroundType.OBEDIENCIA);             
-                
-		this.trainingService.deleteTraining(training);
-		verify(this.trainingRepository, times(1)).delete(training);
+	public void shouldNotInsertSameTrainerDateTraining() throws DataAccessException, BusinessException {
+		this.addTraining(LocalDate.now().plusDays(5));
+		Assertions.assertThrows(BusinessException.class, () -> {
+			this.addTraining(LocalDate.now().plusDays(5));
+		});
 	}
 	
+	@Test
+	@Transactional
+	public void shouldNotInsertPastDateTraining() throws DataAccessException, BusinessException {
+		Assertions.assertThrows(BusinessException.class, () -> {
+			this.addTraining(LocalDate.now().minusDays(5));
+		});
+	}
 	
+	@Test
+	public void shouldDeleteByTrainingId() throws DataAccessException, BusinessException {
+		int id = this.addTraining(LocalDate.now().plusDays(5));
+		int previousTrainings = this.trainingService.findTrainings().size();
+		
+		this.trainingService.delete(id);
+		
+		Collection<Training> actualTrainings = this.trainingService.findTrainings();
+		assertThat(actualTrainings.size()).isEqualTo(previousTrainings - 1);
+		assertThat(actualTrainings.stream().map(t -> t.getId())).doesNotContain(id);
+	}
 	
+	@Test
+	public void shouldNotDeleteInvalidTrainingById() {
+		Assertions.assertThrows(NoSuchElementException.class, () -> {
+			this.trainingService.delete(this.TRAINING_ID);
+		});
+	}
+	
+	@Test
+	public void shouldDeleteByTraining() throws DataAccessException, BusinessException {
+		int id = this.addTraining(LocalDate.now().plusDays(5));
+		int previousTrainings = this.trainingService.findTrainings().size();
+		
+		this.trainingService.deleteTraining(this.training);
+		
+		Collection<Training> actualTrainings = this.trainingService.findTrainings();
+		assertThat(actualTrainings.size()).isEqualTo(previousTrainings - 1);
+		assertThat(actualTrainings.stream().map(t -> t.getId())).doesNotContain(id);
+	}
 }
