@@ -126,6 +126,9 @@
 										</div>
 										<div class="col-lg-8">
 											<p class="text-left"><strong><sec:authentication property="name" /></strong></p>
+											<sec:authorize access="hasAuthority('owner')">
+												<p class="text-left"><a href="<c:url value="/profile" />" class="btn btn-primary btn-block btn-sm">Profile</a></p>
+											</sec:authorize>
 											<p class="text-left"><a href="<c:url value="/logout" />" class="btn btn-primary btn-block btn-sm">Logout</a></p>
 										</div>
 									</div>

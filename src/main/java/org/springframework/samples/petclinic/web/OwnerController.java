@@ -22,9 +22,12 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.model.Owner;
+import org.springframework.samples.petclinic.model.User;
 import org.springframework.samples.petclinic.service.AuthoritiesService;
 import org.springframework.samples.petclinic.service.OwnerService;
 import org.springframework.samples.petclinic.service.VetService;
+import org.springframework.samples.petclinic.web.annotations.IsOwner;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.samples.petclinic.service.UserService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -46,11 +49,14 @@ public class OwnerController {
 
 	private final OwnerService ownerService;
 	
+	private final UserService userService;
+	
 	private final OwnerValidator ownerValidator;
 
 	@Autowired
 	public OwnerController(OwnerService ownerService, UserService userService, AuthoritiesService authoritiesService) {
 		this.ownerService = ownerService;
+		this.userService = userService;
 		this.ownerValidator = new OwnerValidator(userService);
 	}
 
@@ -148,5 +154,12 @@ public class OwnerController {
 		mav.addObject(this.ownerService.findOwnerById(ownerId));
 		return mav;
 	}
-
+	
+	@IsOwner
+	@GetMapping("/profile")
+	public String showProfile() {
+		String username = SecurityContextHolder.getContext().getAuthentication().getName();
+		Owner owner = this.ownerService.findOwnerByUsername(username);
+		return "redirect:/owners/" + owner.getId();
+	}
 }
