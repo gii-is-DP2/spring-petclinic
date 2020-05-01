@@ -136,15 +136,14 @@ public class OwnerController {
 	}
 
 	@PostMapping(value = "/owners/{ownerId}/edit")
-	public String processUpdateOwnerForm(@Valid Owner owner, BindingResult result,
-			@PathVariable("ownerId") int ownerId) {
+	public String processUpdateOwnerForm(@Valid Owner owner, BindingResult result, @PathVariable("ownerId") int ownerId, Model model) {
 		this.authorizeUserAction(ownerId);
+		owner.setId(ownerId);
 		if (result.hasErrors()) {
 			return VIEWS_OWNER_CREATE_OR_UPDATE_FORM;
 		}
-		else {
-			owner.setId(ownerId);
-			this.ownerService.saveOwner(owner);
+		else {	
+			this.ownerService.updateOwner(owner);
 			return "redirect:/owners/{ownerId}";
 		}
 	}

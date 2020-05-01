@@ -84,6 +84,15 @@ public class OwnerService {
 		user.addAuthority(auth);
 		userService.saveUser(user);
 
-	}		
-
+	}
+	
+	@Transactional
+	public void updateOwner(Owner owner) throws DataAccessException {
+		Owner oldOwner = this.findOwnerById(owner.getId());
+		owner.getUser().setUsername(oldOwner.getUser().getUsername());
+		ownerRepository.save(owner);
+		System.out.println(owner.getId());
+		System.out.println(owner.getUser().getUsername());
+		// userService.saveUser(owner.getUser());
+	}
 }
