@@ -85,6 +85,20 @@ class OwnerServiceTests {
 		owners = this.ownerService.findOwnerByLastName("Daviss");
 		assertThat(owners.isEmpty()).isTrue();
 	}
+	
+	@Test
+	void shouldFindByUsername() {
+		String username = "fede";
+		Owner owner = this.ownerService.findOwnerByUsername(username);
+		assertThat(owner).isNotNull();
+		assertThat(owner.getUser().getUsername()).isEqualTo(username);
+	}
+	
+	@Test
+	void shouldNotFindByUsername() {
+		Owner owner = this.ownerService.findOwnerByUsername("pedro");
+		assertThat(owner).isNull();
+	}
 
 	@Test
 	void shouldFindSingleOwnerWithPet() {

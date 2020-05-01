@@ -22,9 +22,12 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.model.Owner;
-import org.springframework.samples.petclinic.service.AuthoritiesService;
+import org.springframework.samples.petclinic.service.AuthorizationService;
 import org.springframework.samples.petclinic.service.OwnerService;
-import org.springframework.samples.petclinic.service.VetService;
+import org.springframework.samples.petclinic.web.annotations.IsOwner;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.samples.petclinic.service.UserService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -46,12 +49,18 @@ public class OwnerController {
 
 	private final OwnerService ownerService;
 	
+	private final UserService userService;
+	
 	private final OwnerValidator ownerValidator;
+	
+	private final AuthorizationService authorizationService;
 
 	@Autowired
-	public OwnerController(OwnerService ownerService, UserService userService, AuthoritiesService authoritiesService) {
+	public OwnerController(OwnerService ownerService, UserService userService, AuthorizationService authorizationService) {
 		this.ownerService = ownerService;
+		this.userService = userService;
 		this.ownerValidator = new OwnerValidator(userService);
+		this.authorizationService = authorizationService;
 	}
 
 	@InitBinder
@@ -119,20 +128,22 @@ public class OwnerController {
 
 	@GetMapping(value = "/owners/{ownerId}/edit")
 	public String initUpdateOwnerForm(@PathVariable("ownerId") int ownerId, Model model) {
+		this.authorizeUserAction(ownerId);
+		
 		Owner owner = this.ownerService.findOwnerById(ownerId);
 		model.addAttribute(owner);
 		return VIEWS_OWNER_CREATE_OR_UPDATE_FORM;
 	}
 
 	@PostMapping(value = "/owners/{ownerId}/edit")
-	public String processUpdateOwnerForm(@Valid Owner owner, BindingResult result,
-			@PathVariable("ownerId") int ownerId) {
+	public String processUpdateOwnerForm(@Valid Owner owner, BindingResult result, @PathVariable("ownerId") int ownerId, Model model) {
+		this.authorizeUserAction(ownerId);
+		owner.setId(ownerId);
 		if (result.hasErrors()) {
 			return VIEWS_OWNER_CREATE_OR_UPDATE_FORM;
 		}
-		else {
-			owner.setId(ownerId);
-			this.ownerService.saveOwner(owner);
+		else {	
+			this.ownerService.updateOwner(owner);
 			return "redirect:/owners/{ownerId}";
 		}
 	}
@@ -148,5 +159,21 @@ public class OwnerController {
 		mav.addObject(this.ownerService.findOwnerById(ownerId));
 		return mav;
 	}
-
+	
+	@IsOwner
+	@GetMapping("/profile")
+	public ModelAndView showProfile() {
+		String username = SecurityContextHolder.getContext().getAuthentication().getName();
+		Owner owner = this.ownerService.findOwnerByUsername(username);
+		ModelAndView mav = new ModelAndView("owners/profile");
+		mav.addObject(owner);
+		return mav;
+	}
+	
+	private void authorizeUserAction(int ownerId) {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		if (!this.authorizationService.canUserModifyHisData(auth.getName(), ownerId)) {
+			throw new AccessDeniedException("User canot modify data.");
+		}
+	}
 }
