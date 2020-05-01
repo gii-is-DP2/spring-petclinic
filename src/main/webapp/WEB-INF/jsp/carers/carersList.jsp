@@ -20,6 +20,7 @@
             <th>Telephone</th>
             <th>Email</th>
             <th>Hairdresser</th>
+            <th>Actions</th>
         </tr>
         </thead>
         <tbody>
@@ -47,6 +48,10 @@
                 <td>
                     <c:out value="${carer.isHairdresser}"/>
                 </td>
+                <td>
+                <a href="<spring:url value="/carers/${carer.id}/delete" htmlEscape="true" />">
+	                		<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+	                	</a>
             </tr>
         </c:forEach>
         </tbody>

@@ -5,6 +5,8 @@ import java.util.Collection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.samples.petclinic.model.Carer;
+import org.springframework.samples.petclinic.model.Daycare;
+import org.springframework.samples.petclinic.model.Pet;
 import org.springframework.samples.petclinic.repository.CarerRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,6 +39,11 @@ public class CarerService {
 	@Transactional
 	public void saveCarer(Carer carer) throws DataAccessException {
 		this.carerRepository.save(carer);		
+	}
+	
+	@Transactional
+	public void delete(int carerId) throws DataAccessException{
+		this.carerRepository.deleteById(carerId);
 	}
 
 }

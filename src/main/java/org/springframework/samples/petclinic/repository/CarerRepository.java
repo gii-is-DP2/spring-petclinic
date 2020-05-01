@@ -9,6 +9,6 @@ import org.springframework.samples.petclinic.model.Trainer;
 
 public interface CarerRepository extends CrudRepository<Carer, Integer> {
 
-	Collection<Carer> findByLastName(@Param("lastName") String lastName);	
-	
+	Collection<Carer> findByLastName(@Param("lastName") String lastName);
+		
 }
