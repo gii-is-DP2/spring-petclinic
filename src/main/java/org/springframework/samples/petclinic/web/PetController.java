@@ -35,9 +35,13 @@ import java.util.logging.Logger;
 import org.springframework.beans.BeanUtils;
 import org.springframework.dao.DataAccessException;
 import org.springframework.samples.petclinic.model.Visit;
+import org.springframework.samples.petclinic.service.AuthorizationService;
 import org.springframework.samples.petclinic.service.OwnerService;
 import org.springframework.samples.petclinic.service.PetService;
 import org.springframework.samples.petclinic.service.exceptions.DuplicatedPetNameException;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
  * @author Juergen Hoeller
@@ -52,11 +56,13 @@ public class PetController {
 
 	private final PetService petService;
     private final OwnerService ownerService;
+    private final AuthorizationService authorizationService;
 
 	@Autowired
-	public PetController(PetService petService, OwnerService ownerService) {
+	public PetController(PetService petService, OwnerService ownerService, AuthorizationService authorizationService) {
 		this.petService = petService;
-                this.ownerService = ownerService;
+        this.ownerService = ownerService;
+        this.authorizationService = authorizationService;
 	}
 
 	@ModelAttribute("types")
@@ -116,7 +122,9 @@ public class PetController {
 	}
 
 	@GetMapping(value = "/pets/{petId}/edit")
-	public String initUpdateForm(@PathVariable("petId") int petId, ModelMap model) {
+	public String initUpdateForm(@PathVariable("petId") int petId, @PathVariable("ownerId") int ownerId, ModelMap model) {
+		this.authorizeUserAction(ownerId);
+		
 		Pet pet = this.petService.findPetById(petId);
 		model.put("pet", pet);
 		return VIEWS_PETS_CREATE_OR_UPDATE_FORM;
@@ -133,8 +141,10 @@ public class PetController {
      * @return
      */
         @PostMapping(value = "/pets/{petId}/edit")
-	public String processUpdateForm(@Valid Pet pet, BindingResult result, Owner owner,@PathVariable("petId") int petId, ModelMap model) {
-		if (result.hasErrors()) {
+	public String processUpdateForm(@Valid Pet pet, BindingResult result, Owner owner,@PathVariable("petId") int petId, @PathVariable("ownerId") int ownerId, ModelMap model) {
+        this.authorizeUserAction(ownerId);
+        	
+        if (result.hasErrors()) {
 			model.put("pet", pet);
 			return VIEWS_PETS_CREATE_OR_UPDATE_FORM;
 		}
@@ -150,5 +160,12 @@ public class PetController {
 			return "redirect:/owners/{ownerId}";
 		}
 	}
+        
+        private void authorizeUserAction(int ownerId) {
+    		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    		if (!this.authorizationService.canUserModifyHisData(auth.getName(), ownerId)) {
+    			throw new AccessDeniedException("User canot modify data.");
+    		}
+    	}
 
 }

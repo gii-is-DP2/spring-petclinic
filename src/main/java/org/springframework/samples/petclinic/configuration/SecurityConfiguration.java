@@ -31,7 +31,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	DataSource dataSource;
 	
 	@Override
-	protected void configure(HttpSecurity http) throws Exception {
+	protected void configure(HttpSecurity http) throws Exception {	
 		http.authorizeRequests()
 				.antMatchers("/resources/**","/webjars/**","/h2-console/**").permitAll()
 				.antMatchers(HttpMethod.GET, "/","/oups").permitAll()
@@ -49,7 +49,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 				.antMatchers("/trainings/**").hasAnyAuthority("owner", "admin")	
 				.antMatchers("/reviews").hasAnyAuthority("owner", "admin")	
 				.antMatchers("/reviews/new").hasAnyAuthority("owner")
-				.antMatchers("/reviews/**/delete").hasAnyAuthority("admin")				
+				.antMatchers("/reviews/**/delete").hasAnyAuthority("admin")
+				.antMatchers("/profile").permitAll()
 				.anyRequest().denyAll()
 				.and()
 				 	.formLogin()
@@ -57,7 +58,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 				 	.failureUrl("/login-error")
 				.and()
 					.logout()
-						.logoutSuccessUrl("/"); 
+						.logoutSuccessUrl("/");
                 // Configuración para que funcione la consola de administración 
                 // de la BD H2 (deshabilitar las cabeceras de protección contra
                 // ataques de tipo csrf y habilitar los framesets si su contenido
