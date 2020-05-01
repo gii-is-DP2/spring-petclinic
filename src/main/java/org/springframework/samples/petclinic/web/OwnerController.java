@@ -157,9 +157,11 @@ public class OwnerController {
 	
 	@IsOwner
 	@GetMapping("/profile")
-	public String showProfile() {
+	public ModelAndView showProfile() {
 		String username = SecurityContextHolder.getContext().getAuthentication().getName();
 		Owner owner = this.ownerService.findOwnerByUsername(username);
-		return "redirect:/owners/" + owner.getId();
+		ModelAndView mav = new ModelAndView("owners/profile");
+		mav.addObject(owner);
+		return mav;
 	}
 }
