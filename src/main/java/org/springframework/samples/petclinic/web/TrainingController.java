@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 import javax.validation.Valid;
@@ -122,14 +123,13 @@ public class TrainingController {
 	public String initUpdateTrainingForm(@PathVariable("trainingId") int trainingId, Model model) {
 		
 		Training training = this.trainingService.findTrainingById(trainingId);
-		System.out.println(training.getPet().getId());
 		this.authorizeUserAction(training.getPet().getId());
 		
 		TrainingDTO trainingDTO = this.convertToDto(training);
 		
 		model.addAttribute("boton", false);
 		model.addAttribute(trainingDTO);
-		//meter que el atributo "new" sea false, en la variable training
+		
 		return VIEWS_TRAINING_CREATE_OR_UPDATE_FORM;
 	}
 
@@ -139,6 +139,8 @@ public class TrainingController {
 			return VIEWS_TRAINING_CREATE_OR_UPDATE_FORM;
 		}
 		else {
+			Training oldTraining = this.trainingService.findTrainingById(trainingId);
+
 			Training training;
 			
 			try {
@@ -204,19 +206,18 @@ public class TrainingController {
 	private Training convertToEntity(TrainingDTO dto) throws MappingException {
 		Training training = new Training();
 		
-		try {
-			String owner = SecurityContextHolder.getContext().getAuthentication().getName();
-			Pet pet = this.petService.findPetsByName(dto.getPetName(), owner);
-			training.setPet(pet);
-		} catch(DataAccessException e) {
-			throw new MappingException("pet", "Not existance", "Pet does not exist");
+		String owner = SecurityContextHolder.getContext().getAuthentication().getName();
+		Pet pet = this.petService.findPetsByName(dto.getPetName(), owner);
+		if (pet == null) {
+			throw new MappingException("petName", "Not existance", "Pet does not exist");
 		}
+		training.setPet(pet);
 		
 		try {
 			Trainer trainer = this.trainerService.findTrainerById(dto.getTrainerId());
 			training.setTrainer(trainer);
-		} catch(DataAccessException e) {
-			throw new MappingException("trainer", "Not existance", "Trainer does not exist");
+		} catch(NoSuchElementException e) {
+			throw new MappingException("trainerId", "Not existance", "Trainer does not exist");
 		}
 
 		training.setGround(dto.getGround());

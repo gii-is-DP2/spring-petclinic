@@ -34,6 +34,7 @@ public class OwnerValidatorTests {
 		user.setPassword("fede");
 		user.setEnabled(true);
 		this.owner.setUser(user);
+		this.owner.setId(1);
 		given(this.userService.exists(username)).willReturn(true);
 		Errors errors = new BeanPropertyBindingResult(this.owner, "invalidAddress");
 		
@@ -50,6 +51,7 @@ public class OwnerValidatorTests {
 		user.setPassword("fede");
 		user.setEnabled(true);
 		this.owner.setUser(user);
+		this.owner.setId(1);
 		given(this.userService.exists(username)).willReturn(true);
 		Errors errors = new BeanPropertyBindingResult(this.owner, "invalidAddress");
 		

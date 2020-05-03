@@ -9,6 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.dao.DataAccessException;
 import org.springframework.samples.petclinic.model.User;
 import org.springframework.samples.petclinic.repository.UserRepository;
 import org.springframework.stereotype.Service;
@@ -19,42 +20,82 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserServiceTests {
 
 	@Autowired
-	private UserService realUserService;
 	private UserService userService;
-	private UserRepository userRepository;
 	
-	@BeforeEach
-	public void initMocks() {
-		this.userRepository = mock(UserRepository.class);
-		this.userService = new UserService(this.userRepository);
+	private User createUser(String username) {
+		User user = new User();
+		user.setUsername(username);
+		user.setPassword("pass");
+		user.setEnabled(true);
+		
+		return user;
 	}
 	
 	@Test
 	public void shouldExistUser() {
 		String username = "fedesartu";
-		when(this.userRepository.existsById(username)).thenReturn(true);
+		User user = this.createUser(username);
+		this.userService.saveUser(user);
+		
 		
 		Boolean exists = this.userService.exists(username);
 		
-		verify(this.userRepository, times(1)).existsById(username);
 		assertThat(exists).isTrue();
+	}
+	
+	@Test
+	public void shouldNotExistUser() {
+		Boolean exists = this.userService.exists("fedes");
+		
+		assertThat(exists).isFalse();
 	}
 	
 	@Test
 	@Transactional
 	public void shouldInsertUser() {
 		String username = "fedesartu";
-		Boolean existsBefore = this.realUserService.exists(username);
+		Boolean existsBefore = this.userService.exists(username);
 		
-		User user = new User();
-		user.setUsername(username);
-		user.setPassword("pass");
-		user.setEnabled(true);
+		User user = this.createUser(username);
 		
-		this.realUserService.saveUser(user);
+		this.userService.saveUser(user);
 		
-		Boolean existsAfter = this.realUserService.exists(username);
+		Boolean existsAfter = this.userService.exists(username);
 		assertThat(existsBefore).isFalse();
 		assertThat(existsAfter).isTrue();
+	}
+	
+	@Test
+	@Transactional
+	public void shouldNotInsertUser() {
+		User user = this.createUser("fedes");
+		user.setUsername(null);
+		
+		Assertions.assertThrows(DataAccessException.class, () -> {
+			this.userService.saveUser(user);
+		});
+	}
+	
+	@Test
+	@Transactional
+	public void shouldFindByUsername() {
+		String username = "fedesartu";
+		
+		User user = this.createUser(username);
+		
+		this.userService.saveUser(user);
+		
+		User userFound = this.userService.findByUsername(username);
+		assertThat(userFound).isNotNull();
+		assertThat(userFound.getUsername()).isEqualTo(username);
+	}
+	
+	@Test
+	@Transactional
+	public void shouldNotFindByUsername() {
+		String username = "fedesartu";
+		
+		User userFound = this.userService.findByUsername(username);
+		assertThat(userFound).isNull();
 	}
 }

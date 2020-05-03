@@ -49,4 +49,8 @@ public class UserService {
 	public boolean exists(String username) throws DataAccessException {
 		return userRepository.existsById(username);
 	}
+	
+	public User findByUsername(String username) throws DataAccessException {
+		return userRepository.findByUsername(username);
+	}
 }

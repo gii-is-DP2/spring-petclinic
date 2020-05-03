@@ -203,8 +203,6 @@ public class DaycareController {
 		return mav;
 	}
 	
-	
-	
 	private Daycare convertToEntity(DaycareDTO dto) throws MappingException {
 		Daycare daycare = new Daycare();
 		

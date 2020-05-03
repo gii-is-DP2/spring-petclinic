@@ -24,7 +24,7 @@ public class OwnerValidator implements Validator {
 		Owner owner = (Owner) target;
 		User user = (User) owner.getUser();
 		
-		if (user != null) {
+		if (user != null && owner.getId() != null) {
 			String username = owner.getUser().getUsername();
 			
 			if (this.userService.exists(username)) {
