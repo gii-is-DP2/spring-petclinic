@@ -7,8 +7,6 @@ import java.util.Collection;
 import java.util.NoSuchElementException;
 
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -24,9 +22,9 @@ import org.springframework.transaction.annotation.Transactional;
 @DataJpaTest(includeFilters = @ComponentScan.Filter(Service.class))
 public class TrainingServiceTest {
 	
-	private static final int TRAINING_ID = 1;
-	private static final int TRAINER_ID = 1;
-	private static final int PET_ID = 1;
+	private final int TRAINING_ID = 1;
+	private final int TRAINER_ID = 1;
+	private final int PET_ID = 1;
 	
 	private Training training;
 	private User user;
