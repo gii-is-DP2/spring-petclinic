@@ -1,15 +1,15 @@
 package org.springframework.samples.petclinic.service;
 
 import java.time.LocalDate;
-import java.util.Optional;
+import java.util.Collection;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.samples.petclinic.model.Hairdressing;
 import org.springframework.samples.petclinic.model.Pet;
 import org.springframework.samples.petclinic.repository.HairdressingRepository;
-import org.springframework.samples.petclinic.repository.OwnerRepository;
 import org.springframework.samples.petclinic.repository.PetRepository;
+import org.springframework.samples.petclinic.service.exceptions.BusinessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,7 +40,7 @@ public class HairdressingService {
 	}
 	
 	@Transactional
-	public void save(Hairdressing hairdressing) {
+	public void save(Hairdressing hairdressing) throws DataAccessException, BusinessException {
 		hairdressingRepo.save(hairdressing);
 	}
 	
@@ -54,6 +54,11 @@ public class HairdressingService {
 
 	public int countHairdressingsByDateAndTime(LocalDate date, String time) {
 		return hairdressingRepo.countHairdressingsByDateAndTime(date, time);
+	}
+	
+	@Transactional(readOnly = true)
+	public Collection<Hairdressing> findHairdressingsByUser(String user) throws DataAccessException {
+		return (Collection<Hairdressing>) this.hairdressingRepo.findByPetOwnerUserUsername(user);
 	}
 
 	

@@ -1,5 +1,8 @@
 package org.springframework.samples.petclinic.web;
 
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+
 /*
  * Copyright 2012-2019 the original author or authors.
  *
@@ -36,10 +39,14 @@ import org.springframework.samples.petclinic.configuration.SecurityConfiguration
 import org.springframework.samples.petclinic.model.Owner;
 import org.springframework.samples.petclinic.model.Pet;
 import org.springframework.samples.petclinic.model.PetType;
+import org.springframework.samples.petclinic.service.AuthorizationService;
 import org.springframework.samples.petclinic.service.OwnerService;
 import org.springframework.samples.petclinic.service.PetService;
 import org.springframework.samples.petclinic.service.VetService;
 import org.springframework.security.config.annotation.web.WebSecurityConfigurer;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -61,12 +68,20 @@ class PetControllerTests {
 	@Autowired
 	private PetController petController;
 
-
 	@MockBean
 	private PetService petService;
         
-        @MockBean
+	@MockBean
 	private OwnerService ownerService;
+        
+    @MockBean
+    private AuthorizationService authorizationService;
+    	
+    @MockBean
+    private Authentication auth;
+    	
+    @MockBean
+    private SecurityContext securityContext;
 
 	@Autowired
 	private MockMvc mockMvc;
@@ -79,6 +94,13 @@ class PetControllerTests {
 		given(this.petService.findPetTypes()).willReturn(Lists.newArrayList(cat));
 		given(this.ownerService.findOwnerById(TEST_OWNER_ID)).willReturn(new Owner());
 		given(this.petService.findPetById(TEST_PET_ID)).willReturn(new Pet());
+		
+		this.loadAuthContext();
+	}
+	
+	private void loadAuthContext() {
+		given(securityContext.getAuthentication()).willReturn(auth);
+		SecurityContextHolder.setContext(securityContext);
 	}
 
 	@WithMockUser(value = "spring")
@@ -103,6 +125,8 @@ class PetControllerTests {
 	@WithMockUser(value = "spring")
     @Test
 	void testProcessCreationFormHasErrors() throws Exception {
+		given(this.authorizationService.canUserModifyHisData(anyString(), eq(this.TEST_PET_ID))).willReturn(true);
+		
 		mockMvc.perform(post("/owners/{ownerId}/pets/{petId}/edit", TEST_OWNER_ID, TEST_PET_ID)
 							.with(csrf())
 							.param("name", "Betty")
@@ -116,14 +140,19 @@ class PetControllerTests {
     @WithMockUser(value = "spring")
 	@Test
 	void testInitUpdateForm() throws Exception {
+		given(this.authorizationService.canUserModifyHisData(anyString(), eq(this.TEST_PET_ID))).willReturn(true);
+    	
 		mockMvc.perform(get("/owners/{ownerId}/pets/{petId}/edit", TEST_OWNER_ID, TEST_PET_ID))
-				.andExpect(status().isOk()).andExpect(model().attributeExists("pet"))
+				.andExpect(status().isOk())
+				.andExpect(model().attributeExists("pet"))
 				.andExpect(view().name("pets/createOrUpdatePetForm"));
 	}
     
     @WithMockUser(value = "spring")
 	@Test
 	void testProcessUpdateFormSuccess() throws Exception {
+		given(this.authorizationService.canUserModifyHisData(anyString(), eq(this.TEST_PET_ID))).willReturn(true);
+    	
 		mockMvc.perform(post("/owners/{ownerId}/pets/{petId}/edit", TEST_OWNER_ID, TEST_PET_ID)
 							.with(csrf())
 							.param("name", "Betty")
@@ -136,6 +165,8 @@ class PetControllerTests {
     @WithMockUser(value = "spring")
 	@Test
 	void testProcessUpdateFormHasErrors() throws Exception {
+		given(this.authorizationService.canUserModifyHisData(anyString(), eq(this.TEST_PET_ID))).willReturn(true);
+    	
 		mockMvc.perform(post("/owners/{ownerId}/pets/{petId}/edit", TEST_OWNER_ID, TEST_PET_ID)
 							.with(csrf())
 							.param("name", "Betty")

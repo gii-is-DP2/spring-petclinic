@@ -9,6 +9,7 @@
     <h2>Trainings</h2>
     
 	<a class="btn btn-default" href='<spring:url value="/trainings/new" htmlEscape="true"/>'>Add training</a>
+	<br><br>
 
     <table id="trainingsTable" class="table table-striped">
         <thead>
@@ -43,7 +44,10 @@
                     <c:out value="${training.pet.name}"/>
                 </td>
                 <td>
-                    <c:out value="${training.trainer.firstName}  ${training.trainer.lastName}"/>
+                    <spring:url value="/trainers/{trainerId}" var="trainerUrl">
+                        <spring:param name="trainerId" value="${training.trainer.id}"/>
+                    </spring:url>
+                    <a href="${fn:escapeXml(trainerUrl)}"><c:out value="${training.trainer.firstName} ${training.trainer.lastName}"/></a>
                 </td>
             </tr>
         </c:forEach>

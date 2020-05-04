@@ -12,8 +12,8 @@ import javax.validation.constraints.NotNull;
 public class Employee extends Person {
 
 	@Column(name = "salary")
-	@Min(value = 0, message = "Salary must be a positive number")
 	@NotNull(message = "Must not be empty")
+	@Min(value = 0, message = "Salary must be a positive number")
 	private double salary;
 
 	@Column(name = "dni")

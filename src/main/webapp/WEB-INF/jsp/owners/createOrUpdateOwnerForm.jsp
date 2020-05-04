@@ -17,7 +17,14 @@
             <petclinic:inputField label="Address" name="address"/>
             <petclinic:inputField label="City" name="city"/>
             <petclinic:inputField label="Telephone" name="telephone"/>
-            <petclinic:inputField label="Username" name="user.username"/>
+            <c:choose>
+				<c:when test="${owner['new']}">
+                	<petclinic:inputField label="Username" name="user.username" />
+             	</c:when>
+                <c:otherwise>
+                	<petclinic:inputField label="Username" name="user.username" readonly="true" />
+                </c:otherwise>
+           	</c:choose>
             <petclinic:inputField label="Password" name="user.password"/>
         </div>
         <div class="form-group">
