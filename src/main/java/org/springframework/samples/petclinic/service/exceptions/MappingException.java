@@ -5,6 +5,7 @@ import lombok.Data;
 @Data
 public class MappingException extends Exception {
 
+	
 	private String entity;
 	private String error;
 	

@@ -29,6 +29,7 @@ import org.springframework.samples.petclinic.service.UserService;
 import org.springframework.samples.petclinic.service.exceptions.BusinessException;
 import org.springframework.samples.petclinic.service.exceptions.MappingException;
 import org.springframework.samples.petclinic.util.ReviewDTO;
+import org.springframework.samples.petclinic.web.annotations.IsAuthenticated;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -53,6 +54,8 @@ import javax.validation.Valid;
  * @author Ken Krebs
  * @author Arjen Poutsma
  */
+
+@IsAuthenticated
 @Controller
 public class ReviewController {
 
@@ -102,8 +105,7 @@ public class ReviewController {
 			try {
 				review = this.convertToEntity(reviewDTO);
 			} catch (MappingException ex) {
-				result.rejectValue(ex.getEntity(), ex.getError(), ex.getMessage());
-	            return VIEWS_REVIEW_CREATE_FORM;
+	            return "errors/elementNotFound";
 			}
 			try {
 				this.reviewService.saveReview(review);
@@ -122,7 +124,7 @@ public class ReviewController {
 			User user = this.userService.findByUsername(username);
 			review.setUser(user);
 		} catch(DataAccessException e) {
-			throw new MappingException("user", "Not existance", "User does not exist");
+			throw new MappingException("reviewDTO", "Not existance", "User does not exist");
 		}
 		review.setRating(dto.getRating());
 		review.setComments(dto.getComments());
