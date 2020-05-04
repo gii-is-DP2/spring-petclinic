@@ -195,7 +195,7 @@ public class DaycareControllerTests {
     @Test
 	void testShowOwnerDaycares() throws Exception {
 		given(this.daycareService.findDaycaresByUser("spring")).willReturn(Lists.newArrayList(this.daycare));
-		mockMvc.perform(get("/trainings/owner"))
+		mockMvc.perform(get("/daycares/owner"))
 				.andExpect(status().isOk())
 				.andExpect(model().attributeExists("daycares")).andExpect(view().name("daycares/daycaresList"));
 	}
