@@ -16,9 +16,11 @@ import org.springframework.samples.petclinic.model.Carer;
 import org.springframework.samples.petclinic.model.Daycare;
 import org.springframework.samples.petclinic.model.Pet;
 import org.springframework.samples.petclinic.model.Trainer;
+import org.springframework.samples.petclinic.service.AuthorizationService;
 import org.springframework.samples.petclinic.service.CarerService;
 import org.springframework.samples.petclinic.service.exceptions.MappingException;
 import org.springframework.samples.petclinic.web.annotations.IsAdmin;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -33,6 +35,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.google.j2objc.annotations.AutoreleasePool;
+
 @IsAdmin
 @Controller
 public class CarerController {
@@ -41,9 +45,13 @@ public class CarerController {
 
 	private final CarerService carerService;
 	
+	private final AuthorizationService authorizationService;
+
+	
 	@Autowired
-	public CarerController(CarerService carerService) {
+	public CarerController(CarerService carerService , final AuthorizationService authorizationService) {
 		this.carerService = carerService;
+		this.authorizationService = authorizationService;
 	}
 	
 	@ModelAttribute("isHairdresser")
@@ -80,6 +88,7 @@ public class CarerController {
 	
 	@GetMapping(value = "/carers/{carerId}/edit")
 	public String initUpdateCarerForm(@PathVariable("carerId") int carerId, Model model) {
+		this.authorizeUserAction();
 		Carer carer = this.carerService.findCarerById(carerId);
 		model.addAttribute("carer", carer);
 		return VIEWS_CARER_CREATE_OR_UPDATE_FORM;
@@ -132,17 +141,28 @@ public class CarerController {
 	
 	@GetMapping(value= "/carers/{carerId}/delete")
 	public String deleteCarer(@PathVariable("carerId") final int carerId, final ModelMap model) {
+		
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		if (!auth.getAuthorities().stream().map(x -> x.getAuthority()).anyMatch(x -> x.equals("admin"))) {
+			throw new AccessDeniedException("User cannot modify data.");
+		} 
+		
 		Carer carer = this.carerService.findCarerById(carerId);
 		
 		this.carerService.delete(carerId);
 	
 		
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-//		if (auth.getAuthorities().stream().map(x -> x.getAuthority()).anyMatch(x -> x.equals("admin"))) {
-//			return "redirect:/daycares";
-//		}
 		
 		return "redirect:/carers";
+		
+	}
+	
+	
+	private void authorizeUserAction() {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		if (!this.authorizationService.canUserModifyEmployee(auth.getName() )) {
+			throw new AccessDeniedException("User cannot modify data.");
+		}
 	}
 	
 	
