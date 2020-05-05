@@ -89,7 +89,7 @@ public class ReviewController {
 	}
 
 	@GetMapping(value = "/reviews/new")
-	public String initTrainingCreationForm(Map<String, Object> model) {
+	public String initReviewCreationForm(Map<String, Object> model) {
 		ReviewDTO dto = new ReviewDTO();
 		model.put("reviewDTO", dto);
 		return VIEWS_REVIEW_CREATE_FORM;
