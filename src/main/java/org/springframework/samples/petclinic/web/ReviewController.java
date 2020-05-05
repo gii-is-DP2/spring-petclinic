@@ -61,8 +61,9 @@ public class ReviewController {
 
 	private final ReviewService reviewService;
 	private final UserService userService;
-	
+
 	private static final String VIEWS_REVIEW_CREATE_FORM = "reviews/createReviewForm";
+	private static final String VIEWS_REVIEW_LIST = "reviews/reviewList";
 
 	@Autowired
 	public ReviewController(ReviewService reviewService, UserService userService) {
@@ -85,7 +86,7 @@ public class ReviewController {
 	public String showReviewList(Map<String, Object> model) {
 		Collection<Review> reviews = this.reviewService.findReviews();
 		model.put("reviews", reviews);
-		return "reviews/reviewList";
+		return VIEWS_REVIEW_LIST;
 	}
 
 	@GetMapping(value = "/reviews/new")
@@ -117,6 +118,13 @@ public class ReviewController {
 		}
 	}
 	
+	@GetMapping(value = "/reviews/{reviewId}/delete")
+	public String processDeleteReviewForm(@PathVariable("reviewId") int reviewId) {
+		Review review = this.reviewService.findReviewById(reviewId);
+		this.reviewService.deleteReview(review);
+		return "redirect:/reviews";
+	}
+	
 	private Review convertToEntity(ReviewDTO dto) throws MappingException {
 		Review review = new Review();
 		try {
@@ -132,13 +140,6 @@ public class ReviewController {
 		review.setDate(LocalDate.now());
 		
 		return review;
-	}
-	
-	@GetMapping(value = "/reviews/{reviewId}/delete")
-	public String processDeleteReviewForm(@PathVariable("reviewId") int reviewId) {
-		Review review = this.reviewService.findReviewById(reviewId);
-		this.reviewService.deleteReview(review);
-		return "redirect:/reviews";
 	}
 
 }
