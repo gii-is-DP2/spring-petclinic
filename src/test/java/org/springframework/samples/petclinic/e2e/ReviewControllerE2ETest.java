@@ -7,6 +7,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrlPattern;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.forwardedUrl;
 
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.BeforeEach;
@@ -54,15 +57,14 @@ public class ReviewControllerE2ETest {
     @Test
 	void testInitCreationFormAdmin() throws Exception {
 		mockMvc.perform(get("/reviews/new"))
-		.andExpect(status().isForbidden())
-		.andExpect(view().name("reviews/createReviewForm"));
+		.andExpect(status().isForbidden());
 	}
 
     @Test
 	void testNotLoggedIn() throws Exception {
 		mockMvc.perform(get("/reviews/new"))
 		.andExpect(status().is3xxRedirection())
-		.andExpect(view().name("reviews/createReviewForm"));
+		.andExpect(redirectedUrlPattern("**/login"));
 	}
 	
 }
