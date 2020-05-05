@@ -66,24 +66,19 @@ public class ReviewServiceTest {
 	@Transactional
 	void shouldNotFindReviewById() {
 		Assertions.assertThrows(NoSuchElementException.class, () -> {
-			reviewService.findReviewById(this.REVIEW_ID);
+			reviewService.findReviewById(99);
 		});
 	}
 
 	@Test
 	@Transactional
 	void shouldFindReviews() throws DataAccessException, BusinessException {
+		Collection<Review> foundReviews = reviewService.findReviews();
+		int previousSize = foundReviews.size();
 		this.addReview();
-		Collection<Review> foundReviews = reviewService.findReviews();
-		assertThat(foundReviews.size()).isEqualTo(1);
+		foundReviews = reviewService.findReviews();
+		assertThat(foundReviews.size()).isEqualTo(previousSize + 1);
 		assertThat(foundReviews).contains(review);
-	}
-
-	@Test
-	@Transactional
-	void shouldNotFindReviews() throws DataAccessException, BusinessException {
-		Collection<Review> foundReviews = reviewService.findReviews();
-		assertThat(foundReviews.size()).isEqualTo(0);
 	}
 	
 	@Test

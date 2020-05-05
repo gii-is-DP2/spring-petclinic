@@ -31,4 +31,9 @@ public class Review extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "username")
 	private User user;
+    
+    @Override
+    public String toString() {
+    	return comments;
+    }
 }
