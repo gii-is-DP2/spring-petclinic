@@ -369,8 +369,6 @@ public class TrainingControllerTests {
 			.andExpect(view().name("trainings/createOrUpdateTrainingForm"));
 	}
     
-    
-    
     @WithMockUser(value = "spring")
 	@Test
 	void testProcessUpdateFormInvalidTraining() throws Exception {
@@ -516,7 +514,7 @@ public class TrainingControllerTests {
 	
     @WithMockUser(value = "spring", authorities = "admin")
 	@Test
-	void testProcessDeleteInvalid() throws Exception {
+	void testProcessDeleteFormInvalid() throws Exception {
 		given(this.trainingService.findTrainingById(TEST_TRAINING_ID)).willThrow(NoSuchElementException.class);
     	given(this.authorizationService.canUserModifyBooking(anyString(), eq(this.TEST_PET_ID))).willReturn(true);
     	
