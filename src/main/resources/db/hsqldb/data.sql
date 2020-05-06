@@ -106,3 +106,5 @@ INSERT INTO review VALUES (2, 'El mejor servicio que recibí en mi vida', '2020-
 INSERT INTO review VALUES (3, 'Mi iguana nunca se vio tan bonita', '2019-07-13', 5, 2, 'david');
 INSERT INTO review VALUES (4, 'A fido le encantaron los ejercicios', '2020-03-13', 5, 0, 'david');
 INSERT INTO review VALUES (5, 'Ni fu ni fa', '2020-04-13', 3, 1, 'carlos');
+
+INSERT INTO training VALUES (1, '2021-03-03', 'Descripcion', 2, 1, 14, 1);
