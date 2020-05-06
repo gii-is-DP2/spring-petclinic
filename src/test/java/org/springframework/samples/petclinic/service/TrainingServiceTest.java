@@ -22,8 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 @DataJpaTest(includeFilters = @ComponentScan.Filter(Service.class))
 public class TrainingServiceTest {
 	
-	private final int TRAINING_ID = 1;
-	private final int TRAINER_ID = 1;
+	private final int TRAINER_ID = 2;
 	private final int PET_ID = 1;
 	
 	private Training training;
@@ -75,16 +74,17 @@ public class TrainingServiceTest {
 	@Transactional
 	void shouldNotFindTrainingById() {
 		Assertions.assertThrows(NoSuchElementException.class, () -> {
-			this.trainingService.findTrainingById(this.TRAINING_ID);
+			this.trainingService.findTrainingById(99);
 		});
 	}
 	
 	@Test
 	@Transactional
 	void shouldFindTrainings() throws DataAccessException, BusinessException {
+		int previousSize = this.trainingService.findTrainings().size();
 		this.addTraining(LocalDate.now().plusDays(5));
 		Collection<Training> foundTrainings = this.trainingService.findTrainings();
-		assertThat(foundTrainings.size()).isEqualTo(1);
+		assertThat(foundTrainings.size()).isEqualTo(previousSize + 1);
 	}
 	
 	@Test
@@ -99,7 +99,7 @@ public class TrainingServiceTest {
 	@Transactional
 	void shouldNotFindTrainingsByUser() throws DataAccessException, BusinessException {
 		this.addTraining(LocalDate.now().plusDays(5));
-		Collection<Training> foundTrainings = this.trainingService.findTrainingsByUser("fede");
+		Collection<Training> foundTrainings = this.trainingService.findTrainingsByUser("betty");
 		assertThat(foundTrainings.size()).isEqualTo(0);
 	}
 	
@@ -170,7 +170,7 @@ public class TrainingServiceTest {
 	@Test
 	public void shouldNotDeleteInvalidTrainingById() {
 		Assertions.assertThrows(NoSuchElementException.class, () -> {
-			this.trainingService.delete(this.TRAINING_ID);
+			this.trainingService.delete(99);
 		});
 	}
 	

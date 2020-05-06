@@ -436,6 +436,7 @@ public class TrainingControllerTests {
 	@Test
 	void testShowTraining() throws Exception {
 		given(this.trainingService.findTrainingById(TEST_TRAINING_ID)).willReturn(this.training);
+		given(this.authorizationService.canUserModifyBooking(anyString(), eq(this.TEST_PET_ID))).willReturn(true);
 		
 		mockMvc.perform(get("/trainings/{trainingId}", this.TEST_TRAINING_ID))
 			.andExpect(status().isOk())
