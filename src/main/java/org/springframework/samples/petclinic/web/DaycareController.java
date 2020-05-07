@@ -151,7 +151,7 @@ public class DaycareController {
 			return "daycares/createOrUpdateDaycareForm";
 		}
 		else {
-//            daycareService.delete(daycareId);
+            daycareService.delete(daycareId);
             
 			Daycare daycare;
 
