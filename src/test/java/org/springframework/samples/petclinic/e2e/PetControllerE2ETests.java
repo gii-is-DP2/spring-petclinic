@@ -1,32 +1,17 @@
 package org.springframework.samples.petclinic.e2e;
 
-import static org.hamcrest.Matchers.hasProperty;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.iterableWithSize;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrlPattern;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
-import java.util.NoSuchElementException;
-
-import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.samples.petclinic.model.Specialty;
-import org.springframework.samples.petclinic.model.Trainer;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -40,7 +25,7 @@ public class PetControllerE2ETests {
 
 	public final String TEST_OWNER_USERNAME = "fede"; //Se crea al levantar la BD en memoria con data.sql
 	public final String TEST_ADMIN_USERNAME = "admin"; //Idem
-	public final int TEST_PET_ID = 1; //Idem
+	public final int TEST_PET_ID = 14; //Idem
 	public final int TEST_OWNER_ID = 11; //ID correspondiente a fede en data.sql
 
 	@Autowired
@@ -140,8 +125,16 @@ public class PetControllerE2ETests {
 	
 	@WithMockUser(username = TEST_OWNER_USERNAME, authorities = {"owner"})
 	@Test
-	void testInitUpdateFormUnauthorized() throws Exception {    	
+	void testInitUpdateFormUnauthorizedOwner() throws Exception {    	
 		mockMvc.perform(get("/owners/{ownerId}/pets/{petId}/edit", 1, 1))
+				.andExpect(status().isOk())
+				.andExpect(view().name("errors/accessDenied"));
+	}
+	
+	@WithMockUser(username = TEST_OWNER_USERNAME, authorities = {"owner"})
+	@Test
+	void testInitUpdateFormUnauthorizedPet() throws Exception {    	
+		mockMvc.perform(get("/owners/{ownerId}/pets/{petId}/edit", TEST_OWNER_ID, 1))
 				.andExpect(status().isOk())
 				.andExpect(view().name("errors/accessDenied"));
 	}
@@ -172,8 +165,20 @@ public class PetControllerE2ETests {
 	
 	@WithMockUser(username = TEST_OWNER_USERNAME, authorities = {"owner"})
 	@Test
-	void testProcessUpdateFormSuccessUnauthorized() throws Exception {    	
+	void testProcessUpdateFormUnauthorizedOwner() throws Exception {    	
 		mockMvc.perform(post("/owners/{ownerId}/pets/{petId}/edit", 1, 1)
+							.with(csrf())
+							.param("name", "Betty")
+							.param("type", "hamster")
+							.param("birthDate", "2015/02/12"))
+				.andExpect(status().isOk())
+				.andExpect(view().name("errors/accessDenied"));
+	}
+	
+	@WithMockUser(username = TEST_OWNER_USERNAME, authorities = {"owner"})
+	@Test
+	void testProcessUpdateFormUnauthorizedPet() throws Exception {    	
+		mockMvc.perform(post("/owners/{ownerId}/pets/{petId}/edit", TEST_OWNER_ID, 1)
 							.with(csrf())
 							.param("name", "Betty")
 							.param("type", "hamster")

@@ -114,16 +114,15 @@ public class PetController {
 	}
 	
     @PostMapping(value = "/pets/{petId}/edit")
-	public String processUpdateForm(@Valid Pet pet, BindingResult result, Owner owner,@PathVariable("petId") int petId, @PathVariable("ownerId") int ownerId, ModelMap model) {
-        this.authorizeUserAction(ownerId);
-        	
+	public String processUpdateForm(@PathVariable("ownerId") int ownerId, @PathVariable("petId") int petId, @Valid Pet pet, BindingResult result, ModelMap model) {
         if (result.hasErrors()) {
 			model.put("pet", pet);
 			return VIEWS_PETS_CREATE_OR_UPDATE_FORM;
 		}
 		else {
-            Pet petToUpdate=this.petService.findPetById(petId);
-    		this.authorizeUserActionOnPet(ownerId, pet);
+            Pet petToUpdate = this.petService.findPetById(petId); //La agarra bien
+            this.authorizeUserAction(ownerId);
+    		this.authorizeUserActionOnPet(ownerId, petToUpdate); //Falla aca
 			BeanUtils.copyProperties(pet, petToUpdate, "id","owner","visits","daycares");                                                                                  
                     try {                    
                         this.petService.savePet(petToUpdate);                    
@@ -143,6 +142,8 @@ public class PetController {
 	}
     
     private void authorizeUserActionOnPet(int ownerId, Pet pet) {
-    	if (ownerId != pet.getOwner().getId()) throw new AccessDeniedException("User cannot modify data.");
+    	if (ownerId != pet.getOwner().getId().intValue()) {
+    		throw new AccessDeniedException("User cannot modify data.");
+    	}
     }
 }
