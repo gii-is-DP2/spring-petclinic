@@ -20,6 +20,7 @@ import static org.mockito.ArgumentMatchers.eq;
  */
 
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -43,6 +44,7 @@ import org.springframework.samples.petclinic.service.AuthorizationService;
 import org.springframework.samples.petclinic.service.OwnerService;
 import org.springframework.samples.petclinic.service.PetService;
 import org.springframework.samples.petclinic.service.VetService;
+import org.springframework.samples.petclinic.service.exceptions.DuplicatedPetNameException;
 import org.springframework.security.config.annotation.web.WebSecurityConfigurer;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
@@ -85,15 +87,31 @@ class PetControllerTests {
 
 	@Autowired
 	private MockMvc mockMvc;
+	
+	private Owner testOwner;
+	private Pet testPet;
+	private PetType testPetType;
 
 	@BeforeEach
 	void setup() {
-		PetType cat = new PetType();
-		cat.setId(3);
-		cat.setName("hamster");
-		given(this.petService.findPetTypes()).willReturn(Lists.newArrayList(cat));
-		given(this.ownerService.findOwnerById(TEST_OWNER_ID)).willReturn(new Owner());
-		given(this.petService.findPetById(TEST_PET_ID)).willReturn(new Pet());
+		testPetType = new PetType();
+		testPetType.setId(3);
+		testPetType.setName("cat");
+		Owner testOwner = new Owner();
+		testOwner.setId(TEST_OWNER_ID);
+		testOwner.setFirstName("Carlos");
+		testOwner.setAddress("Calle Arjona 12");
+		testOwner.setCity("Sevilla");
+		testOwner.setLastName("Ramirez");
+		testOwner.setTelephone("634554345");
+		testPet = new Pet();
+		testPet.setId(TEST_PET_ID);
+		testPet.setName("Fido");
+		testPet.setType(testPetType);
+		testPet.setOwner(testOwner);
+		given(this.petService.findPetTypes()).willReturn(Lists.newArrayList(testPetType));
+		given(this.ownerService.findOwnerById(TEST_OWNER_ID)).willReturn(testOwner);
+		given(this.petService.findPetById(TEST_PET_ID)).willReturn(testPet);
 		
 		this.loadAuthContext();
 	}
@@ -118,7 +136,6 @@ class PetControllerTests {
     @Test
 	void testInitCreationFormUnauthorized() throws Exception {
 		given(this.authorizationService.canUserModifyHisData(anyString(), eq(this.TEST_OWNER_ID))).willReturn(false);
-		given(this.ownerService.findOwnerById(this.TEST_OWNER_ID)).willReturn(new Owner());
 		mockMvc.perform(get("/owners/{ownerId}/pets/new", 99))
 				.andExpect(status().isOk())
 				.andExpect(view().name("errors/accessDenied"));
@@ -127,11 +144,11 @@ class PetControllerTests {
 	@WithMockUser(value = "spring")
     @Test
 	void testProcessCreationFormSuccess() throws Exception {
-		given(this.authorizationService.canUserModifyHisData(anyString(), eq(this.TEST_PET_ID))).willReturn(true);
+		given(this.authorizationService.canUserModifyHisData(anyString(), eq(this.TEST_OWNER_ID))).willReturn(true);
 		mockMvc.perform(post("/owners/{ownerId}/pets/new", TEST_OWNER_ID)
 							.with(csrf())
 							.param("name", "Betty")
-							.param("type", "hamster")
+							.param("type", "cat")
 							.param("birthDate", "2015/02/12"))
 				.andExpect(status().is3xxRedirection())
 				.andExpect(view().name("redirect:/owners/{ownerId}"));
@@ -140,7 +157,7 @@ class PetControllerTests {
 	@WithMockUser(value = "spring")
     @Test
 	void testProcessCreationFormHasErrors() throws Exception {
-		given(this.authorizationService.canUserModifyHisData(anyString(), eq(this.TEST_PET_ID))).willReturn(true);
+		given(this.authorizationService.canUserModifyHisData(anyString(), eq(this.TEST_OWNER_ID))).willReturn(true);
 		mockMvc.perform(post("/owners/{ownerId}/pets/new", TEST_OWNER_ID)
 							.with(csrf())
 							.param("name", "Betty"))
@@ -150,10 +167,24 @@ class PetControllerTests {
 				.andExpect(view().name("pets/createOrUpdatePetForm"));
 	}
 
+	@WithMockUser(value = "spring")
+    @Test
+	void testProcessCreationFormDuplicatedName() throws Exception {
+		given(this.authorizationService.canUserModifyHisData(anyString(), eq(this.TEST_OWNER_ID))).willReturn(true);
+		doThrow(DuplicatedPetNameException.class).when(petService).savePet(any());
+		mockMvc.perform(post("/owners/{ownerId}/pets/new", TEST_OWNER_ID)
+							.with(csrf())
+							.param("name", "Betty")
+							.param("type", "cat")
+							.param("birthDate", "2015/12/12"))
+				.andExpect(status().isOk())
+				.andExpect(view().name("pets/createOrUpdatePetForm"));
+	}
+
     @WithMockUser(value = "spring")
 	@Test
 	void testInitUpdateForm() throws Exception {
-		given(this.authorizationService.canUserModifyHisData(anyString(), eq(this.TEST_PET_ID))).willReturn(true);
+		given(this.authorizationService.canUserModifyHisData(anyString(), eq(this.TEST_OWNER_ID))).willReturn(true);
     	
 		mockMvc.perform(get("/owners/{ownerId}/pets/{petId}/edit", TEST_OWNER_ID, TEST_PET_ID))
 				.andExpect(status().isOk())
@@ -164,12 +195,11 @@ class PetControllerTests {
     @WithMockUser(value = "spring")
 	@Test
 	void testProcessUpdateFormSuccess() throws Exception {
-		given(this.authorizationService.canUserModifyHisData(anyString(), eq(this.TEST_PET_ID))).willReturn(true);
-    	
+		given(this.authorizationService.canUserModifyHisData(anyString(), eq(this.TEST_OWNER_ID))).willReturn(true);
 		mockMvc.perform(post("/owners/{ownerId}/pets/{petId}/edit", TEST_OWNER_ID, TEST_PET_ID)
 							.with(csrf())
 							.param("name", "Betty")
-							.param("type", "hamster")
+							.param("type", "cat")
 							.param("birthDate", "2015/02/12"))
 				.andExpect(status().is3xxRedirection())
 				.andExpect(view().name("redirect:/owners/{ownerId}"));
@@ -178,14 +208,27 @@ class PetControllerTests {
     @WithMockUser(value = "spring")
 	@Test
 	void testProcessUpdateFormHasErrors() throws Exception {
-		given(this.authorizationService.canUserModifyHisData(anyString(), eq(this.TEST_PET_ID))).willReturn(true);
+		given(this.authorizationService.canUserModifyHisData(anyString(), eq(this.TEST_OWNER_ID))).willReturn(true);
     	
 		mockMvc.perform(post("/owners/{ownerId}/pets/{petId}/edit", TEST_OWNER_ID, TEST_PET_ID)
 							.with(csrf())
 							.param("name", "Betty")
 							.param("birthDate", "2015/02/12"))
-				.andExpect(model().attributeHasNoErrors("owner"))
 				.andExpect(model().attributeHasErrors("pet")).andExpect(status().isOk())
+				.andExpect(view().name("pets/createOrUpdatePetForm"));
+	}
+    
+    @WithMockUser(value = "spring")
+	@Test
+	void testProcessUpdateFormDuplicatedName() throws Exception {
+		given(this.authorizationService.canUserModifyHisData(anyString(), eq(this.TEST_OWNER_ID))).willReturn(true);
+		doThrow(DuplicatedPetNameException.class).when(petService).savePet(testPet);
+		mockMvc.perform(post("/owners/{ownerId}/pets/{petId}/edit", TEST_OWNER_ID, TEST_PET_ID)
+							.with(csrf())
+							.param("name", "Betty")
+							.param("type", "cat")
+							.param("birthDate", "2015/02/12"))
+				.andExpect(status().isOk())
 				.andExpect(view().name("pets/createOrUpdatePetForm"));
 	}
 

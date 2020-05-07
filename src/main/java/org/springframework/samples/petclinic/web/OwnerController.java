@@ -173,7 +173,7 @@ public class OwnerController {
 	private void authorizeUserAction(int ownerId) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		if (!this.authorizationService.canUserModifyHisData(auth.getName(), ownerId)) {
-			throw new AccessDeniedException("User canot modify data.");
+			throw new AccessDeniedException("User cannot modify data.");
 		}
 	}
 }
