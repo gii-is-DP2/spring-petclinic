@@ -232,16 +232,6 @@ private static final int TEST_CARER_ID = 1;
 				.andExpect(status().is2xxSuccessful())
 				.andExpect(view().name("carers/createOrUpdateCarerForm"));
 		}
-	 
-	 @WithMockUser(value = "spring")
-		@Test
-		void testInitUpdateFormUnauthorized() throws Exception {
-	    	
-	    	given(this.authorizationService.canUserModifyEmployee(anyString())).willReturn(false);
-	    	
-			mockMvc.perform(get("/carers/{carerId}/edit", this.TEST_CARER_ID))
-					.andExpect(view().name("errors/accessDenied"));
-		}
 	
 	@WithMockUser(value = "spring")
 	@Test
@@ -267,18 +257,5 @@ private static final int TEST_CARER_ID = 1;
 			.andExpect(status().is3xxRedirection())
 			.andExpect(view().name("redirect:/carers"));
 	}
-	
-	@WithMockUser(value = "spring", authorities = "admin")
-	@Test
-	void testProcessDeleteFormUnauthorized() throws Exception {
-    	
-    	given(this.authorizationService.canUserModifyEmployee(anyString())).willReturn(false);
-    	
-		mockMvc.perform(get("/carers/{caresId}/delete", TEST_CARER_ID)
-							.with(csrf()))
-				.andExpect(status().isOk())
-				.andExpect(view().name("errors/accessDenied"));
-	}
-	
 	
 }
