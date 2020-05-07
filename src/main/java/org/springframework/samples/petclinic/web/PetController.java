@@ -75,7 +75,9 @@ public class PetController {
 	}
 
 	@GetMapping(value = "/pets/new")
-	public String initCreationForm(Owner owner, ModelMap model) {
+	public String initCreationForm(@PathVariable("ownerId") int ownerId, ModelMap model) {
+		authorizeUserAction(ownerId);
+		Owner owner = ownerService.findOwnerById(ownerId);
 		Pet pet = new Pet();
 		owner.addPet(pet);
 		model.put("pet", pet);
@@ -103,7 +105,6 @@ public class PetController {
 	@GetMapping(value = "/pets/{petId}/edit")
 	public String initUpdateForm(@PathVariable("petId") int petId, @PathVariable("ownerId") int ownerId, ModelMap model) {
 		this.authorizeUserAction(ownerId);
-		
 		Pet pet = this.petService.findPetById(petId);
 		model.put("pet", pet);
 		return VIEWS_PETS_CREATE_OR_UPDATE_FORM;
@@ -133,7 +134,7 @@ public class PetController {
     private void authorizeUserAction(int ownerId) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		if (!this.authorizationService.canUserModifyHisData(auth.getName(), ownerId)) {
-			throw new AccessDeniedException("User canot modify data.");
+			throw new AccessDeniedException("User cannot modify data.");
 		}
 	}
 }

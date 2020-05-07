@@ -104,14 +104,28 @@ class PetControllerTests {
 	}
 
 	@WithMockUser(value = "spring")
-        @Test
+    @Test
 	void testInitCreationForm() throws Exception {
-		mockMvc.perform(get("/owners/{ownerId}/pets/new", TEST_OWNER_ID)).andExpect(status().isOk())
-				.andExpect(view().name("pets/createOrUpdatePetForm")).andExpect(model().attributeExists("pet"));
+		given(this.authorizationService.canUserModifyHisData(anyString(), eq(this.TEST_OWNER_ID) )).willReturn(true);
+		given(this.ownerService.findOwnerById(this.TEST_OWNER_ID)).willReturn(new Owner());
+		mockMvc.perform(get("/owners/{ownerId}/pets/new", TEST_OWNER_ID))
+				.andExpect(status().isOk())
+				.andExpect(view().name("pets/createOrUpdatePetForm"))
+				.andExpect(model().attributeExists("pet"));
 	}
 
 	@WithMockUser(value = "spring")
-        @Test
+    @Test
+	void testInitCreationFormUnauthorized() throws Exception {
+		given(this.authorizationService.canUserModifyHisData(anyString(), eq(this.TEST_OWNER_ID))).willReturn(false);
+		given(this.ownerService.findOwnerById(this.TEST_OWNER_ID)).willReturn(new Owner());
+		mockMvc.perform(get("/owners/{ownerId}/pets/new", 99))
+				.andExpect(status().isOk())
+				.andExpect(view().name("errors/accessDenied"));
+	}
+
+	@WithMockUser(value = "spring")
+    @Test
 	void testProcessCreationFormSuccess() throws Exception {
 		mockMvc.perform(post("/owners/{ownerId}/pets/new", TEST_OWNER_ID)
 							.with(csrf())
