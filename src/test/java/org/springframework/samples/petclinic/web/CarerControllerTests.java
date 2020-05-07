@@ -232,6 +232,7 @@ private static final int TEST_CARER_ID = 1;
 				.andExpect(status().is2xxSuccessful())
 				.andExpect(view().name("carers/createOrUpdateCarerForm"));
 		}
+
 	
 	@WithMockUser(value = "spring")
 	@Test
@@ -256,6 +257,17 @@ private static final int TEST_CARER_ID = 1;
 			.with(csrf()))
 			.andExpect(status().is3xxRedirection())
 			.andExpect(view().name("redirect:/carers"));
+	}
+	
+	@WithMockUser(value = "spring")
+	@Test
+	void testProcessDeleteFormInvalidCarer() throws Exception {
+		given(this.carerService.findCarerById(TEST_CARER_ID)).willThrow(NoSuchElementException.class);
+	   	given(this.authorizationService.canUserModifyEmployee(anyString())).willReturn(true);
+    	
+		mockMvc.perform(get("/carers/{carerId}/delete", TEST_CARER_ID))
+			.andExpect(status().isOk())
+			.andExpect(view().name("errors/elementNotFound"));
 	}
 	
 }
