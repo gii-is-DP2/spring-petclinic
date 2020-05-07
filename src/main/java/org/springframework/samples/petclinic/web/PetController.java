@@ -85,7 +85,9 @@ public class PetController {
 	}
 
 	@PostMapping(value = "/pets/new")
-	public String processCreationForm(Owner owner, @Valid Pet pet, BindingResult result, ModelMap model) {		
+	public String processCreationForm(@PathVariable("ownerId") int ownerId, @Valid Pet pet, BindingResult result, ModelMap model) {	
+		authorizeUserAction(ownerId);
+		Owner owner = ownerService.findOwnerById(ownerId);
 		if (result.hasErrors()) {
 			model.put("pet", pet);
 			return VIEWS_PETS_CREATE_OR_UPDATE_FORM;
@@ -103,9 +105,10 @@ public class PetController {
 	}
 
 	@GetMapping(value = "/pets/{petId}/edit")
-	public String initUpdateForm(@PathVariable("petId") int petId, @PathVariable("ownerId") int ownerId, ModelMap model) {
+	public String initUpdateForm(@PathVariable("ownerId") int ownerId, @PathVariable("petId") int petId,  ModelMap model) {
 		this.authorizeUserAction(ownerId);
 		Pet pet = this.petService.findPetById(petId);
+		this.authorizeUserActionOnPet(ownerId, pet);
 		model.put("pet", pet);
 		return VIEWS_PETS_CREATE_OR_UPDATE_FORM;
 	}
@@ -119,7 +122,8 @@ public class PetController {
 			return VIEWS_PETS_CREATE_OR_UPDATE_FORM;
 		}
 		else {
-                        Pet petToUpdate=this.petService.findPetById(petId);
+            Pet petToUpdate=this.petService.findPetById(petId);
+    		this.authorizeUserActionOnPet(ownerId, pet);
 			BeanUtils.copyProperties(pet, petToUpdate, "id","owner","visits","daycares");                                                                                  
                     try {                    
                         this.petService.savePet(petToUpdate);                    
@@ -137,4 +141,8 @@ public class PetController {
 			throw new AccessDeniedException("User cannot modify data.");
 		}
 	}
+    
+    private void authorizeUserActionOnPet(int ownerId, Pet pet) {
+    	if (ownerId != pet.getOwner().getId()) throw new AccessDeniedException("User cannot modify data.");
+    }
 }

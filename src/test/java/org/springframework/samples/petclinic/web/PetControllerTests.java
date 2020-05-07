@@ -127,6 +127,7 @@ class PetControllerTests {
 	@WithMockUser(value = "spring")
     @Test
 	void testProcessCreationFormSuccess() throws Exception {
+		given(this.authorizationService.canUserModifyHisData(anyString(), eq(this.TEST_PET_ID))).willReturn(true);
 		mockMvc.perform(post("/owners/{ownerId}/pets/new", TEST_OWNER_ID)
 							.with(csrf())
 							.param("name", "Betty")
@@ -140,13 +141,11 @@ class PetControllerTests {
     @Test
 	void testProcessCreationFormHasErrors() throws Exception {
 		given(this.authorizationService.canUserModifyHisData(anyString(), eq(this.TEST_PET_ID))).willReturn(true);
-		
-		mockMvc.perform(post("/owners/{ownerId}/pets/{petId}/edit", TEST_OWNER_ID, TEST_PET_ID)
+		mockMvc.perform(post("/owners/{ownerId}/pets/new", TEST_OWNER_ID)
 							.with(csrf())
-							.param("name", "Betty")
-							.param("birthDate", "2015/02/12"))
-				.andExpect(model().attributeHasNoErrors("owner"))
+							.param("name", "Betty"))
 				.andExpect(model().attributeHasErrors("pet"))
+				.andExpect(model().attributeHasFieldErrors("pet", "birthDate"))
 				.andExpect(status().isOk())
 				.andExpect(view().name("pets/createOrUpdatePetForm"));
 	}

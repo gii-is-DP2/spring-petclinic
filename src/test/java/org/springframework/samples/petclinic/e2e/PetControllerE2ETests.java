@@ -4,6 +4,8 @@ import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.iterableWithSize;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -37,16 +39,25 @@ import org.springframework.transaction.annotation.Transactional;
 public class PetControllerE2ETests {
 
 	public final String TEST_OWNER_USERNAME = "fede"; //Se crea al levantar la BD en memoria con data.sql
-	public final int TEST_OWNER_ID = 11;
 	public final String TEST_ADMIN_USERNAME = "admin"; //Idem
 	public final int TEST_PET_ID = 1; //Idem
+	public final int TEST_OWNER_ID = 11; //ID correspondiente a fede en data.sql
 
 	@Autowired
 	private MockMvc mockMvc;
 
 	@WithMockUser(username = TEST_OWNER_USERNAME, authorities = {"owner"})
     @Test
-    void testInitCreationForm() throws Exception {
+    void testInitCreationFormSuccessOwner() throws Exception {
+		mockMvc.perform(get("/owners/{ownerId}/pets/new", TEST_OWNER_ID))
+			.andExpect(status().isOk())
+			.andExpect(view().name("pets/createOrUpdatePetForm"))
+			.andExpect(model().attributeExists("pet"));
+	}
+	
+	@WithMockUser(username = TEST_ADMIN_USERNAME, authorities = {"admin"})
+    @Test
+    void testInitCreationFormSuccessAdmin() throws Exception {
 		mockMvc.perform(get("/owners/{ownerId}/pets/new", TEST_OWNER_ID))
 			.andExpect(status().isOk())
 			.andExpect(view().name("pets/createOrUpdatePetForm"))
@@ -59,5 +70,128 @@ public class PetControllerE2ETests {
 		mockMvc.perform(get("/owners/{ownerId}/pets/new", 1))
 			.andExpect(status().isOk())
 			.andExpect(view().name("errors/accessDenied"));
+	}
+	
+	@WithMockUser(username = TEST_OWNER_USERNAME, authorities = {"owner"})
+    @Test
+	void testProcessCreationFormSuccessOwner() throws Exception {
+		mockMvc.perform(post("/owners/{ownerId}/pets/new", TEST_OWNER_ID)
+							.with(csrf())
+							.param("name", "Betty")
+							.param("type", "hamster")
+							.param("birthDate", "2015/02/12"))
+				.andExpect(status().is3xxRedirection())
+				.andExpect(view().name("redirect:/owners/{ownerId}"));
+	}
+	
+	@WithMockUser(username = TEST_ADMIN_USERNAME, authorities = {"admin"})
+    @Test
+	void testProcessCreationFormSuccessAdmin() throws Exception {
+		mockMvc.perform(post("/owners/{ownerId}/pets/new", TEST_OWNER_ID)
+							.with(csrf())
+							.param("name", "Betty")
+							.param("type", "hamster")
+							.param("birthDate", "2015/02/12"))
+				.andExpect(status().is3xxRedirection())
+				.andExpect(view().name("redirect:/owners/{ownerId}"));
+	}
+	
+	@WithMockUser(username = TEST_OWNER_USERNAME, authorities = {"owner"})
+    @Test
+	void testProcessCreationFormUnauthorized() throws Exception {
+		mockMvc.perform(post("/owners/{ownerId}/pets/new", 2)
+							.with(csrf())
+							.param("name", "Betty")
+							.param("type", "hamster")
+							.param("birthDate", "2015/02/12"))
+				.andExpect(status().isOk())
+				.andExpect(view().name("errors/accessDenied"));
+	}
+	
+	@WithMockUser(username = TEST_OWNER_USERNAME, authorities = {"owner"})
+    @Test
+	void testProcessCreationFormHasErrors() throws Exception {
+		mockMvc.perform(post("/owners/{ownerId}/pets/new", TEST_OWNER_ID)
+							.with(csrf())
+							.param("name", "Betty"))
+				.andExpect(model().attributeHasErrors("pet"))
+				.andExpect(model().attributeHasFieldErrors("pet", "birthDate"))
+				.andExpect(status().isOk())
+				.andExpect(view().name("pets/createOrUpdatePetForm"));
+	}
+	
+	@WithMockUser(username = TEST_OWNER_USERNAME, authorities = {"owner"})
+	@Test
+	void testInitUpdateFormSuccess() throws Exception {    	
+		mockMvc.perform(get("/owners/{ownerId}/pets/{petId}/edit", TEST_OWNER_ID, TEST_PET_ID))
+				.andExpect(status().isOk())
+				.andExpect(model().attributeExists("pet"))
+				.andExpect(view().name("pets/createOrUpdatePetForm"));
+	}
+	
+	@WithMockUser(username = TEST_ADMIN_USERNAME, authorities = {"admin"})
+	@Test
+	void testInitUpdateFormSuccessAdmin() throws Exception {    	
+		mockMvc.perform(get("/owners/{ownerId}/pets/{petId}/edit", TEST_OWNER_ID, TEST_PET_ID))
+				.andExpect(status().isOk())
+				.andExpect(model().attributeExists("pet"))
+				.andExpect(view().name("pets/createOrUpdatePetForm"));
+	}
+	
+	@WithMockUser(username = TEST_OWNER_USERNAME, authorities = {"owner"})
+	@Test
+	void testInitUpdateFormUnauthorized() throws Exception {    	
+		mockMvc.perform(get("/owners/{ownerId}/pets/{petId}/edit", 1, 1))
+				.andExpect(status().isOk())
+				.andExpect(view().name("errors/accessDenied"));
+	}
+	
+	@WithMockUser(username = TEST_OWNER_USERNAME, authorities = {"owner"})
+	@Test
+	void testProcessUpdateFormSuccess() throws Exception {    	
+		mockMvc.perform(post("/owners/{ownerId}/pets/{petId}/edit", TEST_OWNER_ID, TEST_PET_ID)
+							.with(csrf())
+							.param("name", "Betty")
+							.param("type", "hamster")
+							.param("birthDate", "2015/02/12"))
+				.andExpect(status().is3xxRedirection())
+				.andExpect(view().name("redirect:/owners/{ownerId}"));
+	}
+	
+	@WithMockUser(username = TEST_ADMIN_USERNAME, authorities = {"admin"})
+	@Test
+	void testProcessUpdateFormSuccessAdmin() throws Exception {    	
+		mockMvc.perform(post("/owners/{ownerId}/pets/{petId}/edit", TEST_OWNER_ID, TEST_PET_ID)
+							.with(csrf())
+							.param("name", "Betty")
+							.param("type", "hamster")
+							.param("birthDate", "2015/02/12"))
+				.andExpect(status().is3xxRedirection())
+				.andExpect(view().name("redirect:/owners/{ownerId}"));
+	}
+	
+	@WithMockUser(username = TEST_OWNER_USERNAME, authorities = {"owner"})
+	@Test
+	void testProcessUpdateFormSuccessUnauthorized() throws Exception {    	
+		mockMvc.perform(post("/owners/{ownerId}/pets/{petId}/edit", 1, 1)
+							.with(csrf())
+							.param("name", "Betty")
+							.param("type", "hamster")
+							.param("birthDate", "2015/02/12"))
+				.andExpect(status().isOk())
+				.andExpect(view().name("errors/accessDenied"));
+	}
+	
+	@WithMockUser(username = TEST_OWNER_USERNAME, authorities = {"owner"})
+	@Test
+	void testProcessUpdateFormHasErrors() throws Exception {
+		mockMvc.perform(post("/owners/{ownerId}/pets/{petId}/edit", TEST_OWNER_ID, TEST_PET_ID)
+							.with(csrf())
+							.param("name", "Betty")
+							.param("birthDate", "2015/02/12"))
+				.andExpect(model().attributeHasErrors("pet"))
+				.andExpect(model().attributeHasFieldErrors("pet", "type"))
+				.andExpect(status().isOk())
+				.andExpect(view().name("pets/createOrUpdatePetForm"));
 	}
 }
