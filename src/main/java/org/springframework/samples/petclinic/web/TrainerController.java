@@ -93,6 +93,7 @@ public class TrainerController {
 	
 	@GetMapping(value = "/trainers/{trainerId}/trainings")
 	public String showTrainerTrainingsList(@PathVariable("trainerId") int trainerId, Map<String, Object> model) {
+		Trainer trainer = this.trainerService.findTrainerById(trainerId);
 		Collection<Training> results = this.trainingService.findTrainingsByTrainer(trainerId);
 		model.put("trainings", results);
 		return "trainings/trainingsList";
