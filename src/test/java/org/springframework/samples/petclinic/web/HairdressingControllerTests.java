@@ -146,6 +146,18 @@ public class HairdressingControllerTests {
 			.andExpect(status().is3xxRedirection())
 			.andExpect(view().name("redirect:/hairdressings"));
 	}
+	
+	@WithMockUser(value = "spring", authorities = "admin")
+	@Test
+	void testProcessDeleteFormUnauthorized() throws Exception {
+    	
+    	given(this.authorizationService.canUserModifyBooking(anyString(), eq(PET_ID))).willReturn(false);
+    	
+		mockMvc.perform(get("/hairdressings/{hairdressingId}/delete", HAIRDRESSING_ID)
+							.with(csrf()))
+				.andExpect(status().isOk())
+				.andExpect(view().name("errors/accessDenied"));
+	}
 
 	// @WithMockUser(value = "spring")
 	// public void testDeleteHairdressing() throws Exception {
