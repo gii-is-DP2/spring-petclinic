@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.model.Owner;
 import org.springframework.samples.petclinic.service.AuthorizationService;
 import org.springframework.samples.petclinic.service.OwnerService;
+import org.springframework.samples.petclinic.web.annotations.IsAdmin;
 import org.springframework.samples.petclinic.web.annotations.IsOwner;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
@@ -73,6 +74,7 @@ public class OwnerController {
 		dataBinder.addValidators(this.ownerValidator);
 	}
 
+	@IsAdmin
 	@GetMapping(value = "/owners/new")
 	public String initCreationForm(Map<String, Object> model) {
 		Owner owner = new Owner();
@@ -80,6 +82,7 @@ public class OwnerController {
 		return VIEWS_OWNER_CREATE_OR_UPDATE_FORM;
 	}
 
+	@IsAdmin
 	@PostMapping(value = "/owners/new")
 	public String processCreationForm(@Valid Owner owner, BindingResult result) {
 		if (result.hasErrors()) {
