@@ -297,14 +297,13 @@ public class TrainerControllerTests {
 	@WithMockUser(value = "spring")
 	@Test
 	void testShowInvalidTrainerTrainingsList() throws Exception {
-		given(this.trainingService.findTrainingsByTrainer(this.TEST_TRAINER_ID))
-			.willReturn(Lists.newArrayList());
+		given(this.trainerService.findTrainerById(this.TEST_TRAINER_ID))
+			.willThrow(NoSuchElementException.class);
 		
 		mockMvc.perform(get("/trainers/" + this.TEST_TRAINER_ID + "/trainings"))
 			.andExpect(status().isOk())
-			.andExpect(model().attribute("trainings", iterableWithSize(0)))
-			.andExpect(view().name("trainings/trainingsList"));
+			.andExpect(view().name("errors/elementNotFound"));
 		
-		verify(this.trainingService, times(1)).findTrainingsByTrainer(this.TEST_TRAINER_ID);
+		verify(this.trainingService, times(0)).findTrainingsByTrainer(this.TEST_TRAINER_ID);
 	}
 }
