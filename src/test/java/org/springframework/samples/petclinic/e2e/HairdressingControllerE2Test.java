@@ -51,12 +51,6 @@ public class HairdressingControllerE2Test {
 		mockMvc.perform(get("hairdressings/new", TEST_OWNER_ID)).andExpect(status().isForbidden());
 	}
 
-	@WithMockUser(username = TEST_ADMIN_USERNAME, authorities = { "admin" })
-	@Test
-	public void testUnathorizedNewHairdressingForm() throws Exception {
-		//	TODO
-	}
-
 	@WithMockUser(username = TEST_OWNER_USERNAME, authorities = { "owner" })
 	@Test
 	public void testProcessNewHairdressingForm() throws Exception {
@@ -107,6 +101,11 @@ public class HairdressingControllerE2Test {
 	@WithMockUser(username = TEST_OWNER_USERNAME, authorities = { "owner" })
 	@Test
 	public void testProcessUpdateHairdressingFormHasErrors() throws Exception {
-		//	TODO
+		mockMvc.perform(post("/hairdressings/{hairdressingId}/edit", this.TEST_HAIRDRESSING).with(csrf())
+				.param("cuidado", "ESTETICA").param("date", "2015/04/04").param("description", "TESTO")
+				.param("petName", "Leo").param("time", "6:00"))
+				.andExpect(model().attributeHasErrors("hairdressingDTO"))
+				.andExpect(model().attributeHasFieldErrors("hairdressingDTO", "date")).andExpect(status().isOk())
+				.andExpect(view().name("hairdressings/createOrUpdateHairdressingForm"));
 	}
 }
