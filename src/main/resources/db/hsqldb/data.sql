@@ -101,6 +101,13 @@ INSERT INTO visits(id,pet_id,visit_date,description) VALUES (4, 7, '2013-01-04',
 INSERT INTO hairdressings VALUES (1, '2021-01-01', 'Pelado a mi mascota', 0, '9:00', 1);
 INSERT INTO hairdressings VALUES (99, '2022-02-02', 'TEST', 0, '7:00',1);
 
+INSERT INTO daycares VALUES (1, '2022-02-02', 'Descripcion de prueba', 10, 1);
+INSERT INTO daycares VALUES (2, '2033-03-03', 'Descripcion de prueba diferente', 10, 1);
+
+INSERT INTO carer VALUES (1, 'Alonso', 'Rodriguez', '11111111A', 'alonso@gmail.com', '1000', '5553344', TRUE);
+INSERT INTO carer VALUES (2, 'Jose', 'Peñuela', '22222222B', 'jose@gmail.com', '1200', '666223344', TRUE);
+INSERT INTO carer VALUES (3, 'David', 'Toro', '33333333C', 'david@gmail.com', '900', '777223344', FALSE);
+
 INSERT INTO review VALUES (1, 'Pésimo servicio', '2020-01-03', 1, 2, 'jeff');
 INSERT INTO review VALUES (2, 'El mejor servicio que recibí en mi vida', '2020-03-13', 5, 0, 'peter');
 INSERT INTO review VALUES (3, 'Mi iguana nunca se vio tan bonita', '2019-07-13', 5, 2, 'david');
