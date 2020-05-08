@@ -135,7 +135,7 @@ class OwnerControllerTests {
 	}
 
 	@WithMockUser(value = "spring")
-        @Test
+    @Test
 	void testProcessFindFormSuccess() throws Exception {
 		given(this.ownerService.findOwnerByLastName("")).willReturn(Lists.newArrayList(george, new Owner()));
 
@@ -143,7 +143,7 @@ class OwnerControllerTests {
 	}
 
 	@WithMockUser(value = "spring")
-        @Test
+    @Test
 	void testProcessFindFormByLastName() throws Exception {
 		given(this.ownerService.findOwnerByLastName(george.getLastName())).willReturn(Lists.newArrayList(george));
 
@@ -151,7 +151,7 @@ class OwnerControllerTests {
 				.andExpect(view().name("redirect:/owners/" + TEST_OWNER_ID));
 	}
 
-        @WithMockUser(value = "spring")
+    @WithMockUser(value = "spring")
 	@Test
 	void testProcessFindFormNoOwnersFound() throws Exception {
 		mockMvc.perform(get("/owners").param("lastName", "Unknown Surname")).andExpect(status().isOk())
@@ -160,7 +160,7 @@ class OwnerControllerTests {
 				.andExpect(view().name("owners/findOwners"));
 	}
 
-        @WithMockUser(value = "spring")
+    @WithMockUser(value = "spring")
 	@Test
 	void testInitUpdateOwnerForm() throws Exception {
     		given(this.authorizationService.canUserModifyHisData(anyString(), eq(this.TEST_OWNER_ID))).willReturn(true);
@@ -174,8 +174,18 @@ class OwnerControllerTests {
 				.andExpect(model().attribute("owner", hasProperty("telephone", is("6085551023"))))
 				.andExpect(view().name("owners/createOrUpdateOwnerForm"));
 	}
+        
+	@WithMockUser(value = "spring")
+	@Test
+	void testInitUpdateFormUnauthorized() throws Exception {
+		given(this.authorizationService.canUserModifyHisData(anyString(), eq(this.TEST_OWNER_ID))).willReturn(false);
+    	mockMvc.perform(get("/owners/{ownerId}/edit", TEST_OWNER_ID))
+    			.andExpect(status().isOk())
+				.andExpect(status().isOk())
+				.andExpect(view().name("errors/accessDenied"));
+	}
 
-        @WithMockUser(value = "spring")
+    @WithMockUser(value = "spring")
 	@Test
 	void testProcessUpdateOwnerFormSuccess() throws Exception {
     		given(this.authorizationService.canUserModifyHisData(anyString(), eq(this.TEST_OWNER_ID))).willReturn(true);

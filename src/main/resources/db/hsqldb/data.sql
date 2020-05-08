@@ -108,4 +108,10 @@ INSERT INTO carer VALUES (1, 'Alonso', 'Rodriguez', '11111111A', 'alonso@gmail.c
 INSERT INTO carer VALUES (2, 'Jose', 'Peñuela', '22222222B', 'jose@gmail.com', '1200', '666223344', TRUE);
 INSERT INTO carer VALUES (3, 'David', 'Toro', '33333333C', 'david@gmail.com', '900', '777223344', FALSE);
 
+INSERT INTO review VALUES (1, 'Pésimo servicio', '2020-01-03', 1, 2, 'jeff');
+INSERT INTO review VALUES (2, 'El mejor servicio que recibí en mi vida', '2020-03-13', 5, 0, 'peter');
+INSERT INTO review VALUES (3, 'Mi iguana nunca se vio tan bonita', '2019-07-13', 5, 2, 'david');
+INSERT INTO review VALUES (4, 'A fido le encantaron los ejercicios', '2020-03-13', 5, 0, 'david');
+INSERT INTO review VALUES (5, 'Ni fu ni fa', '2020-04-13', 3, 1, 'carlos');
 
+INSERT INTO training VALUES (1, '2021-03-03', 'Descripcion', 2, 1, 14, 1);

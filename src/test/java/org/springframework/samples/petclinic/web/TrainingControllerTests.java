@@ -23,7 +23,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
-import org.springframework.dao.DataAccessException;
 import org.springframework.samples.petclinic.service.AuthorizationService;
 import org.springframework.samples.petclinic.service.PetService;
 import org.springframework.samples.petclinic.service.TrainerService;
@@ -53,10 +52,10 @@ excludeAutoConfiguration= SecurityConfiguration.class)
 
 public class TrainingControllerTests {
 	
-	private static final int TEST_TRAINING_ID = 1;
-	private static final int TEST_PET_ID = 1;
-	private static final int TEST_OWNER_ID = 1;
-	private static final int TEST_TRAINER_ID = 1;
+	private final int TEST_TRAINING_ID = 1;
+	private final int TEST_PET_ID = 1;
+	private final int TEST_OWNER_ID = 1;
+	private final int TEST_TRAINER_ID = 1;
 	
 	@MockBean
 	private TrainingService trainingService;
@@ -245,7 +244,7 @@ public class TrainingControllerTests {
 			.andExpect(status().isOk())
 			.andExpect(model().attributeHasErrors("trainingDTO"))
 			.andExpect(model().attributeHasFieldErrors("trainingDTO", "trainerId"))
-			.andExpect(view().name("trainings/createOrUpdateTrainingForm"));;
+			.andExpect(view().name("trainings/createOrUpdateTrainingForm"));
 		
 		verify(this.trainingService, times(0)).saveTraining(any());
 	}
@@ -370,8 +369,6 @@ public class TrainingControllerTests {
 			.andExpect(view().name("trainings/createOrUpdateTrainingForm"));
 	}
     
-    
-    
     @WithMockUser(value = "spring")
 	@Test
 	void testProcessUpdateFormInvalidTraining() throws Exception {
@@ -439,6 +436,7 @@ public class TrainingControllerTests {
 	@Test
 	void testShowTraining() throws Exception {
 		given(this.trainingService.findTrainingById(TEST_TRAINING_ID)).willReturn(this.training);
+		given(this.authorizationService.canUserModifyBooking(anyString(), eq(this.TEST_PET_ID))).willReturn(true);
 		
 		mockMvc.perform(get("/trainings/{trainingId}", this.TEST_TRAINING_ID))
 			.andExpect(status().isOk())
@@ -465,7 +463,8 @@ public class TrainingControllerTests {
 		given(this.trainingService.findTrainings()).willReturn(Lists.newArrayList(this.training));
 		mockMvc.perform(get("/trainings"))
 				.andExpect(status().isOk())
-				.andExpect(model().attributeExists("trainings")).andExpect(view().name("trainings/trainingsList"));
+				.andExpect(model().attributeExists("trainings"))
+				.andExpect(view().name("trainings/trainingsList"));
 	}
 	
 	@WithMockUser(value = "spring")
@@ -474,7 +473,8 @@ public class TrainingControllerTests {
 		given(this.trainingService.findTrainings()).willReturn(Lists.newArrayList(this.training));
 		mockMvc.perform(get("/trainings/owner"))
 				.andExpect(status().isOk())
-				.andExpect(model().attributeExists("trainings")).andExpect(view().name("trainings/trainingsList"));
+				.andExpect(model().attributeExists("trainings"))
+				.andExpect(view().name("trainings/trainingsList"));
 	}
     
     @WithMockUser(value = "spring", authorities = "admin")
@@ -515,7 +515,7 @@ public class TrainingControllerTests {
 	
     @WithMockUser(value = "spring", authorities = "admin")
 	@Test
-	void testProcessDeleteInvalid() throws Exception {
+	void testProcessDeleteFormInvalid() throws Exception {
 		given(this.trainingService.findTrainingById(TEST_TRAINING_ID)).willThrow(NoSuchElementException.class);
     	given(this.authorizationService.canUserModifyBooking(anyString(), eq(this.TEST_PET_ID))).willReturn(true);
     	

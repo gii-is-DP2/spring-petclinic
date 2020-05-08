@@ -19,7 +19,7 @@ import lombok.Data;
 @Table(name = "training")
 public class Training extends Booking{
 	
-	@ManyToOne(fetch = FetchType.LAZY, optional = true)
+	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "trainer_id")
 	private Trainer trainer;
 	
