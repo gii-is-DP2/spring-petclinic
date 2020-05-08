@@ -103,7 +103,7 @@ public class CarerController {
 	}
 	
 	@GetMapping(value = "/carer/find")
-	public String showTrainersList(Carer carer, BindingResult result, Map<String, Object> model) {
+	public String showCarersList(Carer carer, BindingResult result, Map<String, Object> model) {
 		Collection<Carer> results;
 		if (carer == null || carer.getLastName() == null || carer.getLastName().isEmpty()) {
 			results = this.carerService.findCarers();
