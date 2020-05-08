@@ -155,7 +155,6 @@ public class HairdressingController {
 	public String processCreationForm(@Valid HairdressingDTO hairdressingDTO, BindingResult result) {
 		
 		if (result.hasErrors()) {
-			
 			return VIEWS_HAIRDRESSING_CREATE_OR_UPDATE_FORM;
 		}
 		else {
