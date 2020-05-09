@@ -54,8 +54,8 @@ public class DeleteDaycareFromOtherUserUITest {
 	@Test
 	public void testDeleteDaycareUI() throws Exception {
 		driver.get("http://localhost:" + port);
-		driver.findElement(By.xpath("//div[@id='main-navbar']/ul/li[5]/a")).click();
-		driver.findElement(By.xpath("//a[contains(text(),'Login')]")).click();
+		driver.findElement(By.linkText("USER")).click();
+		driver.findElement(By.linkText("LOGIN")).click();
 		driver.findElement(By.id("password")).clear();
 		driver.findElement(By.id("password")).sendKeys("peter");
 		driver.findElement(By.id("username")).clear();

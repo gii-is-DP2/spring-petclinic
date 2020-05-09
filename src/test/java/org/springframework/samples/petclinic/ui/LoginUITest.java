@@ -43,7 +43,7 @@ public class LoginUITest {
 		as("admin", "admin").
 		whenIamLoggedIntheSystem().
 		thenISeeMyUsernameInTheMenuBar().
-		thenISeeTrainersInTheMenuBar();	
+		thenISeeEmployeesInTheMenuBar();	
 	}
 
 	private LoginUITest thenISeeMyUsernameInTheMenuBar() {
@@ -51,8 +51,8 @@ public class LoginUITest {
 		return this;
 	}
 	
-	private LoginUITest thenISeeTrainersInTheMenuBar() {
-		assertEquals("Trainers".toUpperCase(), driver.findElement(By.xpath("//div[@id='main-navbar']/ul/li[4]/a")).getText());
+	private LoginUITest thenISeeEmployeesInTheMenuBar() {
+		assertEquals("Employees".toUpperCase(), driver.findElement(By.xpath("//div[@id='main-navbar']/ul/li[3]/a")).getText());
 		return this;
 	}
 
@@ -65,14 +65,13 @@ public class LoginUITest {
 		this.username=username;
 		System.out.println(port);
 		driver.get(this.baseUrl);
-		driver.findElement(By.xpath("//a[contains(text(),'User')]")).click();
-		driver.findElement(By.xpath("//div[@id='main-navbar']/ul/li[5]/ul/li[1]/a")).click();
+		driver.findElement(By.linkText("USER")).click();
+		driver.findElement(By.linkText("LOGIN")).click();
 		driver.findElement(By.id("username")).clear();
 		driver.findElement(By.id("username")).sendKeys(username);
 		driver.findElement(By.id("password")).clear();
 		driver.findElement(By.id("password")).sendKeys(password);
 		driver.findElement(By.xpath("//button[@type='submit']")).click();
-		    
 		return this;
 	}
 
