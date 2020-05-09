@@ -2,7 +2,7 @@
 INSERT INTO authorities VALUES (1,'admin');
 INSERT INTO authorities VALUES (2,'owner');
 
--- One admin user, named admin1 with passwor 4dm1n and authority admin
+-- One admin user, named admin with password admin and authority admin
 INSERT INTO users(username,password,enabled) VALUES ('admin','admin',TRUE);
 INSERT INTO authorities_users(user_username, authorities_id) VALUES ('admin',1);
 
