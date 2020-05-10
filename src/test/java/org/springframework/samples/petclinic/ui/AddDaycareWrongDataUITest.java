@@ -54,12 +54,13 @@ public class AddDaycareWrongDataUITest {
 
 	@Test
 	public void testAddDaycareUI() throws Exception {
-		driver.get("http://localhost:" + port);
-		as("george", "george").whenIamLoggedIntheSystem().openMyDaycares()
-		.addDaycareWrongDate().isInForm().
+		driver.get(baseUrl);
+		as("george", "george").whenIamLoggedIntheSystem().openMyDaycares();
+		Integer rowsBefore = driver.findElements(By.xpath("//table[@id='daycaresTable']/tbody/tr")).size();
+		addDaycareWrongDate().isInForm().
 		addDaycareWrongDescription().isInForm()
 		.addDaycare().openMyDaycares()
-				.thenDaycareIsInUserDaycaresTable();
+		.thenDaycareIsInUserDaycaresTable(rowsBefore);
 	}
 
 	private AddDaycareWrongDataUITest isInForm() {
@@ -78,32 +79,16 @@ public class AddDaycareWrongDataUITest {
 
 	}
 
-	private AddDaycareWrongDataUITest thenDaycareIsInUserDaycaresTable() {
+	private AddDaycareWrongDataUITest thenDaycareIsInUserDaycaresTable(Integer rowsBefore) {
+		Integer rowsAfter = driver.findElements(By.xpath("//table[@id='daycaresTable']/tbody/tr")).size();
+		rowsBefore++;
+		
 		try {
-			assertEquals(this.daycare.getDate().toString(),
-					driver.findElement(By.xpath("//table[@id='daycaresTable']/tbody/tr[3]/td[1]")).getText());
+			assertEquals(rowsBefore,
+					rowsAfter);
 		} catch (Error e) {
 			verificationErrors.append(e.toString());
 		}
-		try {
-			assertEquals(this.daycare.getDescription(),
-					driver.findElement(By.xpath("//table[@id='daycaresTable']/tbody/tr[3]/td[2]")).getText());
-		} catch (Error e) {
-			verificationErrors.append(e.toString());
-		}
-		try {
-			assertEquals(this.daycare.getCapacity().toString(),
-					driver.findElement(By.xpath("//table[@id='daycaresTable']/tbody/tr[3]/td[3]")).getText());
-		} catch (Error e) {
-			verificationErrors.append(e.toString());
-		}
-		try {
-			assertEquals(this.daycare.getPet().getName(),
-					driver.findElement(By.xpath("//table[@id='daycaresTable']/tbody/tr[3]/td[4]")).getText());
-		} catch (Error e) {
-			verificationErrors.append(e.toString());
-		}
-
 		return this;
 
 	}
@@ -128,18 +113,10 @@ public class AddDaycareWrongDataUITest {
 	
 	private AddDaycareWrongDataUITest addDaycareWrongDescription() {
 		this.initTraining();
-		
-		// Coge el ultimo dia del mes
-		Calendar calendar = Calendar.getInstance();
-		int year = LocalDate.now().getYear();
-		int month = LocalDate.now().getMonthValue();
-		int date = 1;
-		calendar.set(year, month, date);
-		int days = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
-		String ndays= Integer.toString(days);
 
 		driver.findElement(By.id("date")).click();
-		driver.findElement(By.linkText(ndays)).click();
+		driver.findElement(By.xpath("//div[@id='ui-datepicker-div']/div/a[2]/span")).click();
+		driver.findElement(By.linkText("1")).click();
 		driver.findElement(By.id("description")).click();
 		driver.findElement(By.id("description")).clear();
 		driver.findElement(By.id("description")).sendKeys("");
@@ -160,7 +137,8 @@ public class AddDaycareWrongDataUITest {
 		String ndays= Integer.toString(days);
 
 		driver.findElement(By.id("date")).click();
-		 driver.findElement(By.xpath("//div[@id='ui-datepicker-div']/div/a[2]/span")).click();
+		driver.findElement(By.xpath("//div[@id='ui-datepicker-div']/div/a[2]/span")).click();
+		driver.findElement(By.xpath("//div[@id='ui-datepicker-div']/div/a[2]/span")).click();
 		driver.findElement(By.linkText(ndays)).click();
 		driver.findElement(By.id("description")).click();
 		driver.findElement(By.id("description")).clear();

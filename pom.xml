@@ -322,7 +322,7 @@
 		            			<include>**/AddDaycareUITest.java</include>        	
 		            			<include>**/AddDaycareWrongDataUITest.java</include>        	
 		            			<include>**/DeleteDaycareUITest.java</include>        	
-		            			<include>**/ListCarerAsUserUITest.java</include>        	
+		            			<include>**/DeleteDaycareFromOtherUserUITest.java</include>        	
 		            			<include>**/ListCarerUITest.java</include>    
 		            			<include>**/ListCarerAsUserUITest.java</include>  
 							</includes>

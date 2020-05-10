@@ -53,27 +53,34 @@ public class DeleteDaycareFromOtherUserUITest {
 
 	@Test
 	public void testDeleteDaycareUI() throws Exception {
-		driver.get("http://localhost:" + port);
-		driver.findElement(By.linkText("USER")).click();
-		driver.findElement(By.linkText("LOGIN")).click();
-		driver.findElement(By.id("password")).clear();
-		driver.findElement(By.id("password")).sendKeys("peter");
-		driver.findElement(By.id("username")).clear();
-		driver.findElement(By.id("username")).sendKeys("peter");
-		driver.findElement(By.xpath("//button[@type='submit']")).click();
-		driver.get("http://localhost:" + port + "/daycare/1");
-	    accessDenied();
-		thenDaycareIsDelete();
+		whenLoggedInAs("peter", "peter")
+		.thenIAccessAnotherUsersDaycare()
+		.thenAccessIsDenied();
 	}
 	
-	private DeleteDaycareFromOtherUserUITest accessDenied() {
-		  
+	private DeleteDaycareFromOtherUserUITest whenLoggedInAs(String username, String password) {
+		driver.get(baseUrl);
+		driver.findElement(By.xpath("//div[@id='main-navbar']/ul/li[5]/a")).click();
+		driver.findElement(By.xpath("//a[contains(text(),'Login')]")).click();
+		driver.findElement(By.id("password")).clear();
+		driver.findElement(By.id("password")).sendKeys(password);
+		driver.findElement(By.id("username")).clear();
+		driver.findElement(By.id("username")).sendKeys(username);
+		driver.findElement(By.xpath("//button[@type='submit']")).click();
+		return this;		
+	}
+	
+	private DeleteDaycareFromOtherUserUITest thenIAccessAnotherUsersDaycare() {
+		driver.get(baseUrl + "/daycares/2");
+		return this;		
+	}
+	
+	private DeleteDaycareFromOtherUserUITest thenAccessIsDenied() {
 		try {
 			assertEquals("Access Denied!", driver.findElement(By.xpath("//h2")).getText());
 		} catch (Error e) {
 			verificationErrors.append(e.toString());
 		}
-
 		return this;		
 	}
 
@@ -87,21 +94,6 @@ public class DeleteDaycareFromOtherUserUITest {
 		this.daycare.setDescription("Descripcion de prueba");
 		this.daycare.setCapacity(10);
 		this.daycare.setPet(pets.get(0));
-	}
-
-	private DeleteDaycareFromOtherUserUITest thenDaycareIsDelete() {
-		try {
-			assertNotEquals(this.daycare.getDate().toString()+this.daycare.getDescription().toString()+this.daycare.getCapacity().toString()+this.daycare.getPet().getName(),
-					driver.findElement(By.xpath("//table[@id='daycaresTable']/tbody/tr/td[1]")).getText()
-					+driver.findElement(By.xpath("//table[@id='daycaresTable']/tbody/tr/td[2]")).getText()
-					+driver.findElement(By.xpath("//table[@id='daycaresTable']/tbody/tr/td[3]")).getText()
-					+driver.findElement(By.xpath("//table[@id='daycaresTable']/tbody/tr/td[4]")).getText());
-		} catch (Error e) {
-			verificationErrors.append(e.toString());
-		}
-
-		return this;
-
 	}
 
 	  @AfterEach

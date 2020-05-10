@@ -17,6 +17,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.NoAlertPresentException;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -54,36 +55,24 @@ public class AddDaycareUITest {
 	@Test
 	public void testAddDaycareUI() throws Exception {
 		driver.get(baseUrl);
-		as("george", "george").whenIamLoggedIntheSystem().openMyDaycares().addDaycare().openMyDaycares()
-				.thenDaycareIsInUserDaycaresTable();
+		as("george", "george")
+		.whenIamLoggedIntheSystem()
+		.openMyDaycares();
+		Integer rowsBefore = driver.findElements(By.xpath("//table[@id='daycaresTable']/tbody/tr")).size();
+		addDaycare()
+		.openMyDaycares()
+		.thenDaycareIsInUserDaycaresTable(rowsBefore);
 	}
 
-	private AddDaycareUITest thenDaycareIsInUserDaycaresTable() {
+	private AddDaycareUITest thenDaycareIsInUserDaycaresTable(Integer rowsBefore) {
+		Integer rowsAfter = driver.findElements(By.xpath("//table[@id='daycaresTable']/tbody/tr")).size();
+		rowsBefore++;
 		try {
-			assertEquals(this.daycare.getDate().toString(),
-					driver.findElement(By.xpath("//table[@id='daycaresTable']/tbody/tr[3]/td[1]")).getText());
+			assertEquals(rowsBefore,
+					rowsAfter);
 		} catch (Error e) {
 			verificationErrors.append(e.toString());
 		}
-		try {
-			assertEquals(this.daycare.getDescription(),
-					driver.findElement(By.xpath("//table[@id='daycaresTable']/tbody/tr[3]/td[2]")).getText());
-		} catch (Error e) {
-			verificationErrors.append(e.toString());
-		}
-		try {
-			assertEquals(this.daycare.getCapacity().toString(),
-					driver.findElement(By.xpath("//table[@id='daycaresTable']/tbody/tr[3]/td[3]")).getText());
-		} catch (Error e) {
-			verificationErrors.append(e.toString());
-		}
-		try {
-			assertEquals(this.daycare.getPet().getName(),
-					driver.findElement(By.xpath("//table[@id='daycaresTable']/tbody/tr[3]/td[4]")).getText());
-		} catch (Error e) {
-			verificationErrors.append(e.toString());
-		}
-
 		return this;
 
 	}

@@ -69,12 +69,13 @@ public class DaycareControllerE2ETests {
 	@WithMockUser(username = TEST_OWNER_USERNAME, authorities = { "owner" })
 	@Test
 	void testProcessCreationFormSuccess() throws Exception {
-		mockMvc.perform(post("/daycares/new").param("description", "Descripcion")
-				.param("date", (LocalDate.now().getYear() + 2) + "/07/06").param("petName", "Leo").with(csrf()))
-				.andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/daycares/3")); // 3 ya que ya
-																										// existen dos
-																										// creados por
-																										// data.sql
+		mockMvc.perform(post("/daycares/new").
+				param("description", "Descripcion")
+				.param("date", (LocalDate.now().getYear() + 2) + "/07/06")
+				.param("petName", "Leo").
+				with(csrf()))
+				.andExpect(status().is3xxRedirection())
+				.andExpect(redirectedUrlPattern("/daycares/*")); // 3 ya que ya existen dos creados por data.sql
 	}
 
 	@WithMockUser(username = TEST_ADMIN_USERNAME, authorities = { "admin" })

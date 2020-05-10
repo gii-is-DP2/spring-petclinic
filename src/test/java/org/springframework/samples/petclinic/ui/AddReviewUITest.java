@@ -60,8 +60,8 @@ public class AddReviewUITest {
 		driver.findElement(By.id("comments")).sendKeys("Esto esta epico");
 		new Select(driver.findElement(By.id("rating"))).selectByVisibleText("5");
 		driver.findElement(By.xpath("//option[@value='5']")).click();
-		new Select(driver.findElement(By.id("serviceType"))).selectByVisibleText("TRAINING");
-		driver.findElement(By.xpath("//option[@value='TRAINING']")).click();
+		new Select(driver.findElement(By.id("serviceType"))).selectByVisibleText("HAIRDRESSING");
+		driver.findElement(By.xpath("//option[@value='HAIRDRESSING']")).click();
 		driver.findElement(By.xpath("//button[@type='submit']")).click();
 		return this;
 	}
