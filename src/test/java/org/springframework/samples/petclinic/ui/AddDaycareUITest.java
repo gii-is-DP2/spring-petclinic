@@ -53,7 +53,7 @@ public class AddDaycareUITest {
 
 	@Test
 	public void testAddDaycareUI() throws Exception {
-		driver.get("http://localhost:" + port);
+		driver.get(baseUrl);
 		as("george", "george").whenIamLoggedIntheSystem().openMyDaycares().addDaycare().openMyDaycares()
 				.thenDaycareIsInUserDaycaresTable();
 	}
@@ -141,9 +141,8 @@ public class AddDaycareUITest {
 
 	private AddDaycareUITest as(String user, String password) {
 		this.user = user;
-
-		driver.findElement(By.xpath("//div[@id='main-navbar']/ul/li[5]/a")).click();
-		driver.findElement(By.xpath("//a[contains(text(),'Login')]")).click();
+		driver.findElement(By.linkText("USER")).click();
+		driver.findElement(By.linkText("LOGIN")).click();
 	    driver.findElement(By.id("username")).clear();
 	    driver.findElement(By.id("username")).sendKeys("george");
 	    driver.findElement(By.id("password")).click();
