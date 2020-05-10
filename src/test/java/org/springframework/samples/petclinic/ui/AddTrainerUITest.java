@@ -29,24 +29,24 @@ public class AddTrainerUITest {
 	private String username;
 	private Trainer trainer;
 
-  @BeforeEach
-  public void setUp() throws Exception {
-    driver = new FirefoxDriver();
-    baseUrl = "http://localhost:" + port;
-    driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
+	@BeforeEach
+	public void setUp() throws Exception {
+		driver = new FirefoxDriver();
+		baseUrl = "http://localhost:" + port;
+		driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
   
-    this.initTrainer();
-  }
+		this.initTrainer();
+	}
 
-  @Test
-  public void testAddTrainer() throws Exception {
-	  as("admin", "admin").
-	  whenIamLoggedIntheSystem().
-	  openAddTrainers().
-	  addTrainer().
-	  openTrainers().
-	  thenTrainerIsPresent();
-  }
+	@Test
+	public void testAddTrainer() throws Exception {
+		as("admin", "admin").
+		whenIamLoggedIntheSystem().
+		openAddTrainers().
+		addTrainer().
+		openTrainers().
+		thenTrainerIsPresent();
+	}
   
 	private AddTrainerUITest whenIamLoggedIntheSystem() {	
 		return this;
@@ -67,16 +67,17 @@ public class AddTrainerUITest {
 		return this;
 	}
 
+
 	private AddTrainerUITest openAddTrainers() {
-		driver.findElement(By.xpath("//div[@id='main-navbar']/ul/li[4]")).click();
-	    driver.findElement(By.xpath("//div[@id='main-navbar']/ul/li[4]/ul/li[4]/a/span[2]")).click();
+		driver.findElement(By.xpath("//div[@id='main-navbar']/ul/li[3]")).click();
+	    driver.findElement(By.xpath("//div[@id='main-navbar']/ul/li[3]/ul/li[4]/a/span[2]")).click();
 		
 		return this;
 	}
 	
 	private AddTrainerUITest openTrainers() {
-		driver.findElement(By.xpath("//div[@id='main-navbar']/ul/li[4]")).click();
-	    driver.findElement(By.xpath("//div[@id='main-navbar']/ul/li[4]/ul/li[2]/a/span[2]")).click();
+		driver.findElement(By.xpath("//div[@id='main-navbar']/ul/li[3]")).click();
+	    driver.findElement(By.xpath("//div[@id='main-navbar']/ul/li[3]/ul/li[2]/a/span[2]")).click();
 		
 		return this;
 	}
@@ -107,8 +108,8 @@ public class AddTrainerUITest {
 	private AddTrainerUITest thenTrainerIsPresent() {
 		driver.findElement(By.name("lastName")).click();
 	    driver.findElement(By.name("lastName")).clear();
-	    driver.findElement(By.name("lastName")).sendKeys(this.trainer.getLastName());
-	    driver.findElement(By.xpath("//button[@type='submit']")).click();
+		driver.findElement(By.name("lastName")).sendKeys(this.trainer.getLastName());
+		driver.findElement(By.xpath("//button[@type='submit']")).click();
 	    
 	    try {
 	    	assertEquals(this.trainer.getFirstName() + " " + this.trainer.getLastName(), 

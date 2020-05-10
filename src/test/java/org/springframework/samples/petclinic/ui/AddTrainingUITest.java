@@ -62,7 +62,6 @@ public class AddTrainingUITest {
 		return this;
 	}
   
-  	
   	private AddTrainingUITest as(String username, String password) {
 		this.username=username;
 		
@@ -77,11 +76,10 @@ public class AddTrainingUITest {
 		    
 		return this;
 	}
-
   	
   	private AddTrainingUITest openMyTrainings() {
-  		driver.findElement(By.xpath("//div[@id='main-navbar']/ul/li[4]/a")).click();
-  		driver.findElement(By.xpath("//div[@id='main-navbar']/ul/li[4]/ul/li[2]/a/span[2]")).click();
+  		driver.findElement(By.xpath("//div[@id='main-navbar']/ul/li[3]/a")).click();
+  		driver.findElement(By.xpath("//div[@id='main-navbar']/ul/li[3]/ul/li[2]/a/span[2]")).click();
 	    
   		return this;
   	}
@@ -111,28 +109,28 @@ public class AddTrainingUITest {
   
   	private AddTrainingUITest thenTrainingIsInUserTrainingsTable() {
   		try {
-  	      assertEquals(this.training.getDescription(), driver.findElement(By.xpath("//table[@id='trainingsTable']/tbody/tr/td[2]")).getText());
+  	      assertEquals(this.training.getDescription(), driver.findElement(By.xpath("//table[@id='trainingsTable']/tbody/tr[2]/td[2]")).getText());
   	    } catch (Error e) {
   	      verificationErrors.append(e.toString());
   	    }
   	    try {
-  	      assertEquals(this.training.getGround().toString(), driver.findElement(By.xpath("//table[@id='trainingsTable']/tbody/tr/td[3]")).getText());
+  	      assertEquals(this.training.getGround().toString(), driver.findElement(By.xpath("//table[@id='trainingsTable']/tbody/tr[2]/td[3]")).getText());
   	    } catch (Error e) {
   	      verificationErrors.append(e.toString());
   	    }
   	    try {
-  	      assertEquals(this.training.getGroundType().toString().toUpperCase(), driver.findElement(By.xpath("//table[@id='trainingsTable']/tbody/tr/td[4]")).getText());
+  	      assertEquals(this.training.getGroundType().toString().toUpperCase(), driver.findElement(By.xpath("//table[@id='trainingsTable']/tbody/tr[2]/td[4]")).getText());
   	    } catch (Error e) {
   	      verificationErrors.append(e.toString());
   	    }
   	    try {
-  	      assertEquals(this.training.getPet().getName(), driver.findElement(By.xpath("//table[@id='trainingsTable']/tbody/tr/td[5]")).getText());
+  	      assertEquals(this.training.getPet().getName(), driver.findElement(By.xpath("//table[@id='trainingsTable']/tbody/tr[2]/td[5]")).getText());
   	    } catch (Error e) {
   	      verificationErrors.append(e.toString());
   	    }
   	    try {
   	      assertEquals(this.training.getTrainer().getFirstName() + " " + this.training.getTrainer().getLastName(), 
-  	    		  driver.findElement(By.xpath("//table[@id='trainingsTable']/tbody/tr/td[6]")).getText());
+  	    		  driver.findElement(By.xpath("//table[@id='trainingsTable']/tbody/tr[2]/td[6]")).getText());
   	    } catch (Error e) {
   	      verificationErrors.append(e.toString());
   	    }
