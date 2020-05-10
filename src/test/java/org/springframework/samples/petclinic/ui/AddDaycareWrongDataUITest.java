@@ -115,18 +115,10 @@ public class AddDaycareWrongDataUITest {
 	
 	private AddDaycareWrongDataUITest addDaycareWrongDescription() {
 		this.initTraining();
-		
-		// Coge el ultimo dia del mes
-		Calendar calendar = Calendar.getInstance();
-		int year = LocalDate.now().getYear();
-		int month = LocalDate.now().getMonthValue();
-		int date = 1;
-		calendar.set(year, month, date);
-		int days = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
-		String ndays= Integer.toString(days);
 
 		driver.findElement(By.id("date")).click();
-		driver.findElement(By.linkText(ndays)).click();
+		driver.findElement(By.xpath("//div[@id='ui-datepicker-div']/div/a[2]/span")).click();
+		driver.findElement(By.linkText("1")).click();
 		driver.findElement(By.id("description")).click();
 		driver.findElement(By.id("description")).clear();
 		driver.findElement(By.id("description")).sendKeys("");
@@ -147,7 +139,8 @@ public class AddDaycareWrongDataUITest {
 		String ndays= Integer.toString(days);
 
 		driver.findElement(By.id("date")).click();
-		 driver.findElement(By.xpath("//div[@id='ui-datepicker-div']/div/a[2]/span")).click();
+		driver.findElement(By.xpath("//div[@id='ui-datepicker-div']/div/a[2]/span")).click();
+		driver.findElement(By.xpath("//div[@id='ui-datepicker-div']/div/a[2]/span")).click();
 		driver.findElement(By.linkText(ndays)).click();
 		driver.findElement(By.id("description")).click();
 		driver.findElement(By.id("description")).clear();
