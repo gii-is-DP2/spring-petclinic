@@ -102,17 +102,17 @@ public class CarerController {
 		return "carers/carersList";
 	}
 	
-	@GetMapping(value = "/carer/find")
-	public String showCarersList(Carer carer, BindingResult result, Map<String, Object> model) {
-		Collection<Carer> results;
-		if (carer == null || carer.getLastName() == null || carer.getLastName().isEmpty()) {
-			results = this.carerService.findCarers();
-		} else {
-			results = this.carerService.findCarersByLastName(carer.getLastName());
-		}
-		model.put("carers", results);
-		return "carers/carersList";
-	}
+//	@GetMapping(value = "/carer/find")
+//	public String showCarersList(Carer carer, BindingResult result, Map<String, Object> model) {
+//		Collection<Carer> results;
+//		if (carer == null || carer.getLastName() == null || carer.getLastName().isEmpty()) {
+//			results = this.carerService.findCarers();
+//		} else {
+//			results = this.carerService.findCarersByLastName(carer.getLastName());
+//		}
+//		model.put("carers", results);
+//		return "carers/carersList";
+//	}
 	
 	@GetMapping(value= "/carers/{carerId}/delete")
 	public String deleteCarer(@PathVariable("carerId") final int carerId, final ModelMap model) {

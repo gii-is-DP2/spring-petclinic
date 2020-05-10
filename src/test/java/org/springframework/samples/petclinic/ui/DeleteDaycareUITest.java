@@ -1,5 +1,6 @@
 package org.springframework.samples.petclinic.ui;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.fail;
 
@@ -63,9 +64,10 @@ public class DeleteDaycareUITest {
 		driver.findElement(By.xpath("//div[@id='main-navbar']/ul/li[3]/a")).click();
 		driver.findElement(By.xpath("//div[@id='main-navbar']/ul/li[3]/ul/li[3]/a")).click();
 		initDaycare();
+		Integer rowsBefore = driver.findElements(By.xpath("//table[@id='daycaresTable']/tbody/tr")).size();
 		driver.findElement(By.linkText("2022-02-02")).click();
 		driver.findElement(By.xpath("//a[contains(text(),'Cancel daycare')]")).click();
-		thenDaycareIsDelete();
+		thenDaycareIsDelete(rowsBefore);
 	}
 
 	private void initDaycare() {
@@ -80,13 +82,11 @@ public class DeleteDaycareUITest {
 		this.daycare.setPet(pets.get(0));
 	}
 
-	private DeleteDaycareUITest thenDaycareIsDelete() {
+	private DeleteDaycareUITest thenDaycareIsDelete(Integer rowsBefore) {
+		Integer rowsAfter = driver.findElements(By.xpath("//table[@id='daycaresTable']/tbody/tr")).size();
+		rowsBefore--;
 		try {
-			assertNotEquals(this.daycare.getDate().toString()+this.daycare.getDescription().toString()+this.daycare.getCapacity().toString()+this.daycare.getPet().getName(),
-					driver.findElement(By.xpath("//table[@id='daycaresTable']/tbody/tr/td[1]")).getText()
-					+driver.findElement(By.xpath("//table[@id='daycaresTable']/tbody/tr/td[2]")).getText()
-					+driver.findElement(By.xpath("//table[@id='daycaresTable']/tbody/tr/td[3]")).getText()
-					+driver.findElement(By.xpath("//table[@id='daycaresTable']/tbody/tr/td[4]")).getText());
+			assertEquals(rowsBefore, rowsAfter);
 		} catch (Error e) {
 			verificationErrors.append(e.toString());
 		}
