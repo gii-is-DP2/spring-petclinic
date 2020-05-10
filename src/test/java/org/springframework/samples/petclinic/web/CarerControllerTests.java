@@ -172,7 +172,7 @@ private static final int TEST_CARER_ID = 1;
 	void testShowAllCarerList() throws Exception {
 		given(this.carerService.findCarers()).willReturn(Lists.newArrayList(this.carer));
 		
-		mockMvc.perform(get("/carer/find"))
+		mockMvc.perform(get("/carers/find"))
 			.andExpect(status().isOk())
 			.andExpect(model().attribute("carers", iterableWithSize(1)))
 			.andExpect(view().name("carers/carersList"));
@@ -185,7 +185,7 @@ private static final int TEST_CARER_ID = 1;
 	void testShowCarersByLastName() throws Exception {
 		given(this.carerService.findCarersByLastName((this.carer.getLastName()))).willReturn(Lists.newArrayList(this.carer));
 		
-		mockMvc.perform(get("/carer/find")
+		mockMvc.perform(get("/carers/find")
 			.param("lastName", this.carer.getLastName())
 			.with(csrf()))
 			.andExpect(status().isOk())
@@ -200,7 +200,7 @@ private static final int TEST_CARER_ID = 1;
 	void testShowAllEmptyTrainersList() throws Exception {
 		given(this.carerService.findCarers()).willReturn(Lists.newArrayList());
 		
-		mockMvc.perform(get("/carer/find"))
+		mockMvc.perform(get("/carers/find"))
 			.andExpect(status().isOk())
 			.andExpect(model().attribute("carers", iterableWithSize(0)))
 			.andExpect(view().name("carers/carersList"));

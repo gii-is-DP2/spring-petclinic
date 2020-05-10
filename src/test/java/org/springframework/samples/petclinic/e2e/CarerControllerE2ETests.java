@@ -71,7 +71,6 @@ public class CarerControllerE2ETests {
 		.andExpect(redirectedUrlPattern("/carers/**"));
 	}
 	
-	// hay dudas
 	@WithMockUser(username = TEST_ADMIN_USERNAME, authorities = {"admin"})
 	@Test
 	void testProcessCreationEmptyFormErrors() throws Exception {
@@ -83,12 +82,11 @@ public class CarerControllerE2ETests {
 				.param("telephone", "1")
 				.with(csrf()))
 				.andExpect(status().isOk())
-				.andExpect(model().attributeExists("trainer"))
-				.andExpect(model().attributeHasErrors("trainer"))
-				.andExpect(model().attributeHasFieldErrors("trainer", "email"))
-				.andExpect(model().attributeHasFieldErrors("trainer", "specialty"))
-				.andExpect(model().attributeHasFieldErrors("trainer", "description"))
-				.andExpect(view().name("trainers/createOrUpdateTrainerForm"));
+				.andExpect(model().attributeExists("carer"))
+				.andExpect(model().attributeHasErrors("carer"))
+				.andExpect(model().attributeHasFieldErrors("carer", "email"))
+				.andExpect(model().attributeHasFieldErrors("carer", "isHairdresser"))
+				.andExpect(view().name("carers/createOrUpdateCarerForm"));
 	}
 	
 	@WithMockUser(username = TEST_ADMIN_USERNAME, authorities = {"admin"})
