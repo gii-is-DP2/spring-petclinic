@@ -42,7 +42,7 @@ public class AddReviewRepeatedServiceUITest {
 	}
 	
 	private AddReviewRepeatedServiceUITest whenLoggedInAs(String username, String password) {
-		driver.get("http://localhost:8080/");
+		driver.get(baseUrl);
 		driver.findElement(By.linkText("USER")).click();
 		driver.findElement(By.linkText("LOGIN")).click();
 		driver.findElement(By.id("username")).click();
