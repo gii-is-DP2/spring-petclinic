@@ -167,7 +167,9 @@ public class TrainingController {
 	@GetMapping("/trainings/{trainingId}")
 	public ModelAndView showTraining(@PathVariable("trainingId") int trainingId) {
 		ModelAndView mav = new ModelAndView("trainings/trainingDetails");
-		mav.addObject(this.trainingService.findTrainingById(trainingId));
+		Training training = trainingService.findTrainingById(trainingId);
+		authorizeUserAction(training.getPet().getId());
+		mav.addObject(training);
 		return mav;
 	}
 	

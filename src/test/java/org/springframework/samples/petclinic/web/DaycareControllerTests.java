@@ -2,9 +2,12 @@ package org.springframework.samples.petclinic.web;
 
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.is;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -13,6 +16,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 import java.time.LocalDate;
+import java.util.NoSuchElementException;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -37,10 +41,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.google.common.collect.Lists;
 
-
-@WebMvcTest(controllers = DaycareController.class,
-excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = WebSecurityConfigurer.class),
-excludeAutoConfiguration= SecurityConfiguration.class)
+@WebMvcTest(controllers = DaycareController.class, excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = WebSecurityConfigurer.class), excludeAutoConfiguration = SecurityConfiguration.class)
 public class DaycareControllerTests {
 
 	private static final int TEST_DAYCARE_ID = 1;
@@ -49,33 +50,33 @@ public class DaycareControllerTests {
 
 	@MockBean
 	private DaycareService daycareService;
-	
+
 	@MockBean
 	private PetService petService;
-	
+
 	@Autowired
 	private DaycareController daycareController;
-	
+
 	@Autowired
 	private MockMvc mockMvc;
-	
+
 	@MockBean
 	private AuthorizationService authorizationService;
-	
+
 	@MockBean
 	private Authentication auth;
-	
+
 	@MockBean
 	private SecurityContext securityContext;
-	
+
 	private Daycare daycare;
 	private Pet pet;
-	
+
 	@BeforeEach
 	void setup() {
 		daycare = new Daycare();
 		daycare.setId(this.TEST_DAYCARE_ID);
-		daycare.setDate(LocalDate.now());
+		daycare.setDate(LocalDate.now().plusYears(1));
 		daycare.setDescription("Descripcion");
 		pet = new Pet();
 		pet.setId(TEST_PET_ID);
@@ -86,146 +87,174 @@ public class DaycareControllerTests {
 		owner.addPet(pet);
 		given(this.daycareService.findDaycareById(TEST_DAYCARE_ID)).willReturn(this.daycare);
 		given(this.petService.findPetById(TEST_PET_ID)).willReturn(this.pet);
-		
+
 		given(securityContext.getAuthentication()).willReturn(auth);
 		SecurityContextHolder.setContext(securityContext);
 	}
 
-        @WithMockUser(value = "spring")
-        @Test
+	@WithMockUser(value = "spring")
+	@Test
 	void testInitCreationForm() throws Exception {
-        	mockMvc.perform(get("/daycares/new"))
-        	.andExpect(status().isOk())
-			.andExpect(model().attributeExists("daycareDTO"))
-			.andExpect(view().name("daycares/createOrUpdateDaycareForm"));
-	}
-
-	@WithMockUser(value = "spring")
-        @Test
-	void testProcessCreationFormSuccess() throws Exception {
-		mockMvc.perform(post("/daycares/new")
-				.param("description", "asdasd")
-				.param("date", "2020/10/10")
-				.param("petName", "fede")
-				.param("capacity", "5")
-				.with(csrf()))
-                .andExpect(status().is2xxSuccessful());
-	}
-
-	@WithMockUser(value = "spring")
-        @Test
-	void testProcessCreationFormHasErrors() throws Exception {
-		mockMvc.perform(post("/daycares/new")
-				.param("description", "asdasd")
-				.param("date", "2015/02/12")
-							.with(csrf()))
-				.andExpect(model().attributeHasErrors("daycareDTO"))
-				.andExpect(status().isOk())
+		mockMvc.perform(get("/daycares/new")).andExpect(status().isOk())
+				.andExpect(model().attributeExists("daycareDTO"))
 				.andExpect(view().name("daycares/createOrUpdateDaycareForm"));
 	}
-	
+
+	@WithMockUser(value = "spring")
+	@Test
+	void testProcessCreationFormSuccess() throws Exception {
+		given(this.petService.findPetsByName(anyString(), anyString())).willReturn(this.pet);
+
+		mockMvc.perform(post("/daycares/new").param("description", "Descripcion")
+				.param("date", (LocalDate.now().getYear() + 1) + "/05/06").param("petName", "Leo")
+				.param("capacity", "5").with(csrf())).andExpect(status().is3xxRedirection());
+
+		verify(this.daycareService, times(1)).saveDaycare(any());
+	}
+
+	@WithMockUser(value = "spring")
+	@Test
+	void testProcessCreationFormHasErrors() throws Exception {
+		mockMvc.perform(post("/daycares/new").param("description", "asdasd").param("date", "2015/02/12").with(csrf()))
+				.andExpect(model().attributeHasErrors("daycareDTO")).andExpect(status().isOk())
+				.andExpect(view().name("daycares/createOrUpdateDaycareForm"));
+	}
+
 	@WithMockUser(value = "spring")
 	@Test
 	void testInitUpdateForm() throws Exception {
-    	given(this.authorizationService.canUserModifyBooking(anyString(), eq(this.TEST_PET_ID))).willReturn(true);
-		
-		mockMvc.perform(get("/daycares/{daycareId}/edit", this.TEST_DAYCARE_ID))
-			.andExpect(status().isOk())
-			.andExpect(view().name("daycares/createOrUpdateDaycareForm"));
+		given(this.authorizationService.canUserModifyBooking(anyString(), eq(this.TEST_PET_ID))).willReturn(true);
+
+		mockMvc.perform(get("/daycares/{daycareId}/edit", this.TEST_DAYCARE_ID)).andExpect(status().isOk())
+				.andExpect(view().name("daycares/createOrUpdateDaycareForm"));
 	}
 
 	@WithMockUser(value = "spring")
 	@Test
 	void testProcessUpdateFormSuccess() throws Exception {
-	   	given(this.authorizationService.canUserModifyBooking(anyString(), eq(this.TEST_PET_ID))).willReturn(true);
-	
-	   	mockMvc.perform(post("/daycares/{daycareId}/edit", this.TEST_DAYCARE_ID)
-	   			.with(csrf())
-				.param("description", "asdasda")
-				.param("date", "2020/10/10"))
-				.andExpect(status().is2xxSuccessful())
-				.andExpect(view().name("daycares/createOrUpdateDaycareForm"));
-		}
-	 
-	 @WithMockUser(value = "spring")
-		@Test
-		void testInitUpdateFormUnauthorized() throws Exception {
-	    	
-	    	given(this.authorizationService.canUserModifyBooking(anyString(), eq(this.TEST_PET_ID))).willReturn(false);
-	    	
-			mockMvc.perform(get("/daycares/{daycareId}/edit", this.TEST_DAYCARE_ID))
-					.andExpect(status().isOk())
-					.andExpect(view().name("errors/accessDenied"));
-		}
-	
+		given(this.daycareService.findDaycareById(TEST_DAYCARE_ID)).willReturn(this.daycare);
+		given(this.petService.findPetsByName(anyString(), anyString())).willReturn(this.pet);
+		given(this.authorizationService.canUserModifyBooking(anyString(), eq(this.TEST_PET_ID))).willReturn(true);
+    	
+		mockMvc.perform(post("/daycares/{daycareId}/edit", this.TEST_DAYCARE_ID)
+							.with(csrf())
+							.param("description", "Desc")
+							.param("date", (LocalDate.now().getYear() + 1) + "/05/06")
+							.param("petName","Leo")
+							.param("capacity", "5"))
+						.andExpect(status().is3xxRedirection())
+						.andExpect(view().name("redirect:/daycares/owner"));
+		
+		verify(this.daycareService, times(1)).saveDaycare(any());
+	}
+
+	@WithMockUser(value = "spring")
+	@Test
+	void testInitUpdateFormUnauthorized() throws Exception {
+
+		given(this.authorizationService.canUserModifyBooking(anyString(), eq(this.TEST_PET_ID))).willReturn(false);
+
+		mockMvc.perform(get("/daycares/{daycareId}/edit", this.TEST_DAYCARE_ID)).andExpect(status().isOk())
+				.andExpect(view().name("errors/accessDenied"));
+	}
+
+	@WithMockUser(value = "spring")
+	@Test
+	void testProcessUpdateFormUnauthorized() throws Exception {
+		given(this.daycareService.findDaycareById(TEST_DAYCARE_ID)).willReturn(this.daycare);
+		given(this.petService.findPetsByName(anyString(), anyString())).willReturn(this.pet);
+		given(this.authorizationService.canUserModifyBooking(anyString(), eq(this.TEST_PET_ID))).willReturn(false);
+
+		mockMvc.perform(post("/daycares/{daycareId}/edit", this.TEST_DAYCARE_ID).with(csrf())
+				.param("description", "Descrpcion").param("date", (LocalDate.now().getYear() + 1) + "/05/06")
+				.param("petName", "Leo").param("capacity", "5")).andExpect(status().isOk())
+				.andExpect(view().name("errors/accessDenied"));
+
+		verify(this.daycareService, times(0)).saveDaycare(any());
+	}
+
 	@WithMockUser(value = "spring")
 	@Test
 	void testProcessUpdateFormHasErrors() throws Exception {
-	   	given(this.authorizationService.canUserModifyBooking(anyString(), eq(this.TEST_PET_ID))).willReturn(true);
-		
-		mockMvc.perform(post("/daycares/{daycareId}/edit", this.TEST_DAYCARE_ID)
-				.with(csrf())
-				.param("description", "asdasda")
-				.param("date", "2015/02/12"))
-				.andExpect(model().attributeHasErrors("daycareDTO"))
-				.andExpect(status().isOk())
+		given(this.authorizationService.canUserModifyBooking(anyString(), eq(this.TEST_PET_ID))).willReturn(true);
+
+		mockMvc.perform(post("/daycares/{daycareId}/edit", this.TEST_DAYCARE_ID).with(csrf())
+				.param("description", "asdasda").param("date", "2015/02/12"))
+				.andExpect(model().attributeHasErrors("daycareDTO")).andExpect(status().isOk())
 				.andExpect(view().name("daycares/createOrUpdateDaycareForm"));
-		}
-	 	 
-	@WithMockUser(value = "spring")
-    @Test
-	void testShowDaycare() throws Exception {
-	   	given(this.authorizationService.canUserModifyBooking(anyString(), eq(this.TEST_PET_ID))).willReturn(true);
-		
-		mockMvc.perform(get("/daycares/{daycareId}", TEST_DAYCARE_ID))
-		.andExpect(status().isOk())
-		.andExpect(view().name("daycares/daycareDetails"));
 	}
 
 	@WithMockUser(value = "spring")
-    @Test
-    void testShowDaycares() throws Exception {
-	   	mockMvc.perform(get("/daycares"))
-	   		.andExpect(status().isOk())
-	   		.andExpect(model().attributeExists("daycares"))
-	   		.andExpect(view().name("daycares/daycaresList"));
+	@Test
+	void testShowDaycare() throws Exception {
+		given(this.authorizationService.canUserModifyBooking(anyString(), eq(this.TEST_PET_ID))).willReturn(true);
+
+		mockMvc.perform(get("/daycares/{daycareId}", TEST_DAYCARE_ID)).andExpect(status().isOk())
+				.andExpect(view().name("daycares/daycareDetails"));
 	}
-	
-	@WithMockUser(value = "spring")
-    @Test
-	void testShowOwnerDaycares() throws Exception {
-		given(this.daycareService.findDaycaresByUser("spring")).willReturn(Lists.newArrayList(this.daycare));
-		mockMvc.perform(get("/trainings/owner"))
-				.andExpect(status().isOk())
-				.andExpect(model().attributeExists("daycares")).andExpect(view().name("daycares/daycaresList"));
-	}
-	
+
 	@WithMockUser(value = "spring")
 	@Test
-	void testProcessDeleteFormSuccess() throws Exception {
-		given(this.daycareService.findDaycareById(TEST_DAYCARE_ID)).willReturn(this.daycare);
-	   	given(this.authorizationService.canUserModifyBooking(anyString(), eq(this.TEST_PET_ID))).willReturn(true);
-		
-		mockMvc.perform(get( "/daycares/{daycareId}/delete", this.TEST_DAYCARE_ID)
-			.with(csrf()))
-			.andExpect(status().is3xxRedirection())
-			.andExpect(view().name("redirect:/daycares/owner"));
+	void testShowDaycares() throws Exception {
+		mockMvc.perform(get("/daycares")).andExpect(status().isOk()).andExpect(model().attributeExists("daycares"))
+				.andExpect(view().name("daycares/daycaresList"));
 	}
-	
+
+	@WithMockUser(value = "spring")
+	@Test
+	void testShowOwnerDaycares() throws Exception {
+		given(this.daycareService.findDaycaresByUser("spring")).willReturn(Lists.newArrayList(this.daycare));
+		mockMvc.perform(get("/daycares/owner")).andExpect(status().isOk())
+				.andExpect(model().attributeExists("daycares")).andExpect(view().name("daycares/daycaresList"));
+	}
+
+	@WithMockUser(value = "spring")
+	@Test
+	void testShowInvalidDaycare() throws Exception {
+		given(this.daycareService.findDaycareById(TEST_DAYCARE_ID)).willThrow(NoSuchElementException.class);
+
+		mockMvc.perform(get("/daycares/{daycareId}", this.TEST_DAYCARE_ID)).andExpect(status().isOk())
+				.andExpect(view().name("errors/elementNotFound"));
+	}
+
+	@WithMockUser(value = "spring")
+	@Test
+	void testProcessDeleteFormSuccessAsOwner() throws Exception {
+		given(this.daycareService.findDaycareById(TEST_DAYCARE_ID)).willReturn(this.daycare);
+		given(this.authorizationService.canUserModifyBooking(anyString(), eq(this.TEST_PET_ID))).willReturn(true);
+
+		mockMvc.perform(get("/daycares/{daycareId}/delete", this.TEST_DAYCARE_ID).with(csrf()))
+				.andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/daycares/owner"));
+	}
+
+	@WithMockUser(value = "spring", authorities = "admin")
+	@Test
+	void testProcessDeleteFormSuccessAsAdmin() throws Exception {
+		given(this.daycareService.findDaycareById(TEST_DAYCARE_ID)).willReturn(this.daycare);
+		given(this.authorizationService.canUserModifyBooking(anyString(), eq(this.TEST_PET_ID))).willReturn(true);
+
+		mockMvc.perform(get("/daycares/{daycareId}/delete", this.TEST_DAYCARE_ID).with(csrf()))
+				.andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/daycares"));
+	}
+
 	@WithMockUser(value = "spring", authorities = "admin")
 	@Test
 	void testProcessDeleteFormUnauthorized() throws Exception {
-    	
-    	given(this.authorizationService.canUserModifyBooking(anyString(), eq(this.TEST_PET_ID))).willReturn(false);
-    	
-		mockMvc.perform(get("/daycares/{daycareId}/delete", TEST_DAYCARE_ID)
-							.with(csrf()))
-				.andExpect(status().isOk())
+
+		given(this.authorizationService.canUserModifyBooking(anyString(), eq(this.TEST_PET_ID))).willReturn(false);
+
+		mockMvc.perform(get("/daycares/{daycareId}/delete", TEST_DAYCARE_ID).with(csrf())).andExpect(status().isOk())
 				.andExpect(view().name("errors/accessDenied"));
 	}
-	
-}
-	
-		
-		
 
+	@WithMockUser(value = "spring", authorities = "admin")
+	@Test
+	void testProcessDeleteFormInvalid() throws Exception {
+		given(this.daycareService.findDaycareById(TEST_DAYCARE_ID)).willThrow(NoSuchElementException.class);
+		given(this.authorizationService.canUserModifyBooking(anyString(), eq(this.TEST_PET_ID))).willReturn(true);
+
+		mockMvc.perform(get("/daycares/{daycareId}/delete", TEST_DAYCARE_ID)).andExpect(status().isOk())
+				.andExpect(view().name("errors/elementNotFound"));
+	}
+
+}

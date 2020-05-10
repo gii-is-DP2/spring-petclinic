@@ -12,13 +12,25 @@ public class AuthorizationService {
 	private PetService petService;
 	
 	private final OwnerService ownerService;
-	
+		
 	@Autowired
 	public AuthorizationService(PetService petService, OwnerService ownerService) {
 		this.petService = petService;
 		this.ownerService = ownerService;
+		
 	}
 	
+
+	@Transactional(readOnly = true)
+	public boolean canUserModifyEmployee(String userId) {
+		
+		if(userId.equals("admin")) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+		
 	@Transactional(readOnly = true)
 	public boolean canUserModifyBooking(String userId, int petId) {
 		Pet pet = this.petService.findPetById(petId);

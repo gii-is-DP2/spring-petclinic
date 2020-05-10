@@ -3,16 +3,19 @@ package org.springframework.samples.petclinic.ui;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.openqa.selenium.*;
 import org.openqa.selenium.firefox.FirefoxDriver;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.openqa.selenium.Alert;
+import org.openqa.selenium.By;
+import org.openqa.selenium.NoAlertPresentException;
+import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.WebDriver;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -41,7 +44,7 @@ public class LoginUITest {
 		as("admin", "admin").
 		whenIamLoggedIntheSystem().
 		thenISeeMyUsernameInTheMenuBar().
-		thenISeeTrainersInTheMenuBar();	
+		thenISeeEmployeesInTheMenuBar();	
 	}
 
 	private LoginUITest thenISeeMyUsernameInTheMenuBar() {
@@ -49,8 +52,8 @@ public class LoginUITest {
 		return this;
 	}
 	
-	private LoginUITest thenISeeTrainersInTheMenuBar() {
-		assertEquals("Trainers".toUpperCase(), driver.findElement(By.xpath("//div[@id='main-navbar']/ul/li[4]/a")).getText());
+	private LoginUITest thenISeeEmployeesInTheMenuBar() {
+		assertEquals("Employees".toUpperCase(), driver.findElement(By.xpath("//div[@id='main-navbar']/ul/li[3]/a")).getText());
 		return this;
 	}
 
@@ -63,14 +66,14 @@ public class LoginUITest {
 		this.username=username;
 		System.out.println(port);
 		driver.get(this.baseUrl);
-		driver.findElement(By.xpath("//div[@id='main-navbar']/ul/li[5]/a")).click();
-		driver.findElement(By.xpath("//div[@id='main-navbar']/ul/li[5]/ul/li[1]/a")).click();
+		driver.findElement(By.linkText("USER")).click();
+		driver.findElement(By.linkText("LOGIN")).click();
 		driver.findElement(By.id("username")).clear();
 		driver.findElement(By.id("username")).sendKeys(username);
 		driver.findElement(By.id("password")).clear();
 		driver.findElement(By.id("password")).sendKeys(password);
 		driver.findElement(By.xpath("//button[@type='submit']")).click();
-		    
+
 		return this;
 	}
 

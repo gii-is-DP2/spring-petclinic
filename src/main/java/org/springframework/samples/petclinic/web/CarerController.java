@@ -1,11 +1,7 @@
 package org.springframework.samples.petclinic.web;
 
-import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collection;
-import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
 
@@ -13,14 +9,8 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.model.Carer;
-import org.springframework.samples.petclinic.model.Daycare;
-import org.springframework.samples.petclinic.model.Pet;
-import org.springframework.samples.petclinic.model.Trainer;
 import org.springframework.samples.petclinic.service.CarerService;
-import org.springframework.samples.petclinic.service.exceptions.MappingException;
 import org.springframework.samples.petclinic.web.annotations.IsAdmin;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
@@ -73,7 +63,6 @@ public class CarerController {
 		}
 		else {
 			this.carerService.saveCarer(carer);
-			
 			return "redirect:/carers/" + carer.getId();
 		}
 	}
@@ -86,11 +75,8 @@ public class CarerController {
 	}
 
 	@PostMapping(value = "/carers/{carerId}/edit")
-	public String processUpdateCarerForm(@Valid Carer carer, BindingResult result,
-			@PathVariable("carerId") int carerId) {
-		
+	public String processUpdateCarerForm(@Valid Carer carer, BindingResult result, @PathVariable("carerId") int carerId) {
 		carer.setId(carerId);
-		
 		if (result.hasErrors()) {
 			return VIEWS_CARER_CREATE_OR_UPDATE_FORM;
 		}
@@ -117,15 +103,13 @@ public class CarerController {
 	}
 	
 	@GetMapping(value = "/carer/find")
-	public String showTrainersList(Carer carer, BindingResult result, Map<String, Object> model) {
+	public String showCarersList(Carer carer, BindingResult result, Map<String, Object> model) {
 		Collection<Carer> results;
-		
 		if (carer == null || carer.getLastName() == null || carer.getLastName().isEmpty()) {
 			results = this.carerService.findCarers();
 		} else {
 			results = this.carerService.findCarersByLastName(carer.getLastName());
 		}
-
 		model.put("carers", results);
 		return "carers/carersList";
 	}
@@ -133,17 +117,8 @@ public class CarerController {
 	@GetMapping(value= "/carers/{carerId}/delete")
 	public String deleteCarer(@PathVariable("carerId") final int carerId, final ModelMap model) {
 		Carer carer = this.carerService.findCarerById(carerId);
-		
 		this.carerService.delete(carerId);
-	
-		
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-//		if (auth.getAuthorities().stream().map(x -> x.getAuthority()).anyMatch(x -> x.equals("admin"))) {
-//			return "redirect:/daycares";
-//		}
-		
 		return "redirect:/carers";
 	}
-	
 	
 }

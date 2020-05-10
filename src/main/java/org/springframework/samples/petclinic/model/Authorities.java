@@ -56,6 +56,11 @@ public class Authorities extends BaseEntity {
 	}
 	
 	@Override
+	public String toString() {
+		return authority;
+	}
+	
+	@Override
     public int hashCode() {
         return 43;
     }

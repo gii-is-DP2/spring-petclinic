@@ -29,6 +29,7 @@ import org.springframework.samples.petclinic.service.UserService;
 import org.springframework.samples.petclinic.service.exceptions.BusinessException;
 import org.springframework.samples.petclinic.service.exceptions.MappingException;
 import org.springframework.samples.petclinic.util.ReviewDTO;
+import org.springframework.samples.petclinic.web.annotations.IsAuthenticated;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -53,13 +54,16 @@ import javax.validation.Valid;
  * @author Ken Krebs
  * @author Arjen Poutsma
  */
+
+@IsAuthenticated
 @Controller
 public class ReviewController {
 
 	private final ReviewService reviewService;
 	private final UserService userService;
-	
+
 	private static final String VIEWS_REVIEW_CREATE_FORM = "reviews/createReviewForm";
+	private static final String VIEWS_REVIEW_LIST = "reviews/reviewList";
 
 	@Autowired
 	public ReviewController(ReviewService reviewService, UserService userService) {
@@ -82,11 +86,11 @@ public class ReviewController {
 	public String showReviewList(Map<String, Object> model) {
 		Collection<Review> reviews = this.reviewService.findReviews();
 		model.put("reviews", reviews);
-		return "reviews/reviewList";
+		return VIEWS_REVIEW_LIST;
 	}
 
 	@GetMapping(value = "/reviews/new")
-	public String initTrainingCreationForm(Map<String, Object> model) {
+	public String initReviewCreationForm(Map<String, Object> model) {
 		ReviewDTO dto = new ReviewDTO();
 		model.put("reviewDTO", dto);
 		return VIEWS_REVIEW_CREATE_FORM;
@@ -102,8 +106,7 @@ public class ReviewController {
 			try {
 				review = this.convertToEntity(reviewDTO);
 			} catch (MappingException ex) {
-				result.rejectValue(ex.getEntity(), ex.getError(), ex.getMessage());
-	            return VIEWS_REVIEW_CREATE_FORM;
+	            return "errors/elementNotFound";
 			}
 			try {
 				this.reviewService.saveReview(review);
@@ -115,6 +118,13 @@ public class ReviewController {
 		}
 	}
 	
+	@GetMapping(value = "/reviews/{reviewId}/delete")
+	public String processDeleteReviewForm(@PathVariable("reviewId") int reviewId) {
+		Review review = this.reviewService.findReviewById(reviewId);
+		this.reviewService.deleteReview(review);
+		return "redirect:/reviews";
+	}
+	
 	private Review convertToEntity(ReviewDTO dto) throws MappingException {
 		Review review = new Review();
 		try {
@@ -122,7 +132,7 @@ public class ReviewController {
 			User user = this.userService.findByUsername(username);
 			review.setUser(user);
 		} catch(DataAccessException e) {
-			throw new MappingException("user", "Not existance", "User does not exist");
+			throw new MappingException("reviewDTO", "Not existance", "User does not exist");
 		}
 		review.setRating(dto.getRating());
 		review.setComments(dto.getComments());
@@ -130,13 +140,6 @@ public class ReviewController {
 		review.setDate(LocalDate.now());
 		
 		return review;
-	}
-	
-	@GetMapping(value = "/reviews/{reviewId}/delete")
-	public String processDeleteReviewForm(@PathVariable("reviewId") int reviewId) {
-		Review review = this.reviewService.findReviewById(reviewId);
-		this.reviewService.deleteReview(review);
-		return "redirect:/reviews";
 	}
 
 }

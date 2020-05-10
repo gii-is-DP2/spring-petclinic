@@ -266,15 +266,23 @@
                     </dependency>
                 </dependencies>
             </plugin>
+            
 	        <plugin>
 		        <groupId>org.apache.maven.plugins</groupId>
           		<artifactId>maven-surefire-plugin</artifactId>
 		        <configuration>
 		          	<excludes>
 		            	<exclude>**/*UITest.java</exclude>
+		            	<exclude>**/*LoginUITest.java</exclude>
+		            	<exclude>**/*AddDaycareUITest.java</exclude>        	
+		            	<exclude>**/*AddDaycareWrongDataUITest.java</exclude>        	
+		            	<exclude>**/*DeleteDaycareUITest.java</exclude>        	
+		            	<exclude>**/*ListCarerAsUserUITest.java</exclude>        	
+		            	<exclude>**/*ListCarerUITest.java</exclude>    
+		            	<exclude>**/*ListCarerAsUserUITest.java</exclude>    		            	    	       	
 		          	</excludes>
-		        </configuration>
-	      </plugin>
+		    	</configuration>
+	      	</plugin>
         </plugins>
     </build>
 
@@ -285,7 +293,64 @@
             <url>https://www.apache.org/licenses/LICENSE-2.0</url>
         </license>
     </licenses>
-
-
+    
+    <profiles>
+		<profile>
+			<id>AcceptanceTests</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-surefire-plugin</artifactId>
+						<configuration>
+							<skipTests>true</skipTests>
+						</configuration>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-failsafe-plugin</artifactId>
+						<executions>
+							<execution>
+								<goals>
+									<goal>integration-test</goal>
+									<goal>verify</goal>
+								</goals>
+							</execution>
+						</executions>
+						<configuration>
+							<includes>
+		            			<include>**/AddDaycareUITest.java</include>        	
+		            			<include>**/AddDaycareWrongDataUITest.java</include>        	
+		            			<include>**/DeleteDaycareUITest.java</include>        	
+		            			<include>**/ListCarerAsUserUITest.java</include>        	
+		            			<include>**/ListCarerUITest.java</include>    
+		            			<include>**/ListCarerAsUserUITest.java</include>  
+							</includes>
+						</configuration>
+					</plugin>
+					<plugin>
+						<groupId>net.masterthought</groupId>
+						<artifactId>maven-cucumber-reporting</artifactId>
+						<version>3.8.0</version>
+						<executions>
+							<execution>
+								<id>post-integration-test</id>
+								<goals>
+									<goal>generate</goal>
+								</goals>
+								<configuration>
+									<projectName>${name}</projectName>
+									<outputDirectory>target</outputDirectory>
+									<cucumberOutput>target/cucumber-reports/cucumber-report.json</cucumberOutput>
+									<buildNumber>1</buildNumber>
+									<parallelTesting>false</parallelTesting>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 
 </project>
