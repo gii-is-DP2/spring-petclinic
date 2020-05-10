@@ -15,7 +15,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class AddRepeatedReviewUITest {
+public class AddReviewRepeatedServiceUITest {
 
 	@LocalServerPort
 	private int port;
@@ -41,7 +41,7 @@ public class AddRepeatedReviewUITest {
 		thenIGetAnErrorMessage();
 	}
 	
-	private AddRepeatedReviewUITest whenLoggedInAs(String username, String password) {
+	private AddReviewRepeatedServiceUITest whenLoggedInAs(String username, String password) {
 		driver.get("http://localhost:8080/");
 		driver.findElement(By.linkText("USER")).click();
 		driver.findElement(By.linkText("LOGIN")).click();
@@ -55,7 +55,7 @@ public class AddRepeatedReviewUITest {
 		return this;
 	}
 	
-	private AddRepeatedReviewUITest thenIAddAReview() {
+	private AddReviewRepeatedServiceUITest thenIAddAReview() {
 		driver.findElement(By.xpath("//div[@id='main-navbar']/ul/li[4]/a/span[2]")).click();
 		driver.findElement(By.linkText("Add review")).click();
 		new Select(driver.findElement(By.id("serviceType"))).selectByVisibleText("TRAINING");
@@ -69,7 +69,7 @@ public class AddRepeatedReviewUITest {
 		return this;
 	}
 	
-	private AddRepeatedReviewUITest thenIAmTakenToTheReviewList() {
+	private AddReviewRepeatedServiceUITest thenIAmTakenToTheReviewList() {
 		try {
 			assertEquals("Add review", driver.findElement(By.linkText("Add review")).getText());
 		} catch (Error e) {
@@ -78,7 +78,7 @@ public class AddRepeatedReviewUITest {
 		return this;
 	}
 	
-	private AddRepeatedReviewUITest thenIAddAnotherReviewOfSameService() {
+	private AddReviewRepeatedServiceUITest thenIAddAnotherReviewOfSameService() {
 		driver.findElement(By.linkText("Add review")).click();
 		driver.findElement(By.id("comments")).click();
 		driver.findElement(By.id("comments")).clear();
@@ -91,7 +91,7 @@ public class AddRepeatedReviewUITest {
 		return this;
 	}
 	
-	private AddRepeatedReviewUITest thenIGetAnErrorMessage() {
+	private AddReviewRepeatedServiceUITest thenIGetAnErrorMessage() {
 		try {
 			assertEquals("You have already submitted a review for this service.",
 					driver.findElement(By.xpath("//form[@id='add-review-form']/div/div[3]/div/span[2]")).getText());
