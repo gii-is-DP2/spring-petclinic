@@ -65,8 +65,7 @@
 								</li>
 						</ul>
 					</li>
-				</sec:authorize>
-				
+				</sec:authorize>				
 				<li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown"> 
 					<span class="glyphicon glyphicon-check"></span> Reservations <span class="glyphicon glyphicon-chevron-down"></span></a>
 					<ul class="dropdown-menu">
