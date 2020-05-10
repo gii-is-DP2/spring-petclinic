@@ -37,6 +37,7 @@ public class TrainerController {
 		this.trainingService = trainingService;
 	}
 	
+	
 	@InitBinder
 	public void setAllowedFields(WebDataBinder dataBinder) {
 		dataBinder.setDisallowedFields("id");

@@ -96,21 +96,6 @@ public class DeleteDaycareFromOtherUserUITest {
 		this.daycare.setPet(pets.get(0));
 	}
 
-//	private DeleteDaycareFromOtherUserUITest thenDaycareIsDelete() {
-//		try {
-//			assertNotEquals(this.daycare.getDate().toString()+this.daycare.getDescription().toString()+this.daycare.getCapacity().toString()+this.daycare.getPet().getName(),
-//					driver.findElement(By.xpath("//table[@id='daycaresTable']/tbody/tr/td[1]")).getText()
-//					+driver.findElement(By.xpath("//table[@id='daycaresTable']/tbody/tr/td[2]")).getText()
-//					+driver.findElement(By.xpath("//table[@id='daycaresTable']/tbody/tr/td[3]")).getText()
-//					+driver.findElement(By.xpath("//table[@id='daycaresTable']/tbody/tr/td[4]")).getText());
-//		} catch (Error e) {
-//			verificationErrors.append(e.toString());
-//		}
-//
-//		return this;
-//
-//	}
-
 	  @AfterEach
 	  public void tearDown() throws Exception {
 	    driver.quit();
