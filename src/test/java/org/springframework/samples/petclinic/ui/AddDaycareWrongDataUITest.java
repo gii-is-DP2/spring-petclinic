@@ -55,11 +55,14 @@ public class AddDaycareWrongDataUITest {
 	@Test
 	public void testAddDaycareUI() throws Exception {
 		driver.get("http://localhost:" + port);
-		as("george", "george").whenIamLoggedIntheSystem().openMyDaycares()
-		.addDaycareWrongDate().isInForm().
+		as("george", "george").whenIamLoggedIntheSystem().openMyDaycares();
+		
+		Integer rowsBefore = driver.findElements(By.xpath("//table[@id='daycaresTable']/tbody/tr")).size();		
+		
+		addDaycareWrongDate().isInForm().
 		addDaycareWrongDescription().isInForm()
 		.addDaycare().openMyDaycares()
-				.thenDaycareIsInUserDaycaresTable();
+		.thenDaycareIsInUserDaycaresTable(rowsBefore);
 	}
 
 	private AddDaycareWrongDataUITest isInForm() {
@@ -78,32 +81,16 @@ public class AddDaycareWrongDataUITest {
 
 	}
 
-	private AddDaycareWrongDataUITest thenDaycareIsInUserDaycaresTable() {
+	private AddDaycareWrongDataUITest thenDaycareIsInUserDaycaresTable(Integer rowsBefore) {
+		Integer rowsAfter = driver.findElements(By.xpath("//table[@id='daycaresTable']/tbody/tr")).size();
+		rowsBefore++;
+		
 		try {
-			assertEquals(this.daycare.getDate().toString(),
-					driver.findElement(By.xpath("//table[@id='daycaresTable']/tbody/tr[3]/td[1]")).getText());
+			assertEquals(rowsBefore,
+					rowsAfter);
 		} catch (Error e) {
 			verificationErrors.append(e.toString());
 		}
-		try {
-			assertEquals(this.daycare.getDescription(),
-					driver.findElement(By.xpath("//table[@id='daycaresTable']/tbody/tr[3]/td[2]")).getText());
-		} catch (Error e) {
-			verificationErrors.append(e.toString());
-		}
-		try {
-			assertEquals(this.daycare.getCapacity().toString(),
-					driver.findElement(By.xpath("//table[@id='daycaresTable']/tbody/tr[3]/td[3]")).getText());
-		} catch (Error e) {
-			verificationErrors.append(e.toString());
-		}
-		try {
-			assertEquals(this.daycare.getPet().getName(),
-					driver.findElement(By.xpath("//table[@id='daycaresTable']/tbody/tr[3]/td[4]")).getText());
-		} catch (Error e) {
-			verificationErrors.append(e.toString());
-		}
-
 		return this;
 
 	}
