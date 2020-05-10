@@ -53,27 +53,34 @@ public class DeleteDaycareFromOtherUserUITest {
 
 	@Test
 	public void testDeleteDaycareUI() throws Exception {
-		driver.get("http://localhost:" + port);
+		whenLoggedInAs("peter", "peter")
+		.thenIAccessAnotherUsersDaycare()
+		.thenAccessIsDenied();
+	}
+	
+	private DeleteDaycareFromOtherUserUITest whenLoggedInAs(String username, String password) {
+		driver.get(baseUrl);
 		driver.findElement(By.xpath("//div[@id='main-navbar']/ul/li[5]/a")).click();
 		driver.findElement(By.xpath("//a[contains(text(),'Login')]")).click();
 		driver.findElement(By.id("password")).clear();
-		driver.findElement(By.id("password")).sendKeys("peter");
+		driver.findElement(By.id("password")).sendKeys(password);
 		driver.findElement(By.id("username")).clear();
-		driver.findElement(By.id("username")).sendKeys("peter");
+		driver.findElement(By.id("username")).sendKeys(username);
 		driver.findElement(By.xpath("//button[@type='submit']")).click();
-		driver.get("http://localhost:" + port + "/daycares/1");
-	    accessDenied();
-//		thenDaycareIsDelete();
+		return this;		
 	}
 	
-	private DeleteDaycareFromOtherUserUITest accessDenied() {
-		  
+	private DeleteDaycareFromOtherUserUITest thenIAccessAnotherUsersDaycare() {
+		driver.get(baseUrl + "/daycares/2");
+		return this;		
+	}
+	
+	private DeleteDaycareFromOtherUserUITest thenAccessIsDenied() {
 		try {
 			assertEquals("Access Denied!", driver.findElement(By.xpath("//h2")).getText());
 		} catch (Error e) {
 			verificationErrors.append(e.toString());
 		}
-
 		return this;		
 	}
 

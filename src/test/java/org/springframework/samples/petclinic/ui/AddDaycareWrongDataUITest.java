@@ -54,11 +54,9 @@ public class AddDaycareWrongDataUITest {
 
 	@Test
 	public void testAddDaycareUI() throws Exception {
-		driver.get("http://localhost:" + port);
+		driver.get(baseUrl);
 		as("george", "george").whenIamLoggedIntheSystem().openMyDaycares();
-		
-		Integer rowsBefore = driver.findElements(By.xpath("//table[@id='daycaresTable']/tbody/tr")).size();		
-		
+		Integer rowsBefore = driver.findElements(By.xpath("//table[@id='daycaresTable']/tbody/tr")).size();
 		addDaycareWrongDate().isInForm().
 		addDaycareWrongDescription().isInForm()
 		.addDaycare().openMyDaycares()

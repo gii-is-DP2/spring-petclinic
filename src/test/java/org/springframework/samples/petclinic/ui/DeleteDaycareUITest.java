@@ -43,6 +43,7 @@ public class DeleteDaycareUITest {
 	private String baseUrl;
 	private boolean acceptNextAlert = true;
 	private StringBuffer verificationErrors = new StringBuffer();
+	private int rowsBefore = 0;
 
 	@BeforeEach
 	public void setUp() throws Exception {
@@ -53,21 +54,36 @@ public class DeleteDaycareUITest {
 
 	@Test
 	public void testDeleteDaycareUI() throws Exception {
-		driver.get("http://localhost:" + port);
+		initDaycare();
+		whenLoggedInAs("george", "george")
+		.thenOpenMyDaycares()
+		.thenDeleteDaycare()
+		.thenDaycareIsDeleted();
+	}
+	
+	private DeleteDaycareUITest whenLoggedInAs(String username, String password) {
+		driver.get(baseUrl);
 		driver.findElement(By.xpath("//div[@id='main-navbar']/ul/li[5]/a")).click();
 		driver.findElement(By.xpath("//a[contains(text(),'Login')]")).click();
 		driver.findElement(By.id("password")).clear();
-		driver.findElement(By.id("password")).sendKeys("george");
+		driver.findElement(By.id("password")).sendKeys(password);
 		driver.findElement(By.id("username")).clear();
-		driver.findElement(By.id("username")).sendKeys("george");
+		driver.findElement(By.id("username")).sendKeys(username);
 		driver.findElement(By.xpath("//button[@type='submit']")).click();
+		return this;
+	}
+	
+	private DeleteDaycareUITest thenOpenMyDaycares() {
 		driver.findElement(By.xpath("//div[@id='main-navbar']/ul/li[3]/a")).click();
 		driver.findElement(By.xpath("//div[@id='main-navbar']/ul/li[3]/ul/li[3]/a")).click();
-		initDaycare();
-		Integer rowsBefore = driver.findElements(By.xpath("//table[@id='daycaresTable']/tbody/tr")).size();
+		rowsBefore = driver.findElements(By.xpath("//table[@id='daycaresTable']/tbody/tr")).size();
+		return this;
+	}
+	
+	private DeleteDaycareUITest thenDeleteDaycare() {
 		driver.findElement(By.linkText("2022-02-02")).click();
 		driver.findElement(By.xpath("//a[contains(text(),'Cancel daycare')]")).click();
-		thenDaycareIsDelete(rowsBefore);
+		return this;
 	}
 
 	private void initDaycare() {
@@ -82,15 +98,13 @@ public class DeleteDaycareUITest {
 		this.daycare.setPet(pets.get(0));
 	}
 
-	private DeleteDaycareUITest thenDaycareIsDelete(Integer rowsBefore) {
-		Integer rowsAfter = driver.findElements(By.xpath("//table[@id='daycaresTable']/tbody/tr")).size();
-		rowsBefore--;
+	private DeleteDaycareUITest thenDaycareIsDeleted() {
+		int rowsAfter = driver.findElements(By.xpath("//table[@id='daycaresTable']/tbody/tr")).size();
 		try {
-			assertEquals(rowsBefore, rowsAfter);
+			assertEquals(rowsBefore - 1, rowsAfter);
 		} catch (Error e) {
 			verificationErrors.append(e.toString());
 		}
-
 		return this;
 
 	}

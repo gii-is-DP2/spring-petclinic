@@ -54,13 +54,14 @@ public class AddDaycareUITest {
 
 	@Test
 	public void testAddDaycareUI() throws Exception {
-		
-		driver.get("http://localhost:" + port);
-		as("george", "george").whenIamLoggedIntheSystem().openMyDaycares();
-		
+		driver.get(baseUrl);
+		as("george", "george")
+		.whenIamLoggedIntheSystem()
+		.openMyDaycares();
 		Integer rowsBefore = driver.findElements(By.xpath("//table[@id='daycaresTable']/tbody/tr")).size();
-
-		addDaycare().openMyDaycares().thenDaycareIsInUserDaycaresTable(rowsBefore);
+		addDaycare()
+		.openMyDaycares()
+		.thenDaycareIsInUserDaycaresTable(rowsBefore);
 	}
 
 	private AddDaycareUITest thenDaycareIsInUserDaycaresTable(Integer rowsBefore) {
