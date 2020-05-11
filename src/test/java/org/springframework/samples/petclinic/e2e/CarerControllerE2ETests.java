@@ -8,6 +8,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
+import java.time.LocalDate;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,6 +73,79 @@ public class CarerControllerE2ETests {
 		.andExpect(redirectedUrlPattern("/carers/**"));
 	}
 	
+	@WithMockUser(username = TEST_OWNER_USERNAME, authorities = {"owner"})
+	@Test
+	void testInitUpdateFormForbidden() throws Exception {   	
+		mockMvc.perform(get("/carer/{carerId}/edit", TEST_CARER_ID))
+				.andExpect(status().isForbidden());
+	}
+	
+	
+	@WithMockUser(username = TEST_ADMIN_USERNAME, authorities = {"admin"})
+	@Test
+	void testInitUpdateFormSuccess() throws Exception {
+		mockMvc.perform(get("/carers/{carerId}/edit", TEST_CARER_ID))
+		.andExpect(status().isOk())
+		.andExpect(model().attributeExists("carer"))
+		.andExpect(view().name("carers/createOrUpdateCarerForm"));
+	}
+	
+	@WithMockUser(username = TEST_ADMIN_USERNAME, authorities = {"admin"})
+	@Test
+	void testInitUpdateFormInvalidCarer() throws Exception {   	
+		mockMvc.perform(get("/carers/{carerId}/edit", 99))
+		.andExpect(status().isOk())
+		.andExpect(view().name("errors/elementNotFound"));
+    }
+	
+	@WithMockUser(username = TEST_OWNER_USERNAME, authorities = {"owner"})
+	@Test
+	void testProcessUpdateFormForbidden() throws Exception {
+		mockMvc.perform(post("/carers/{carerId}/edit", TEST_CARER_ID)
+				.with(csrf())
+				.param("firstName", "Ian")
+				.param("lastName", " Spektor")
+				.param("salary", "2000")
+				.param("dni", "11223344i")
+				.param("telephone", "666223344")
+				.param("email", "correo2@gmail.com")
+				.param("isHairdresser", "false"))
+			.andExpect(view().name("errors/accessDenied"));
+	}
+	
+	@WithMockUser(username = TEST_ADMIN_USERNAME, authorities = {"admin"})
+	@Test
+	void testProcessUpdateFormSuccess() throws Exception {		
+		mockMvc.perform(post("/carers/{carerId}/edit", TEST_CARER_ID)
+				.param("firstName", "Alonso")
+				.param("lastName", "Rodriguez")
+				.param("salary", "1000")
+				.param("dni", "11223344d")
+				.param("telephone", "111223344")
+				.param("email", "correo1@gmail.com")
+				.param("isHairdresser", "true")
+				.with(csrf()))
+		.andExpect(status().is3xxRedirection())
+		.andExpect(view().name("redirect:/carers"));
+	}
+	
+	@WithMockUser(username = TEST_ADMIN_USERNAME, authorities = {"admin"})
+	@Test
+	void testProcessUpdateFormHasErrors() throws Exception {		
+		mockMvc.perform(post("/carers/{carerId}/edit", TEST_CARER_ID)
+				.param("firstName", "")
+				.param("lastName", "Rodriguez")
+				.param("salary", "1000")
+				.param("dni", "11223344d")
+				.param("telephone", "111223344")
+				.param("email", "correo")
+				.param("isHairdresser", "true")
+				.with(csrf()))
+		.andExpect(status().isOk())
+		.andExpect(model().attributeHasErrors("carer"))
+		.andExpect(view().name("carers/createOrUpdateCarerForm"));
+	}
+	
 	@WithMockUser(username = TEST_ADMIN_USERNAME, authorities = {"admin"})
 	@Test
 	void testProcessCreationEmptyFormErrors() throws Exception {
@@ -79,7 +154,7 @@ public class CarerControllerE2ETests {
 				.param("lastName", "Rodriguez")
 				.param("salary", "1000")
 				.param("dni", "11223344d")
-				.param("telephone", "1")
+				.param("telephone", "122334455")
 				.with(csrf()))
 				.andExpect(status().isOk())
 				.andExpect(model().attributeExists("carer"))
@@ -113,6 +188,33 @@ public class CarerControllerE2ETests {
 			.andExpect(status().isOk())
 			.andExpect(model().attributeExists("carers"))
 			.andExpect(view().name("carers/carersList"));
+	}
+	
+	@WithMockUser(username = TEST_ADMIN_USERNAME, authorities = {"admin"})
+	@Test
+	void testProcessDeleteFormSuccessOwner() throws Exception {
+		mockMvc.perform(get("/carers/{carerId}/delete", TEST_CARER_ID)
+							.with(csrf()))
+			.andExpect(status().is3xxRedirection())
+			.andExpect(view().name("redirect:/carers"));
+	}
+	
+	@WithMockUser(username = TEST_OWNER_USERNAME, authorities = {"owner"})
+	@Test
+	void testProcessDeleteForbidden() throws Exception {
+		mockMvc.perform(get("/carers/{carerId}/delete", TEST_CARER_ID)
+							.with(csrf()))
+			.andExpect(status().isOk())
+			.andExpect(view().name("errors/accessDenied"));
+	}
+	
+	@WithMockUser(username = TEST_ADMIN_USERNAME, authorities = {"admin"})
+	@Test
+	void testProcessDeleteInvalid() throws Exception {
+		mockMvc.perform(get("/carers/{carerId}/delete", 99)
+							.with(csrf()))
+			.andExpect(status().isOk())
+			.andExpect(view().name("errors/elementNotFound"));
 	}
 	 
 }

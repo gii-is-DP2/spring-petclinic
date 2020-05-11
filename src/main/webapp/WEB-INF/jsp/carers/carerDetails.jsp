@@ -38,5 +38,6 @@
     </table>
     
     <a class="btn btn-default" href='<spring:url value="/carers/${carer.id}/edit" htmlEscape="true"/>'>Edit carer</a>    
+    <a class="btn btn-default" href='<spring:url value="/carers/${carer.id}/delete" htmlEscape="true"/>'>Delete</a>    
 
 </petclinic:layout>

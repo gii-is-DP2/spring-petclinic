@@ -71,7 +71,7 @@ public class DeleteDaycareFromOtherUserUITest {
 	}
 	
 	private DeleteDaycareFromOtherUserUITest thenIAccessAnotherUsersDaycare() {
-		driver.get(baseUrl + "/daycares/2");
+		driver.get(baseUrl + "/daycares/2/delete");
 		return this;		
 	}
 	
