@@ -14,7 +14,6 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.samples.petclinic.model.Hairdressing;
 import org.springframework.samples.petclinic.model.Pet;
 import org.springframework.samples.petclinic.model.TipoCuidado;
-import org.springframework.samples.petclinic.model.Training;
 import org.springframework.samples.petclinic.service.AuthorizationService;
 import org.springframework.samples.petclinic.service.HairdressingService;
 import org.springframework.samples.petclinic.service.PetService;
@@ -271,7 +270,7 @@ public class HairdressingController {
 	
 	@IsOwner
 	@GetMapping(value = "/hairdressings/owner")
-	public String showOwnerTrainingsList(Map<String, Object> model) {
+	public String showOwnerHairdressingsList(Map<String, Object> model) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		model.put("owner", true);
 		Collection<Hairdressing> results = this.hairdressingService.findHairdressingsByUser(auth.getName());
