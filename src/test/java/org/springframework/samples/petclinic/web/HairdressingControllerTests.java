@@ -11,14 +11,20 @@ import org.springframework.samples.petclinic.model.Pet;
 import org.springframework.samples.petclinic.model.TipoCuidado;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
+import org.springframework.samples.petclinic.service.AuthorizationService;
 import org.springframework.samples.petclinic.service.HairdressingService;
 import org.springframework.samples.petclinic.service.PetService;
 import org.springframework.security.config.annotation.web.WebSecurityConfigurer;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.test.context.support.WithMockUser;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -43,6 +49,16 @@ public class HairdressingControllerTests {
 	
 	@MockBean
 	private HairdressingService hairdressingService;
+	
+	
+	@MockBean
+	private AuthorizationService authorizationService;
+	
+	@MockBean
+	private Authentication auth;
+	
+	@MockBean
+	private SecurityContext securityContext;
 	
 	@Autowired
 	private HairdressingController hairdressingController;
@@ -69,14 +85,19 @@ public class HairdressingControllerTests {
 		pet.setName("elpotro");
 		
 		given(this.petService.findPetById(PET_ID)).willReturn(this.pet);
+	
+		given(securityContext.getAuthentication()).willReturn(auth);
+		SecurityContextHolder.setContext(securityContext);
 	}
 
 	@WithMockUser(value = "spring")
 	@Test
 	public void testInitNewHairdressingForm() throws Exception {
-		mockMvc.perform(get("/owners/*/pets/{petId}/hairdressing/new", PET_ID)).andExpect(status().isOk())
-				.andExpect(model().attributeExists("hairdressing"))
-				.andExpect(view().name("pets/createOrUpdateHairdressingForm"));
+	   	given(this.authorizationService.canUserModifyBooking(anyString(), eq(this.PET_ID))).willReturn(true);
+		
+		mockMvc.perform(get("/hairdressings/new", PET_ID)).andExpect(status().isOk())
+				.andExpect(model().attributeExists("hairdressingDTO"))
+				.andExpect(view().name("hairdressings/createOrUpdateHairdressingForm"));
 	}
 
 	//@WithMockUser(value = "spring")

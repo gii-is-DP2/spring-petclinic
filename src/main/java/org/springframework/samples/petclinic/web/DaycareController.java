@@ -19,6 +19,7 @@ import org.springframework.samples.petclinic.model.Pet;
 import org.springframework.samples.petclinic.service.AuthorizationService;
 import org.springframework.samples.petclinic.service.DaycareService;
 import org.springframework.samples.petclinic.service.PetService;
+import org.springframework.samples.petclinic.service.exceptions.BusinessException;
 import org.springframework.samples.petclinic.service.exceptions.MappingException;
 import org.springframework.samples.petclinic.util.DaycareDTO;
 import org.springframework.samples.petclinic.web.annotations.IsAdmin;
@@ -100,13 +101,13 @@ public class DaycareController {
 	@PostMapping(value = "/daycares/new")
 	public String processNewDaycareForm(@Valid DaycareDTO daycareDTO, BindingResult result) {
 		
-		Daycare daycare;
+//		Daycare daycare;
 
 		if (result.hasErrors()) {
 			return "daycares/createOrUpdateDaycareForm";
 		}
 		else {
-						
+			Daycare daycare;
 			try {
 				daycare = this.convertToEntity(daycareDTO);
 			} catch (MappingException ex) {
@@ -127,9 +128,10 @@ public class DaycareController {
 			}
 			
 			this.daycareService.saveDaycare(daycare);	
+			return "redirect:/daycares/" + daycare.getId();
 
 		}
-		return "redirect:/daycares/" + daycare.getId();
+		
 	}
 	
 	@GetMapping(value = "/daycares/{daycareId}/edit")
@@ -161,6 +163,8 @@ public class DaycareController {
 	            return "daycares/createOrUpdateDaycareForm";
 			}
             
+			this.authorizeUserAction(daycare.getPet().getId());
+
             if(this.daycareService.oneDaycareById(daycare.getDate(), daycare.getPet().getId())==1){
                 result.rejectValue("date", "", "This daycare already exists");
                 return "daycares/createOrUpdateDaycareForm";
@@ -172,6 +176,7 @@ public class DaycareController {
                 result.rejectValue("date", "", "Please, select a future date");
                 return "daycares/createOrUpdateDaycareForm";
             }
+            
             
             daycare.setId(daycareId);
             daycareService.saveDaycare(daycare);
@@ -202,8 +207,6 @@ public class DaycareController {
 		mav.addObject(this.daycareService.findDaycareById(daycareId));
 		return mav;
 	}
-	
-	
 	
 	private Daycare convertToEntity(DaycareDTO dto) throws MappingException {
 		Daycare daycare = new Daycare();

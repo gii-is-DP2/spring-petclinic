@@ -14,14 +14,21 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.any;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.samples.petclinic.service.AuthoritiesService;
+import org.springframework.samples.petclinic.service.AuthorizationService;
 import org.springframework.samples.petclinic.service.OwnerService;
 import org.springframework.samples.petclinic.service.UserService;
 import org.springframework.security.config.annotation.web.WebSecurityConfigurer;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.test.context.support.WithMockUser;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -45,13 +52,22 @@ class OwnerControllerTests {
 	private OwnerController ownerController;
 
 	@MockBean
-	private OwnerService clinicService;
+	private OwnerService ownerService;
         
-        @MockBean
+    @MockBean
 	private UserService userService;
         
-        @MockBean
-        private AuthoritiesService authoritiesService; 
+    @MockBean
+    private AuthoritiesService authoritiesService;
+    
+    @MockBean
+    private AuthorizationService authorizationService;
+    
+    @MockBean
+	private Authentication auth;
+	
+	@MockBean
+	private SecurityContext securityContext;
 
 	@Autowired
 	private MockMvc mockMvc;
@@ -68,8 +84,14 @@ class OwnerControllerTests {
 		george.setAddress("110 W. Liberty St.");
 		george.setCity("Madison");
 		george.setTelephone("6085551023");
-		given(this.clinicService.findOwnerById(TEST_OWNER_ID)).willReturn(george);
+		given(this.ownerService.findOwnerById(TEST_OWNER_ID)).willReturn(george);
 
+		this.loadAuthContext();
+	}
+	
+	private void loadAuthContext() {
+		given(securityContext.getAuthentication()).willReturn(auth);
+		SecurityContextHolder.setContext(securityContext);
 	}
 
 	@WithMockUser(value = "spring")
@@ -113,23 +135,23 @@ class OwnerControllerTests {
 	}
 
 	@WithMockUser(value = "spring")
-        @Test
+    @Test
 	void testProcessFindFormSuccess() throws Exception {
-		given(this.clinicService.findOwnerByLastName("")).willReturn(Lists.newArrayList(george, new Owner()));
+		given(this.ownerService.findOwnerByLastName("")).willReturn(Lists.newArrayList(george, new Owner()));
 
 		mockMvc.perform(get("/owners")).andExpect(status().isOk()).andExpect(view().name("owners/ownersList"));
 	}
 
 	@WithMockUser(value = "spring")
-        @Test
+    @Test
 	void testProcessFindFormByLastName() throws Exception {
-		given(this.clinicService.findOwnerByLastName(george.getLastName())).willReturn(Lists.newArrayList(george));
+		given(this.ownerService.findOwnerByLastName(george.getLastName())).willReturn(Lists.newArrayList(george));
 
 		mockMvc.perform(get("/owners").param("lastName", "Franklin")).andExpect(status().is3xxRedirection())
 				.andExpect(view().name("redirect:/owners/" + TEST_OWNER_ID));
 	}
 
-        @WithMockUser(value = "spring")
+    @WithMockUser(value = "spring")
 	@Test
 	void testProcessFindFormNoOwnersFound() throws Exception {
 		mockMvc.perform(get("/owners").param("lastName", "Unknown Surname")).andExpect(status().isOk())
@@ -138,10 +160,12 @@ class OwnerControllerTests {
 				.andExpect(view().name("owners/findOwners"));
 	}
 
-        @WithMockUser(value = "spring")
+    @WithMockUser(value = "spring")
 	@Test
 	void testInitUpdateOwnerForm() throws Exception {
-		mockMvc.perform(get("/owners/{ownerId}/edit", TEST_OWNER_ID)).andExpect(status().isOk())
+    		given(this.authorizationService.canUserModifyHisData(anyString(), eq(this.TEST_OWNER_ID))).willReturn(true);
+
+        	mockMvc.perform(get("/owners/{ownerId}/edit", TEST_OWNER_ID)).andExpect(status().isOk())
 				.andExpect(model().attributeExists("owner"))
 				.andExpect(model().attribute("owner", hasProperty("lastName", is("Franklin"))))
 				.andExpect(model().attribute("owner", hasProperty("firstName", is("George"))))
@@ -150,11 +174,23 @@ class OwnerControllerTests {
 				.andExpect(model().attribute("owner", hasProperty("telephone", is("6085551023"))))
 				.andExpect(view().name("owners/createOrUpdateOwnerForm"));
 	}
+        
+	@WithMockUser(value = "spring")
+	@Test
+	void testInitUpdateFormUnauthorized() throws Exception {
+		given(this.authorizationService.canUserModifyHisData(anyString(), eq(this.TEST_OWNER_ID))).willReturn(false);
+    	mockMvc.perform(get("/owners/{ownerId}/edit", TEST_OWNER_ID))
+    			.andExpect(status().isOk())
+				.andExpect(status().isOk())
+				.andExpect(view().name("errors/accessDenied"));
+	}
 
-        @WithMockUser(value = "spring")
+    @WithMockUser(value = "spring")
 	@Test
 	void testProcessUpdateOwnerFormSuccess() throws Exception {
-		mockMvc.perform(post("/owners/{ownerId}/edit", TEST_OWNER_ID)
+    		given(this.authorizationService.canUserModifyHisData(anyString(), eq(this.TEST_OWNER_ID))).willReturn(true);
+
+        	mockMvc.perform(post("/owners/{ownerId}/edit", TEST_OWNER_ID)
 							.with(csrf())
 							.param("firstName", "Joe")
 							.param("lastName", "Bloggs")
@@ -167,7 +203,10 @@ class OwnerControllerTests {
         @WithMockUser(value = "spring")
 	@Test
 	void testProcessUpdateOwnerFormHasErrors() throws Exception {
-		mockMvc.perform(post("/owners/{ownerId}/edit", TEST_OWNER_ID)
+    		given(this.authorizationService.canUserModifyHisData(anyString(), eq(this.TEST_OWNER_ID))).willReturn(true);
+
+        	
+        	mockMvc.perform(post("/owners/{ownerId}/edit", TEST_OWNER_ID)
 							.with(csrf())
 							.param("firstName", "Joe")
 							.param("lastName", "Bloggs")
@@ -190,5 +229,16 @@ class OwnerControllerTests {
 				.andExpect(model().attribute("owner", hasProperty("telephone", is("6085551023"))))
 				.andExpect(view().name("owners/ownerDetails"));
 	}
+        
+    @WithMockUser(value = "spring")
+    @Test
+    void shouldShowProfile() throws Exception {
+    	given(this.ownerService.findOwnerByUsername(any()))
+    		.willReturn(george);
+    	
+    	mockMvc.perform(get("/profile"))
+    	.andExpect(status().is2xxSuccessful())
+		.andExpect(view().name("owners/profile"));
+    }
 
 }

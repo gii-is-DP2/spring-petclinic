@@ -12,7 +12,4 @@ public interface ReviewRepository extends CrudRepository<Review, Integer>{
 
 	@Query("SELECT DISTINCT r FROM Review r WHERE r.user.username = :username AND r.serviceType = :serviceType")
 	public Collection<Review> findByUsernameAndServiceType(@Param("username") String username, @Param("serviceType") ServiceType serviceType);
-	
-	@Query("SELECT DISTINCT r FROM Review r WHERE r.id = :id")
-	public Review findById(@Param("id") int id);
 }

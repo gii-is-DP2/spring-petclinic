@@ -16,15 +16,22 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.dao.DataAccessException;
 import org.springframework.samples.petclinic.model.Hairdressing;
 import org.springframework.samples.petclinic.model.Pet;
 import org.springframework.samples.petclinic.model.TipoCuidado;
 import org.springframework.samples.petclinic.repository.HairdressingRepository;
+import org.springframework.samples.petclinic.service.exceptions.BusinessException;
 import org.springframework.stereotype.Service;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.DirtiesContext.ClassMode;
 
 @DataJpaTest(includeFilters = @ComponentScan.Filter(Service.class))
+@AutoConfigureTestDatabase(replace=AutoConfigureTestDatabase.Replace.NONE)
+@DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
 public class HairdressingServiceTest {
 
 	@Autowired
@@ -66,7 +73,7 @@ public class HairdressingServiceTest {
 
 	@Test
 	@Transactional
-	void shouldSave() {
+	void shouldSave() throws DataAccessException, BusinessException {
 		Pet pet = new Pet();
 		pet.setId(27);
 		Hairdressing hairdressing = new Hairdressing();

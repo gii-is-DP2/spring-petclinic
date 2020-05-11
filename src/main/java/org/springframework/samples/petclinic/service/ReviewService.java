@@ -27,17 +27,17 @@ public class ReviewService {
 	
 	@Transactional(readOnly = true)
 	public Review findReviewById(int id) throws DataAccessException {
-		return reviewRepository.findById(id);
+		return reviewRepository.findById(id).get();
 	}
 	
 	@Transactional
 	public void saveReview(Review review) throws DataAccessException, BusinessException {
 		ServiceType type = review.getServiceType();
 		User user = review.getUser();
-		if(this.existsByUsernameAndServiceType(user, type)) {
+		if(this.existsByUserAndServiceType(user, type)) {
 			throw new BusinessException("serviceType", "serviceType", "You have already submitted a review for this service.");
 		}
-		reviewRepository.save(review);		
+		reviewRepository.save(review);
 	}	
 	
 	@Transactional(readOnly = true)	
@@ -46,7 +46,7 @@ public class ReviewService {
 	}	
 
 	@Transactional(readOnly = true)	
-	private boolean existsByUsernameAndServiceType(User user, ServiceType type) {
+	public boolean existsByUserAndServiceType(User user, ServiceType type) {
 		Collection<Review> found = this.reviewRepository.findByUsernameAndServiceType(user.getUsername(), type);
 		return found.size() > 0;
 	}

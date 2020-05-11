@@ -37,11 +37,11 @@ public class TrainerController {
 		this.trainingService = trainingService;
 	}
 	
+	
 	@InitBinder
 	public void setAllowedFields(WebDataBinder dataBinder) {
 		dataBinder.setDisallowedFields("id");
 	}
-	
 	
 	@GetMapping(value = "/trainers/new")
 	public String initTrainerCreationForm(Map<String, Object> model) {
@@ -71,9 +71,10 @@ public class TrainerController {
 	
 	@GetMapping(value = "/trainers")
 	public String initFindForm(Map<String, Object> model) {
-		model.put("trainer", new Trainer());
 		Collection<Trainer> results = this.trainerService.findTrainers();
 		model.put("trainers", results);
+		Trainer trainer = new Trainer();
+		model.put("trainer", trainer);
 		return "trainers/trainersList";
 	}
 	
@@ -81,7 +82,7 @@ public class TrainerController {
 	public String showTrainersList(Trainer trainer, BindingResult result, Map<String, Object> model) {
 		Collection<Trainer> results;
 		
-		if (trainer.getLastName().isEmpty()) {
+		if (trainer == null || trainer.getLastName() == null || trainer.getLastName().isEmpty()) {
 			results = this.trainerService.findTrainers();
 		} else {
 			results = this.trainerService.findTrainersByLastName(trainer.getLastName());
@@ -91,9 +92,9 @@ public class TrainerController {
 		return "trainers/trainersList";
 	}
 	
-	@IsAdmin
 	@GetMapping(value = "/trainers/{trainerId}/trainings")
 	public String showTrainerTrainingsList(@PathVariable("trainerId") int trainerId, Map<String, Object> model) {
+		Trainer trainer = this.trainerService.findTrainerById(trainerId);
 		Collection<Training> results = this.trainingService.findTrainingsByTrainer(trainerId);
 		model.put("trainings", results);
 		return "trainings/trainingsList";

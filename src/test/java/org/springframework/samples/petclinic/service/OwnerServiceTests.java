@@ -25,6 +25,7 @@ import java.util.logging.Logger;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.dao.DataAccessException;
@@ -38,6 +39,8 @@ import org.springframework.samples.petclinic.model.Authorities;
 import org.springframework.samples.petclinic.service.exceptions.DuplicatedPetNameException;
 import org.springframework.samples.petclinic.util.EntityUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
@@ -73,8 +76,11 @@ import org.springframework.transaction.annotation.Transactional;
  */
 
 @DataJpaTest(includeFilters = @ComponentScan.Filter(Service.class))
+@AutoConfigureTestDatabase(replace=AutoConfigureTestDatabase.Replace.NONE)
+@DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
 class OwnerServiceTests {                
-        @Autowired
+    
+	@Autowired
 	protected OwnerService ownerService;
 
 	@Test
@@ -84,6 +90,20 @@ class OwnerServiceTests {
 
 		owners = this.ownerService.findOwnerByLastName("Daviss");
 		assertThat(owners.isEmpty()).isTrue();
+	}
+	
+	@Test
+	void shouldFindByUsername() {
+		String username = "fede";
+		Owner owner = this.ownerService.findOwnerByUsername(username);
+		assertThat(owner).isNotNull();
+		assertThat(owner.getUser().getUsername()).isEqualTo(username);
+	}
+	
+	@Test
+	void shouldNotFindByUsername() {
+		Owner owner = this.ownerService.findOwnerByUsername("pedro");
+		assertThat(owner).isNull();
 	}
 
 	@Test
