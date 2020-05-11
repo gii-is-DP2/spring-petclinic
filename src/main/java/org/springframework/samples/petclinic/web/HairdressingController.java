@@ -261,7 +261,7 @@ public class HairdressingController {
 	
 	@IsAdmin
 	@GetMapping(value = "/hairdressings")
-	public String showTrainingsList(Map<String, Object> model) {
+	public String showHairdressingList(Map<String, Object> model) {
 		Collection<Hairdressing> results = (Collection) this.hairdressingService.findAll();
 		model.put("hairdressings", results);
 		model.put("owner", false);
@@ -283,6 +283,7 @@ public class HairdressingController {
 	@GetMapping(value = "/hairdressings/{hairdressingId}/delete")
 	public String processDeleteHairdressingForm(@PathVariable("hairdressingId") int hairdressingId) {
 		Hairdressing h = hairdressingService.findHairdressingById(hairdressingId);
+		this.authorizeUserAction(h.getPet().getId());
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		if (auth.getAuthorities().stream().map(x -> x.getAuthority()).anyMatch(x -> x.equals("admin"))) {
 
@@ -340,7 +341,7 @@ public class HairdressingController {
 	private void authorizeUserAction(int petId) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		if (!this.authorizationService.canUserModifyBooking(auth.getName(), petId)) {
-			throw new AccessDeniedException("User canot modify data.");
+			throw new AccessDeniedException("User cannot modify data.");
 		}
 	}
 	
