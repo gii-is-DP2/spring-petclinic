@@ -46,7 +46,8 @@
     <br/>
     <br/>
 
-    <h2>Pets and Visits</h2>
+    <!-- <h2>Pets and Visits</h2> -->
+    <h2>Pets</h2>
     <c:forEach var="pet" items="${owner.pets}">
     	<hr/>
     	<table class="table table-striped">
@@ -73,7 +74,7 @@
             	</td>
         	</tr>
     	</table>
-    	<h3> Visits </h3>
+    	<%-- <h3> Visits </h3>
     	<spring:url value="/owners/{ownerId}/pets/{petId}/visits/new" var="visitUrl">
             <spring:param name="ownerId" value="${owner.id}"/>
         	<spring:param name="petId" value="${pet.id}"/>
@@ -94,6 +95,6 @@
                     <td></td>
                 </tr>
            </c:forEach>
-		</table>
+		</table> --%>
 	</c:forEach>
 </petclinic:layout>

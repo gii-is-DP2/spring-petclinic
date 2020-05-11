@@ -9,6 +9,7 @@
     <h2>Hairdressings</h2>
     <c:if test="${owner}">
 		<a class="btn btn-default" href='<spring:url value="/hairdressings/new" htmlEscape="true"/>'>Add hairdressing</a>
+		<br><br>
 	</c:if>
 	
 

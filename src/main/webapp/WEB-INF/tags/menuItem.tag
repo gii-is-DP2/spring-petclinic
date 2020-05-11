@@ -4,8 +4,9 @@
 <%@ attribute name="active" required="true" rtexprvalue="true" %>
 <%@ attribute name="url" required="true" rtexprvalue="true" %>
 <%@ attribute name="title" required="false" rtexprvalue="true" %>
+<%@ attribute name="style" required="false" rtexprvalue="true" %>
 
-<li class="${active ? 'active' : ''}">
+<li class="${active ? 'active' : ''}" style="${style}">
     <a href="<spring:url value="${url}" htmlEscape="true" />"
        title="${fn:escapeXml(title)}">
         <jsp:doBody/>

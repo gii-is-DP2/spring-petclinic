@@ -10,6 +10,7 @@
     <h2>Trainers</h2>
     
     <a class="btn btn-default" href='<spring:url value="/trainers/new" htmlEscape="true"/>'>Add Trainer</a>
+    <br><br>
     
     <form:form modelAttribute="trainer" action="/trainers/find" method="get" class="form-horizontal" id="search-trainer-form">
         <div class="form-group">

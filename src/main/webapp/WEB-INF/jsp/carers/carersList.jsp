@@ -10,6 +10,7 @@
     <h2>Carers</h2>
     
     <a class="btn btn-default" href='<spring:url value="/carers/new" htmlEscape="true"/>'>Add Carer</a>
+    <br><br>
 
     <table id="carersTable" class="table table-striped">
         <thead>
