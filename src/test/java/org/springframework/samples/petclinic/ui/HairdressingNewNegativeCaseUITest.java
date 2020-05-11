@@ -7,6 +7,7 @@ import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
@@ -15,8 +16,17 @@ import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.support.ui.Select;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+@ExtendWith(SpringExtension.class)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class HairdressingNewNegativeCaseUITest {
+
+	@LocalServerPort
+	private int port;
+
 	private WebDriver driver;
 	private String baseUrl;
 	private boolean acceptNextAlert = true;
@@ -24,16 +34,14 @@ public class HairdressingNewNegativeCaseUITest {
 
 	@BeforeEach
 	public void setUp() throws Exception {
-		String pathToGeckoDriver = "/home/prada/eclipse/eclipse-ee/workspace/.geckodriver/";
-		System.setProperty("webdriver.gecko.driver", pathToGeckoDriver + "geckodriver");
 		driver = new FirefoxDriver();
-		baseUrl = "https://www.google.com/";
+		baseUrl = "http://localhost:" + port;
 		driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
 	}
 
 	@Test
 	  public void testNewHairdressingNegativeCase() throws Exception {
-	    driver.get("http://localhost:8080/");
+	    driver.get(baseUrl);
 		driver.findElement(By.linkText("USER")).click();
 		driver.findElement(By.linkText("LOGIN")).click();
 	    driver.findElement(By.id("username")).click();
@@ -60,8 +68,8 @@ public class HairdressingNewNegativeCaseUITest {
 	    driver.findElement(By.id("description")).click();
 	    driver.findElement(By.id("description")).clear();
 	    driver.findElement(By.id("description")).sendKeys("Test");
-	    new Select(driver.findElement(By.id("time"))).selectByVisibleText("6:00");
-	    driver.findElement(By.xpath("//option[@value='6:00']")).click();
+	    new Select(driver.findElement(By.id("time"))).selectByVisibleText("7:00");
+	    driver.findElement(By.xpath("//option[@value='7:00']")).click();
 	    new Select(driver.findElement(By.id("cuidado"))).selectByVisibleText("ESTETICA");
 	    driver.findElement(By.xpath("//option[@value='ESTETICA']")).click();
 	    driver.findElement(By.xpath("//button[@type='submit']")).click();
@@ -79,8 +87,8 @@ public class HairdressingNewNegativeCaseUITest {
 	    driver.findElement(By.id("description")).click();
 	    driver.findElement(By.id("description")).clear();
 	    driver.findElement(By.id("description")).sendKeys("Test");
-	    new Select(driver.findElement(By.id("time"))).selectByVisibleText("6:00");
-	    driver.findElement(By.xpath("//option[@value='6:00']")).click();
+	    new Select(driver.findElement(By.id("time"))).selectByVisibleText("7:00");
+	    driver.findElement(By.xpath("//option[@value='7:00']")).click();
 	    new Select(driver.findElement(By.id("cuidado"))).selectByVisibleText("ESTETICA");
 	    driver.findElement(By.xpath("//option[@value='ESTETICA']")).click();
 	    driver.findElement(By.xpath("//button[@type='submit']")).click();
