@@ -1,6 +1,6 @@
 package org.springframework.samples.petclinic.ui;
 
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import java.util.concurrent.TimeUnit;
 
@@ -31,67 +31,68 @@ public class HairdressingUpdateUITest {
 	}
 
 	@Test
-	public void testActualizarCita() throws Exception {
-		driver.get("http://localhost:8080/");
+	  public void testUpdateHairdressing() throws Exception {
+	    driver.get("http://localhost:8080/");
 		driver.findElement(By.linkText("USER")).click();
 		driver.findElement(By.linkText("LOGIN")).click();
-		driver.findElement(By.id("username")).click();
-		driver.findElement(By.id("username")).clear();
-		driver.findElement(By.id("username")).sendKeys("george");
-		driver.findElement(By.id("password")).click();
-		driver.findElement(By.id("password")).clear();
-		driver.findElement(By.id("password")).sendKeys("george");
-		driver.findElement(By.xpath("//button[@type='submit']")).click();
-		driver.findElement(By.linkText("RESERVATIONS")).click();
+	    driver.findElement(By.id("username")).click();
+	    driver.findElement(By.id("username")).clear();
+	    driver.findElement(By.id("username")).sendKeys("george");
+	    driver.findElement(By.id("password")).click();
+	    driver.findElement(By.id("password")).clear();
+	    driver.findElement(By.id("password")).sendKeys("george");
+	    driver.findElement(By.xpath("//button[@type='submit']")).click();
+	    driver.findElement(By.linkText("RESERVATIONS")).click();
 		driver.findElement(By.linkText("HAIRDRESSINGS")).click();
-		driver.findElement(By.linkText("2021-01-01")).click();
-		driver.findElement(By.linkText("Edit hairdressing")).click();
-		new Select(driver.findElement(By.id("time"))).selectByVisibleText("9:30");
-		driver.findElement(By.xpath("//option[@value='9:30']")).click();
-		new Select(driver.findElement(By.id("cuidado"))).selectByVisibleText("ESTETICA");
-		driver.findElement(By.xpath("//option[@value='ESTETICA']")).click();
-		driver.findElement(By.xpath("//button[@type='submit']")).click();
-	}
+	    driver.findElement(By.linkText("2021-01-01")).click();
+	    driver.findElement(By.linkText("Edit hairdressing")).click();
+	    new Select(driver.findElement(By.id("time"))).selectByVisibleText("9:30");
+	    driver.findElement(By.xpath("//option[@value='9:30']")).click();
+	    new Select(driver.findElement(By.id("cuidado"))).selectByVisibleText("ESTETICA");
+	    driver.findElement(By.xpath("//option[@value='ESTETICA']")).click();
+	    driver.findElement(By.xpath("//button[@type='submit']")).click();
+	    assertEquals("9:30", driver.findElement(By.xpath("//tr[2]/td/b")).getText());
+	  }
 
-	@AfterEach
-	public void tearDown() throws Exception {
-		driver.quit();
-		String verificationErrorString = verificationErrors.toString();
-		if (!"".equals(verificationErrorString)) {
-			fail(verificationErrorString);
-		}
-	}
+	  @AfterEach
+	  public void tearDown() throws Exception {
+	    driver.quit();
+	    String verificationErrorString = verificationErrors.toString();
+	    if (!"".equals(verificationErrorString)) {
+	      fail(verificationErrorString);
+	    }
+	  }
 
-	private boolean isElementPresent(By by) {
-		try {
-			driver.findElement(by);
-			return true;
-		} catch (NoSuchElementException e) {
-			return false;
-		}
-	}
+	  private boolean isElementPresent(By by) {
+	    try {
+	      driver.findElement(by);
+	      return true;
+	    } catch (NoSuchElementException e) {
+	      return false;
+	    }
+	  }
 
-	private boolean isAlertPresent() {
-		try {
-			driver.switchTo().alert();
-			return true;
-		} catch (NoAlertPresentException e) {
-			return false;
-		}
-	}
+	  private boolean isAlertPresent() {
+	    try {
+	      driver.switchTo().alert();
+	      return true;
+	    } catch (NoAlertPresentException e) {
+	      return false;
+	    }
+	  }
 
-	private String closeAlertAndGetItsText() {
-		try {
-			Alert alert = driver.switchTo().alert();
-			String alertText = alert.getText();
-			if (acceptNextAlert) {
-				alert.accept();
-			} else {
-				alert.dismiss();
-			}
-			return alertText;
-		} finally {
-			acceptNextAlert = true;
-		}
+	  private String closeAlertAndGetItsText() {
+	    try {
+	      Alert alert = driver.switchTo().alert();
+	      String alertText = alert.getText();
+	      if (acceptNextAlert) {
+	        alert.accept();
+	      } else {
+	        alert.dismiss();
+	      }
+	      return alertText;
+	    } finally {
+	      acceptNextAlert = true;
+	    }
+	  }
 	}
-}

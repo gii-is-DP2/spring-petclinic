@@ -1,6 +1,6 @@
 package org.springframework.samples.petclinic.ui;
 
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import java.util.concurrent.TimeUnit;
 
@@ -32,99 +32,100 @@ public class HairdressingNewNegativeCaseUITest {
 	}
 
 	@Test
-	public void testSolicitarCitaNegativo() throws Exception {
-		driver.get("http://localhost:8080/");
-		driver.findElement(By.xpath("//div[@id='main-navbar']/ul/li[5]/a/span[2]")).click();
+	  public void testNewHairdressingNegativeCase() throws Exception {
+	    driver.get("http://localhost:8080/");
+		driver.findElement(By.linkText("USER")).click();
 		driver.findElement(By.linkText("LOGIN")).click();
-		driver.findElement(By.id("username")).click();
-		driver.findElement(By.id("username")).clear();
-		driver.findElement(By.id("username")).sendKeys("george");
-		driver.findElement(By.id("password")).click();
-		driver.findElement(By.id("password")).clear();
-		driver.findElement(By.id("password")).sendKeys("george");
-		driver.findElement(By.id("password")).sendKeys(Keys.ENTER);
-		driver.findElement(By.linkText("RESERVATIONS")).click();
+	    driver.findElement(By.id("username")).click();
+	    driver.findElement(By.id("username")).clear();
+	    driver.findElement(By.id("username")).sendKeys("george");
+	    driver.findElement(By.id("password")).click();
+	    driver.findElement(By.id("password")).clear();
+	    driver.findElement(By.id("password")).sendKeys("george");
+	    driver.findElement(By.id("password")).sendKeys(Keys.ENTER);
+	    driver.findElement(By.linkText("RESERVATIONS")).click();
 		driver.findElement(By.linkText("HAIRDRESSINGS")).click();
-		driver.findElement(By.linkText("Add hairdressing")).click();
-		driver.findElement(By.xpath("//form[@id='add-hairdressing-form']/div")).click();
-		driver.findElement(By.id("date")).click();
-		driver.findElement(By.xpath("//div[@id='ui-datepicker-div']/div/a[2]/span")).click();
-		driver.findElement(By.xpath("//div[@id='ui-datepicker-div']/div/a[2]/span")).click();
-		driver.findElement(By.xpath("//div[@id='ui-datepicker-div']/div/a[2]/span")).click();
-		driver.findElement(By.xpath("//div[@id='ui-datepicker-div']/div/a[2]/span")).click();
-		driver.findElement(By.xpath("//div[@id='ui-datepicker-div']/div/a[2]/span")).click();
-		driver.findElement(By.xpath("//div[@id='ui-datepicker-div']/div/a[2]/span")).click();
-		driver.findElement(By.xpath("//div[@id='ui-datepicker-div']/div/a[2]/span")).click();
-		driver.findElement(By.xpath("//div[@id='ui-datepicker-div']/div/a[2]/span")).click();
-		driver.findElement(By.linkText("30")).click();
-		driver.findElement(By.id("description")).click();
-		driver.findElement(By.id("description")).clear();
-		driver.findElement(By.id("description")).sendKeys("Test");
-		new Select(driver.findElement(By.id("time"))).selectByVisibleText("6:00");
-		driver.findElement(By.xpath("//option[@value='6:00']")).click();
-		new Select(driver.findElement(By.id("cuidado"))).selectByVisibleText("ESTETICA");
-		driver.findElement(By.xpath("//option[@value='ESTETICA']")).click();
-		driver.findElement(By.xpath("//button[@type='submit']")).click();
-		driver.findElement(By.linkText("Add hairdressing")).click();
-		driver.findElement(By.id("date")).click();
-		driver.findElement(By.xpath("//div[@id='ui-datepicker-div']/div/a[2]/span")).click();
-		driver.findElement(By.xpath("//div[@id='ui-datepicker-div']/div/a[2]/span")).click();
-		driver.findElement(By.xpath("//div[@id='ui-datepicker-div']/div/a[2]/span")).click();
-		driver.findElement(By.xpath("//div[@id='ui-datepicker-div']/div/a[2]/span")).click();
-		driver.findElement(By.xpath("//div[@id='ui-datepicker-div']/div/a[2]/span")).click();
-		driver.findElement(By.xpath("//div[@id='ui-datepicker-div']/div/a[2]/span")).click();
-		driver.findElement(By.xpath("//div[@id='ui-datepicker-div']/div/a[2]/span")).click();
-		driver.findElement(By.xpath("//div[@id='ui-datepicker-div']/div/a[2]/span")).click();
-		driver.findElement(By.linkText("30")).click();
-		driver.findElement(By.id("description")).click();
-		driver.findElement(By.id("description")).clear();
-		driver.findElement(By.id("description")).sendKeys("Test");
-		new Select(driver.findElement(By.id("time"))).selectByVisibleText("6:00");
-		driver.findElement(By.xpath("//option[@value='6:00']")).click();
-		new Select(driver.findElement(By.id("cuidado"))).selectByVisibleText("ESTETICA");
-		driver.findElement(By.xpath("//option[@value='ESTETICA']")).click();
-		driver.findElement(By.xpath("//button[@type='submit']")).click();
-	}
+	    driver.findElement(By.linkText("Add hairdressing")).click();
+	    driver.findElement(By.xpath("//form[@id='add-hairdressing-form']/div")).click();
+	    driver.findElement(By.id("date")).click();
+	    driver.findElement(By.xpath("//div[@id='ui-datepicker-div']/div/a[2]/span")).click();
+	    driver.findElement(By.xpath("//div[@id='ui-datepicker-div']/div/a[2]/span")).click();
+	    driver.findElement(By.xpath("//div[@id='ui-datepicker-div']/div/a[2]/span")).click();
+	    driver.findElement(By.xpath("//div[@id='ui-datepicker-div']/div/a[2]/span")).click();
+	    driver.findElement(By.xpath("//div[@id='ui-datepicker-div']/div/a[2]/span")).click();
+	    driver.findElement(By.xpath("//div[@id='ui-datepicker-div']/div/a[2]/span")).click();
+	    driver.findElement(By.xpath("//div[@id='ui-datepicker-div']/div/a[2]/span")).click();
+	    driver.findElement(By.xpath("//div[@id='ui-datepicker-div']/div/a[2]/span")).click();
+	    driver.findElement(By.linkText("30")).click();
+	    driver.findElement(By.id("description")).click();
+	    driver.findElement(By.id("description")).clear();
+	    driver.findElement(By.id("description")).sendKeys("Test");
+	    new Select(driver.findElement(By.id("time"))).selectByVisibleText("6:00");
+	    driver.findElement(By.xpath("//option[@value='6:00']")).click();
+	    new Select(driver.findElement(By.id("cuidado"))).selectByVisibleText("ESTETICA");
+	    driver.findElement(By.xpath("//option[@value='ESTETICA']")).click();
+	    driver.findElement(By.xpath("//button[@type='submit']")).click();
+	    driver.findElement(By.linkText("Add hairdressing")).click();
+	    driver.findElement(By.id("date")).click();
+	    driver.findElement(By.xpath("//div[@id='ui-datepicker-div']/div/a[2]/span")).click();
+	    driver.findElement(By.xpath("//div[@id='ui-datepicker-div']/div/a[2]/span")).click();
+	    driver.findElement(By.xpath("//div[@id='ui-datepicker-div']/div/a[2]/span")).click();
+	    driver.findElement(By.xpath("//div[@id='ui-datepicker-div']/div/a[2]/span")).click();
+	    driver.findElement(By.xpath("//div[@id='ui-datepicker-div']/div/a[2]/span")).click();
+	    driver.findElement(By.xpath("//div[@id='ui-datepicker-div']/div/a[2]/span")).click();
+	    driver.findElement(By.xpath("//div[@id='ui-datepicker-div']/div/a[2]/span")).click();
+	    driver.findElement(By.xpath("//div[@id='ui-datepicker-div']/div/a[2]/span")).click();
+	    driver.findElement(By.linkText("30")).click();
+	    driver.findElement(By.id("description")).click();
+	    driver.findElement(By.id("description")).clear();
+	    driver.findElement(By.id("description")).sendKeys("Test");
+	    new Select(driver.findElement(By.id("time"))).selectByVisibleText("6:00");
+	    driver.findElement(By.xpath("//option[@value='6:00']")).click();
+	    new Select(driver.findElement(By.id("cuidado"))).selectByVisibleText("ESTETICA");
+	    driver.findElement(By.xpath("//option[@value='ESTETICA']")).click();
+	    driver.findElement(By.xpath("//button[@type='submit']")).click();
+	    assertEquals("This time has already been taken. Please, select another time", driver.findElement(By.xpath("//form[@id='add-hairdressing-form']/div/div[3]/div/div/span[2]")).getText());
+	  }
 
-	@AfterEach
-	public void tearDown() throws Exception {
-		driver.quit();
-		String verificationErrorString = verificationErrors.toString();
-		if (!"".equals(verificationErrorString)) {
-			fail(verificationErrorString);
-		}
-	}
+	  @AfterEach
+	  public void tearDown() throws Exception {
+	    driver.quit();
+	    String verificationErrorString = verificationErrors.toString();
+	    if (!"".equals(verificationErrorString)) {
+	      fail(verificationErrorString);
+	    }
+	  }
 
-	private boolean isElementPresent(By by) {
-		try {
-			driver.findElement(by);
-			return true;
-		} catch (NoSuchElementException e) {
-			return false;
-		}
-	}
+	  private boolean isElementPresent(By by) {
+	    try {
+	      driver.findElement(by);
+	      return true;
+	    } catch (NoSuchElementException e) {
+	      return false;
+	    }
+	  }
 
-	private boolean isAlertPresent() {
-		try {
-			driver.switchTo().alert();
-			return true;
-		} catch (NoAlertPresentException e) {
-			return false;
-		}
-	}
+	  private boolean isAlertPresent() {
+	    try {
+	      driver.switchTo().alert();
+	      return true;
+	    } catch (NoAlertPresentException e) {
+	      return false;
+	    }
+	  }
 
-	private String closeAlertAndGetItsText() {
-		try {
-			Alert alert = driver.switchTo().alert();
-			String alertText = alert.getText();
-			if (acceptNextAlert) {
-				alert.accept();
-			} else {
-				alert.dismiss();
-			}
-			return alertText;
-		} finally {
-			acceptNextAlert = true;
-		}
+	  private String closeAlertAndGetItsText() {
+	    try {
+	      Alert alert = driver.switchTo().alert();
+	      String alertText = alert.getText();
+	      if (acceptNextAlert) {
+	        alert.accept();
+	      } else {
+	        alert.dismiss();
+	      }
+	      return alertText;
+	    } finally {
+	      acceptNextAlert = true;
+	    }
+	  }
 	}
-}

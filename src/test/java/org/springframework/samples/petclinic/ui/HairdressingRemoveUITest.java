@@ -1,6 +1,6 @@
 package org.springframework.samples.petclinic.ui;
 
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import java.util.concurrent.TimeUnit;
 
@@ -30,7 +30,7 @@ public class HairdressingRemoveUITest {
 	}
 
 	@Test
-	public void testDeleteCita() throws Exception {
+	public void testRemoveHairdressing() throws Exception {
 		driver.get("http://localhost:8080/");
 		driver.findElement(By.linkText("USER")).click();
 		driver.findElement(By.linkText("LOGIN")).click();
@@ -43,6 +43,19 @@ public class HairdressingRemoveUITest {
 		driver.findElement(By.linkText("HAIRDRESSINGS")).click();
 		driver.findElement(By.linkText("2021-01-01")).click();
 		driver.findElement(By.linkText("Cancel hairdressing")).click();
+		// Warning: waitForTextNotPresent may require manual changes
+		for (int second = 0;; second++) {
+			if (second >= 60)
+				fail("timeout");
+			try {
+				if (!driver.findElement(By.cssSelector("BODY")).getText()
+						.matches("^[\\s\\S]*link=2020-01-01[\\s\\S]*$"))
+					break;
+			} catch (Exception e) {
+			}
+			Thread.sleep(1000);
+		}
+
 	}
 
 	@AfterEach
