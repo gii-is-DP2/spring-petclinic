@@ -100,6 +100,7 @@ INSERT INTO visits(id,pet_id,visit_date,description) VALUES (4, 7, '2013-01-04',
 
 INSERT INTO hairdressings VALUES (1, '2021-01-01', 'Pelado a mi mascota', 0, '9:00', 1);
 INSERT INTO hairdressings VALUES (99, '2022-02-02', 'TEST', 0, '7:00',1);
+INSERT INTO hairdressings VALUES (90, '2022-01-12', 'TEST2', 0, '7:00',2);
 
 INSERT INTO daycares VALUES (1, '2022-02-02', 'Descripcion de prueba', 10, 1);
 INSERT INTO daycares VALUES (2, '2033-03-03', 'Descripcion de prueba diferente', 10, 1);
@@ -117,3 +118,6 @@ INSERT INTO review VALUES (4, 'A fido le encantaron los ejercicios', '2020-03-13
 INSERT INTO review VALUES (5, 'Ni fu ni fa', '2020-04-13', 3, 1, 'carlos');
 
 INSERT INTO training VALUES (1, '2021-03-03', 'Descripcion', 2, 1, 14, 1);
+
+
+

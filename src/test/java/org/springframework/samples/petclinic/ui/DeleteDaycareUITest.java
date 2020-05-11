@@ -74,8 +74,8 @@ public class DeleteDaycareUITest {
 	}
 	
 	private DeleteDaycareUITest thenOpenMyDaycares() {
-		driver.findElement(By.xpath("//div[@id='main-navbar']/ul/li[3]/a")).click();
-		driver.findElement(By.xpath("//div[@id='main-navbar']/ul/li[3]/ul/li[3]/a")).click();
+		driver.findElement(By.linkText("RESERVATIONS")).click();
+		driver.findElement(By.linkText("DAYCARES")).click();
 		rowsBefore = driver.findElements(By.xpath("//table[@id='daycaresTable']/tbody/tr")).size();
 		return this;
 	}
