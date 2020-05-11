@@ -18,7 +18,7 @@
     </jsp:attribute>
 	<jsp:body>
 	    <h2>
-	        <c:if test="${boton}">Add </c:if> Training
+	        <c:if test="${boton}">Add </c:if> Hairdressing
 	    </h2>
 	    <form:form modelAttribute="hairdressingDTO" class="form-horizontal"
 				id="add-hairdressing-form">
