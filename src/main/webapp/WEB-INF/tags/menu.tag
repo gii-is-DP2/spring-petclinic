@@ -28,7 +28,7 @@
 				</petclinic:menuItem>
 
 				<petclinic:menuItem active="${name eq 'vets'}" url="/vets"
-					title="veterinarians">
+					title="veterinarians" style="display:none">
 					<span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
 					<span>Veterinarians</span>
 				</petclinic:menuItem>
