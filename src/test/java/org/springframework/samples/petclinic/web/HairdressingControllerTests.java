@@ -188,25 +188,34 @@ public class HairdressingControllerTests {
 	}
 
 	@WithMockUser(value = "spring")
-	@Test //Antonio tiene problemas
+	@Test
 	public void testProcessUpdateHairdressingFormUnauthorized() throws Exception {
 		given(this.authorizationService.canUserModifyBooking(anyString(), eq(this.PET_ID))).willReturn(false);
-
-		mockMvc.perform(post("/hairdressings/{hairdressingId}/edit", this.HAIRDRESSING_ID).with(csrf())
-				.param("cuidado", "ESTETICA").param("date", "2022/04/04").param("description", "TESTO")
-				.param("petName", "Leo").param("time", "6:00")).andExpect(status().is3xxRedirection())
-				.andExpect(view().name("redirect:/errors/accessDenied"));
+		mockMvc.perform(post("/hairdressings/{hairdressingId}/edit", this.HAIRDRESSING_ID)
+				.with(csrf())
+				.param("cuidado", "ESTETICA")
+				.param("date", "2022/04/04")
+				.param("description", "TESTO")
+				.param("petName", "Leo").param("time", "6:00"))
+				.andExpect(status().isOk())
+				.andExpect(view().name("errors/accessDenied"));
 	}
 
 	@WithMockUser(value = "spring")
 	@Test
 	public void testProcessUpdateHairdressingFormErrors() throws Exception {
-		given(this.authorizationService.canUserModifyBooking(anyString(), eq(this.PET_ID))).willReturn(false);
+		given(this.authorizationService.canUserModifyBooking(anyString(), eq(this.PET_ID))).willReturn(true);
 
-		mockMvc.perform(post("/hairdressings/{hairdressingId}/edit", this.HAIRDRESSING_ID).with(csrf())
-				.param("cuidado", "ESTETICA").param("date", "2015/04/04").param("description", "TESTO")
-				.param("petName", "Leo").param("time", "6:00")).andExpect(model().attributeHasErrors("hairdressingDTO"))
-				.andExpect(model().attributeHasFieldErrors("hairdressingDTO", "date")).andExpect(status().isOk())
+		mockMvc.perform(post("/hairdressings/{hairdressingId}/edit", this.HAIRDRESSING_ID)
+				.with(csrf())
+				.param("cuidado", "ESTETICA")
+				.param("date", "2015/04/04")
+				.param("description", "TESTO")
+				.param("petName", "Leo")
+				.param("time", "6:00"))
+				.andExpect(model().attributeHasErrors("hairdressingDTO"))
+				.andExpect(model().attributeHasFieldErrors("hairdressingDTO", "date"))
+				.andExpect(status().isOk())
 				.andExpect(view().name("hairdressings/createOrUpdateHairdressingForm"));
 	}
 
