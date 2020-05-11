@@ -18,7 +18,7 @@
     </jsp:attribute>
 	<jsp:body>
 	    <h2>
-	        <c:if test="${boton}">Add </c:if> Training
+	        <c:if test="${boton}">Add </c:if> Hairdressing
 	    </h2>
 	    <form:form modelAttribute="hairdressingDTO" class="form-horizontal"
 				id="add-hairdressing-form">
@@ -35,14 +35,16 @@
             </div>
 	        <div class="form-group">
 	            <div class="col-sm-offset-2 col-sm-10">
-	                <c:choose>
-	                    <c:when test="${boton}">
-	                        <button class="btn btn-default" type="submit">Add Hairdressing</button>
-	                    </c:when>
-	                    <c:otherwise>
-	                        <button class="btn btn-default" type="submit">Update Hairdressing</button>
-	                    </c:otherwise>
-	                </c:choose>
+	                
+		                <c:choose>
+		                    <c:when test="${boton}">
+		                        <button class="btn btn-default" type="submit">Add Hairdressing</button>
+		                    </c:when>
+		                    <c:otherwise>
+		                        <button class="btn btn-default" type="submit">Update Hairdressing</button>
+		                    </c:otherwise>
+		                </c:choose>
+	                
 	            </div>
 	        </div>
 	    </form:form>

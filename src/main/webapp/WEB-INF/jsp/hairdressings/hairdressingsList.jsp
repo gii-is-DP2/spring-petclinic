@@ -7,8 +7,10 @@
 
 <petclinic:layout pageName="hairdressings">
     <h2>Hairdressings</h2>
-    
-	<a class="btn btn-default" href='<spring:url value="/hairdressings/new" htmlEscape="true"/>'>Add hairdressing</a>
+    <c:if test="${owner}">
+		<a class="btn btn-default" href='<spring:url value="/hairdressings/new" htmlEscape="true"/>'>Add hairdressing</a>
+	</c:if>
+	
 
     <table id="hairdressingsTable" class="table table-striped">
         <thead>
