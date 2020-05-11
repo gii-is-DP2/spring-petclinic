@@ -1,19 +1,15 @@
 package org.springframework.samples.petclinic.ui;
 
-import java.util.regex.Pattern;
 import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.hamcrest.CoreMatchers.*;
 import org.openqa.selenium.*;
 import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.support.ui.Select;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.samples.petclinic.model.Trainer;
-import org.springframework.samples.petclinic.pages.BasePage;
 import org.springframework.samples.petclinic.pages.HomePage;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -124,8 +120,6 @@ public class AddTrainerUITest {
 		assertEquals("must not be empty", driver.findElement(By.xpath("//form[@id='add-trainer-form']/div/div[2]/div/span[2]")).getText());
     	assertTrue(isElementPresent(By.xpath("//form[@id='add-trainer-form']/div/div[4]/div/span[2]")));
     	assertEquals("must not be empty", driver.findElement(By.xpath("//form[@id='add-trainer-form']/div/div[4]/div/span[2]")).getText());
-    	assertTrue(isElementPresent(By.xpath("//form[@id='add-trainer-form']/div/div[5]/div/span[2]")));
-    	assertEquals("must not be empty", driver.findElement(By.xpath("//form[@id='add-trainer-form']/div/div[5]/div/span[2]")).getText());
     	assertTrue(isElementPresent(By.xpath("//form[@id='add-trainer-form']/div/div[6]/div/span[2]")));
     	assertEquals("must not be empty", driver.findElement(By.xpath("//form[@id='add-trainer-form']/div/div[6]/div/span[2]")).getText());
     	assertTrue(isElementPresent(By.xpath("//form[@id='add-trainer-form']/div/div[7]/div/span[2]")));
@@ -133,6 +127,29 @@ public class AddTrainerUITest {
     	assertTrue(isElementPresent(By.xpath("//form[@id='add-trainer-form']/div/div[8]/div/span[2]")));
     	assertEquals("must not be empty", driver.findElement(By.xpath("//form[@id='add-trainer-form']/div/div[8]/div/span[2]")).getText());
 	}
+	
+	@Test
+	public void testAddInvalidEmailTrainer() throws Exception {		
+		this.initTrainer();
+		this.trainer.setEmail("email");
+		
+		this.homePage
+			.goToLogin()
+			.setUsername("admin")
+			.setPassword("admin")
+			.submit()
+			.goToAddTrainer()
+			.setTrainer(this.trainer)
+			.submit();
+		
+		this.assertTrainerEmailErrorMessageIsPresent();
+	}
+	
+	private void assertTrainerEmailErrorMessageIsPresent() {
+    	assertTrue(isElementPresent(By.xpath("//form[@id='add-trainer-form']/div/div[6]/div/span[2]")));
+    	assertEquals("must be a well-formed email address", driver.findElement(By.xpath("//form[@id='add-trainer-form']/div/div[6]/div/span[2]")).getText());
+	}
+	
 	
 	private void initTrainer() {
 		this.trainer = new Trainer();
