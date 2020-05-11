@@ -145,10 +145,16 @@ public class HairdressingController {
 //	}
 	@GetMapping(value = "/hairdressings/new")
 	public String initHairdressingCreationForm(Map<String, Object> model) {
-		HairdressingDTO hairdressingDTO = new HairdressingDTO();
-		model.put("hairdressingDTO", hairdressingDTO);
-		model.put("boton", true);
-		return VIEWS_HAIRDRESSING_CREATE_OR_UPDATE_FORM;
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		if (!auth.getAuthorities().stream().map(x -> x.getAuthority()).anyMatch(x -> x.equals("admin"))) {
+			return "redirect:errors/accessDenied";
+		}else {
+			HairdressingDTO hairdressingDTO = new HairdressingDTO();
+			model.put("hairdressingDTO", hairdressingDTO);
+			model.put("boton", true);
+			return VIEWS_HAIRDRESSING_CREATE_OR_UPDATE_FORM;
+		}
+		
 	}
 	
 	@PostMapping(value = "/hairdressings/new")
@@ -270,16 +276,17 @@ public class HairdressingController {
 	}
 	
 	@GetMapping(value = "/hairdressings/{hairdressingId}/delete")
-	public String processDeleteHairdressingForm(@PathVariable("hairdressingId") int hairdressingId) {
-		Hairdressing h = hairdressingService.findHairdressingById(hairdressingId);
-		if(h.getDate().isEqual(LocalDate.now()) || h.getDate().isEqual(LocalDate.now().plusDays(1))) {
-			return "redirect:/hairdressings";
+    public String processDeleteHairdressingForm(@PathVariable("hairdressingId") int hairdressingId) {
+        Hairdressing h = hairdressingService.findHairdressingById(hairdressingId);
+        this.authorizeUserAction(h.getPet().getId());
+        if(h.getDate().isEqual(LocalDate.now()) || h.getDate().isEqual(LocalDate.now().plusDays(1))) {
+            return "redirect:/hairdressings";
 
-		}else {
-			hairdressingService.delete(hairdressingId);
-			return "redirect:/hairdressings";
-		}
-	}
+        }else {
+            hairdressingService.delete(hairdressingId);
+            return "redirect:/hairdressings";
+        }
+    }
 	
 	private Hairdressing convertToEntity(HairdressingDTO dto) throws MappingException {
 		Hairdressing hairdressing = new Hairdressing();
@@ -314,7 +321,7 @@ public class HairdressingController {
 	private void authorizeUserAction(int petId) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		if (!this.authorizationService.canUserModifyBooking(auth.getName(), petId)) {
-			throw new AccessDeniedException("User canot modify data.");
+			throw new AccessDeniedException("User cannot modify data.");
 		}
 	}
 	

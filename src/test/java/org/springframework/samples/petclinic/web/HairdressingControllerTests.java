@@ -83,7 +83,7 @@ public class HairdressingControllerTests {
 		pet.setName("elpotro");
 
 		given(this.petService.findPetById(PET_ID)).willReturn(this.pet);
-//		given(this.hairdressingService.findHairdressingById(HAIRDRESSING_ID)).willReturn(this.hairdressing);
+		given(this.hairdressingService.findHairdressingById(HAIRDRESSING_ID)).willReturn(this.hairdressing);
 
 		given(securityContext.getAuthentication()).willReturn(auth);
 		SecurityContextHolder.setContext(securityContext);
@@ -92,55 +92,111 @@ public class HairdressingControllerTests {
 	@WithMockUser(value = "spring")
 	@Test
 	public void testInitNewHairdressingForm() throws Exception {
-		given(this.authorizationService.canUserModifyBooking(anyString(), eq(this.PET_ID))).willReturn(true);
-
 		mockMvc.perform(get("/hairdressings/new")).andExpect(status().isOk())
 				.andExpect(model().attributeExists("hairdressingDTO"))
 				.andExpect(view().name("hairdressings/createOrUpdateHairdressingForm"));
+	}
+	
+	@WithMockUser(value = "spring", authorities = "admin")
+	@Test
+	public void testInitNewHairdressingFormAdmin() throws Exception{
+		mockMvc.perform(get("/hairdressings/new")).andExpect(status().isOk())
+		.andExpect(model().attributeExists("hairdressingDTO"))
+		.andExpect(view().name("hairdressings/createOrUpdateHairdressingForm"));
 	}
 
 	@WithMockUser(value = "spring")
 	@Test
 	public void testProcessNewHairdressingForm() throws Exception {
-		mockMvc.perform(
-				post("/hairdressings/new").param("date", "2024-04-04")
-						.param("description", "TESTO").param("type", "ESTETICA").param("time", "6:00").with(csrf()))
-				.andExpect(status().is2xxSuccessful()).andExpect(view().name("redirect:/hairdressings"));
+		mockMvc.perform(post("/hairdressings/new").with(csrf()).param("cuidado", "ESTETICA").param("date", "2022/04/04")
+				.param("description", "TESTO").param("petName", "Leo").param("time", "6:00"))
+				.andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/hairdressings"));
+	}
+	
+	@WithMockUser(value = "spring")
+	@Test
+	public void testProcessNewHairdressingFormErrors() throws Exception {
+		mockMvc.perform(post("/hairdressings/new").with(csrf()).param("cuidado", "ESTETICA").param("date", "2015/04/04")
+				.param("description", "TESTO").param("petName", "Leo").param("time", "6:00"))
+				.andExpect(status().is2xxSuccessful()).andExpect(view().name("hairdressings/createOrUpdateHairdressingForm"));
 	}
 
 	@WithMockUser(value = "spring")
 	@Test
 	public void testInitUpdateHairdressingForm() throws Exception {
 		given(this.authorizationService.canUserModifyBooking(anyString(), eq(this.PET_ID))).willReturn(true);
-
+		
+		mockMvc.perform(get("/hairdressings/{hairdressingId}/edit", this.HAIRDRESSING_ID)).andExpect(status().isOk())
+				.andExpect(view().name("hairdressings/createOrUpdateHairdressingForm"));
+	}
+	
+	@WithMockUser(value = "spring", authorities = "admin")
+	@Test //TODO
+	public void testInitUpdateHairdressingFormAdmin() throws Exception {
+		given(this.authorizationService.canUserModifyBooking(anyString(), eq(this.PET_ID))).willReturn(true);
+		
 		mockMvc.perform(get("/hairdressings/{hairdressingId}/edit", this.HAIRDRESSING_ID)).andExpect(status().isOk())
 				.andExpect(view().name("hairdressings/createOrUpdateHairdressingForm"));
 	}
 
 	@WithMockUser(value = "spring")
-	@Test	//TODO
+	@Test
+	public void testInitUpdateHairdressingFormUnauthorized() throws Exception {
+		given(this.authorizationService.canUserModifyBooking(anyString(), eq(this.PET_ID))).willReturn(false);
+		
+		mockMvc.perform(get("/hairdressings/{hairdressingId}/edit", this.HAIRDRESSING_ID)).andExpect(status().isOk())
+				.andExpect(view().name("errors/accessDenied"));
+	}
+	
+	@WithMockUser(value = "spring")
+	@Test
 	public void testProcessUpdateHairdressingForm() throws Exception {
 		given(this.authorizationService.canUserModifyBooking(anyString(), eq(this.PET_ID))).willReturn(true);
 
-		mockMvc.perform(post("/hairdressings/{hairdressingId}/edit", this.HAIRDRESSING_ID).with(csrf()).param("time", "8:30"))
-				.andExpect(status().isOk()).andExpect(view().name("hairdressings/createOrUpdateHairdressingForm"));
+		mockMvc.perform(post("/hairdressings/{hairdressingId}/edit", this.HAIRDRESSING_ID).with(csrf())
+				.param("cuidado", "ESTETICA").param("date", "2022/04/04").param("description", "TESTO")
+				.param("petName", "Leo").param("time", "6:00")).andExpect(status().is3xxRedirection())
+				.andExpect(view().name("redirect:/hairdressings/{hairdressingId}"));
 	}
 	
+	@WithMockUser(value = "spring")
+	@Test //TODO
+	public void testProcessUpdateHairdressingFormAdmin() throws Exception {
+		given(this.authorizationService.canUserModifyBooking(anyString(), eq(this.PET_ID))).willReturn(true);
+
+		mockMvc.perform(post("/hairdressings/{hairdressingId}/edit", this.HAIRDRESSING_ID).with(csrf())
+				.param("cuidado", "ESTETICA").param("date", "2022/04/04").param("description", "TESTO")
+				.param("petName", "Leo").param("time", "6:00")).andExpect(status().is3xxRedirection())
+				.andExpect(view().name("redirect:/hairdressings/{hairdressingId}"));
+	}
+	
+	@WithMockUser(value = "spring")
+	@Test
+	public void testProcessUpdateHairdressingFormUnauthorized() throws Exception {
+		given(this.authorizationService.canUserModifyBooking(anyString(), eq(this.PET_ID))).willReturn(false);
+
+		mockMvc.perform(post("/hairdressings/{hairdressingId}/edit", this.HAIRDRESSING_ID).with(csrf())
+				.param("cuidado", "ESTETICA").param("date", "2022/04/04").param("description", "TESTO")
+				.param("petName", "Leo").param("time", "6:00")).andExpect(status().is3xxRedirection())
+				.andExpect(view().name("redirect:/hairdressings/{hairdressingId}"));
+	}
+
 	@WithMockUser(value = "spring")
 	@Test
 	public void testShowHairdressing() throws Exception {
 		given(this.authorizationService.canUserModifyBooking(anyString(), eq(this.PET_ID))).willReturn(true);
 
-		mockMvc.perform(get("/hairdressings/{hairdressingId}", this.HAIRDRESSING_ID)).andExpect(status().isOk()).andExpect(view().name("hairdressings/hairdressingDetails"));
+		mockMvc.perform(get("/hairdressings/{hairdressingId}", this.HAIRDRESSING_ID)).andExpect(status().isOk())
+				.andExpect(view().name("hairdressings/hairdressingDetails"));
 	}
-	
+
 	@WithMockUser(value = "spring")
 	@Test
 	public void testShowHairdressingList() throws Exception {
-		mockMvc.perform(get("/hairdressings")).andExpect(view().name("/hairdressings/hairdressingList"))
-				.andExpect(status().isOk()).andExpect(model().attributeExists("results"));
+		mockMvc.perform(get("/hairdressings")).andExpect(view().name("hairdressings/hairdressingsList"))
+				.andExpect(status().isOk()).andExpect(model().attributeExists("hairdressings"));
 	}
-	
+
 	@WithMockUser(value = "spring")
 	@Test
 	public void testDeleteHairdressingForm() throws Exception {
@@ -154,8 +210,8 @@ public class HairdressingControllerTests {
 	@WithMockUser(value = "spring", authorities = "admin")
 	@Test
 	void testProcessDeleteFormUnauthorized() throws Exception {
-
-		given(this.authorizationService.canUserModifyBooking(anyString(), eq(PET_ID))).willReturn(false);
+		given(this.hairdressingService.findHairdressingById(HAIRDRESSING_ID)).willReturn(this.hairdressing);
+		given(this.authorizationService.canUserModifyBooking(anyString(), eq(this.PET_ID))).willReturn(false);
 
 		mockMvc.perform(get("/hairdressings/{hairdressingId}/delete", HAIRDRESSING_ID).with(csrf()))
 				.andExpect(status().isOk()).andExpect(view().name("errors/accessDenied"));
@@ -171,6 +227,6 @@ public class HairdressingControllerTests {
 	/// public void testPopulateTiposCuidado() throws Exception {
 
 	// }
-	
-	//TODO FALTAN ALGUNOS TEST BRO
+
+	// TODO FALTAN ALGUNOS TEST BRO
 }
