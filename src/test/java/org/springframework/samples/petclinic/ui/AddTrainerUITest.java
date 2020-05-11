@@ -1,18 +1,16 @@
 package org.springframework.samples.petclinic.ui;
 
-import java.util.regex.Pattern;
 import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.hamcrest.CoreMatchers.*;
 import org.openqa.selenium.*;
 import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.support.ui.Select;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.samples.petclinic.model.Trainer;
+import org.springframework.samples.petclinic.pages.HomePage;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
@@ -26,6 +24,8 @@ public class AddTrainerUITest {
 	private boolean acceptNextAlert = true;
 	private StringBuffer verificationErrors = new StringBuffer();
 	
+	private HomePage homePage;
+	
 	private String username;
 	private Trainer trainer;
 
@@ -35,77 +35,28 @@ public class AddTrainerUITest {
 		baseUrl = "http://localhost:" + port;
 		driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
   
-		this.initTrainer();
+		this.homePage = new HomePage(driver);
+		driver.get(this.baseUrl);
 	}
 
 	@Test
 	public void testAddTrainer() throws Exception {
-		as("admin", "admin").
-		whenIamLoggedIntheSystem().
-		openAddTrainers().
-		addTrainer().
-		openTrainers().
-		thenTrainerIsPresent();
-	}
-  
-	private AddTrainerUITest whenIamLoggedIntheSystem() {	
-		return this;
-	}
-
-	private AddTrainerUITest as(String username, String password) {
-		this.username=username;
+		this.initTrainer();
 		
-		driver.get(this.baseUrl);
-		driver.findElement(By.xpath("//div[@id='main-navbar']/ul/li[5]/a")).click();
-		driver.findElement(By.xpath("//div[@id='main-navbar']/ul/li[5]/ul/li[1]/a")).click();
-		driver.findElement(By.id("username")).clear();
-		driver.findElement(By.id("username")).sendKeys(username);
-		driver.findElement(By.id("password")).clear();
-		driver.findElement(By.id("password")).sendKeys(password);
-		driver.findElement(By.xpath("//button[@type='submit']")).click();
-		    
-		return this;
-	}
-
-
-	private AddTrainerUITest openAddTrainers() {
-		driver.findElement(By.xpath("//div[@id='main-navbar']/ul/li[3]")).click();
-	    driver.findElement(By.xpath("//div[@id='main-navbar']/ul/li[3]/ul/li[4]/a/span[2]")).click();
+		this.homePage
+			.goToLogin()
+			.setUsername("admin")
+			.setPassword("admin")
+			.submit()
+			.goToAddTrainer()
+			.setTrainer(this.trainer)
+			.submit()
+			.goToTrainers();
 		
-		return this;
+		this.assertTrainerIsPresent();
 	}
 	
-	private AddTrainerUITest openTrainers() {
-		driver.findElement(By.xpath("//div[@id='main-navbar']/ul/li[3]")).click();
-	    driver.findElement(By.xpath("//div[@id='main-navbar']/ul/li[3]/ul/li[2]/a/span[2]")).click();
-		
-		return this;
-	}
-	
-	private AddTrainerUITest addTrainer() {
-		driver.findElement(By.id("firstName")).click();
-	    driver.findElement(By.id("firstName")).clear();
-	    driver.findElement(By.id("firstName")).sendKeys(this.trainer.getFirstName());
-	    driver.findElement(By.id("lastName")).clear();
-	    driver.findElement(By.id("lastName")).sendKeys(this.trainer.getLastName());
-	    driver.findElement(By.id("salary")).clear();
-	    driver.findElement(By.id("salary")).sendKeys(this.trainer.getSalary() + "");
-	    driver.findElement(By.id("dni")).clear();
-	    driver.findElement(By.id("dni")).sendKeys(this.trainer.getDni());
-	    driver.findElement(By.id("telephone")).clear();
-	    driver.findElement(By.id("telephone")).sendKeys(this.trainer.getTelephone());
-	    driver.findElement(By.id("email")).clear();
-	    driver.findElement(By.id("email")).sendKeys(this.trainer.getEmail());
-	    driver.findElement(By.id("specialty")).clear();
-	    driver.findElement(By.id("specialty")).sendKeys(this.trainer.getSpecialty());
-	    driver.findElement(By.id("description")).clear();
-	    driver.findElement(By.id("description")).sendKeys(this.trainer.getDescription());
-	    driver.findElement(By.xpath("//button[@type='submit']")).click();
-		
-		return this;
-	}
-
-	private AddTrainerUITest thenTrainerIsPresent() {
+	private void assertTrainerIsPresent() {
 		driver.findElement(By.name("lastName")).click();
 	    driver.findElement(By.name("lastName")).clear();
 		driver.findElement(By.name("lastName")).sendKeys(this.trainer.getLastName());
@@ -147,9 +98,58 @@ public class AddTrainerUITest {
   	    } catch (Error e) {
   	    	verificationErrors.append(e.toString());
   	    }
-	
-	    return this;
 	}
+
+	@Test
+	public void testAddInvalidTrainer() throws Exception {		
+		this.homePage
+			.goToLogin()
+			.setUsername("admin")
+			.setPassword("admin")
+			.submit()
+			.goToAddTrainer()
+			.submit();
+		
+		this.assertTrainerErrorsMessageArePresent();
+	}
+	
+	private void assertTrainerErrorsMessageArePresent() {
+		assertTrue(isElementPresent(By.xpath("//form[@id='add-trainer-form']/div/div/div/span[2]")));
+		assertEquals("must not be empty", driver.findElement(By.xpath("//form[@id='add-trainer-form']/div/div/div/span[2]")).getText());
+		assertTrue(isElementPresent(By.xpath("//form[@id='add-trainer-form']/div/div[2]/div/span[2]")));
+		assertEquals("must not be empty", driver.findElement(By.xpath("//form[@id='add-trainer-form']/div/div[2]/div/span[2]")).getText());
+    	assertTrue(isElementPresent(By.xpath("//form[@id='add-trainer-form']/div/div[4]/div/span[2]")));
+    	assertEquals("must not be empty", driver.findElement(By.xpath("//form[@id='add-trainer-form']/div/div[4]/div/span[2]")).getText());
+    	assertTrue(isElementPresent(By.xpath("//form[@id='add-trainer-form']/div/div[6]/div/span[2]")));
+    	assertEquals("must not be empty", driver.findElement(By.xpath("//form[@id='add-trainer-form']/div/div[6]/div/span[2]")).getText());
+    	assertTrue(isElementPresent(By.xpath("//form[@id='add-trainer-form']/div/div[7]/div/span[2]")));
+    	assertEquals("must not be empty", driver.findElement(By.xpath("//form[@id='add-trainer-form']/div/div[7]/div/span[2]")).getText());
+    	assertTrue(isElementPresent(By.xpath("//form[@id='add-trainer-form']/div/div[8]/div/span[2]")));
+    	assertEquals("must not be empty", driver.findElement(By.xpath("//form[@id='add-trainer-form']/div/div[8]/div/span[2]")).getText());
+	}
+	
+	@Test
+	public void testAddInvalidEmailTrainer() throws Exception {		
+		this.initTrainer();
+		this.trainer.setEmail("email");
+		
+		this.homePage
+			.goToLogin()
+			.setUsername("admin")
+			.setPassword("admin")
+			.submit()
+			.goToAddTrainer()
+			.setTrainer(this.trainer)
+			.submit();
+		
+		this.assertTrainerEmailErrorMessageIsPresent();
+	}
+	
+	private void assertTrainerEmailErrorMessageIsPresent() {
+    	assertTrue(isElementPresent(By.xpath("//form[@id='add-trainer-form']/div/div[6]/div/span[2]")));
+    	assertEquals("must be a well-formed email address", driver.findElement(By.xpath("//form[@id='add-trainer-form']/div/div[6]/div/span[2]")).getText());
+	}
+	
 	
 	private void initTrainer() {
 		this.trainer = new Trainer();
@@ -164,7 +164,7 @@ public class AddTrainerUITest {
 	}
 	
   @AfterEach
-  public void tearDown() throws Exception {
+  	public void tearDown() throws Exception {
     driver.quit();
     String verificationErrorString = verificationErrors.toString();
     if (!"".equals(verificationErrorString)) {
@@ -172,7 +172,7 @@ public class AddTrainerUITest {
     }
   }
 
-  private boolean isElementPresent(By by) {
+  	private boolean isElementPresent(By by) {
     try {
       driver.findElement(by);
       return true;
@@ -181,7 +181,7 @@ public class AddTrainerUITest {
     }
   }
 
-  private boolean isAlertPresent() {
+  	private boolean isAlertPresent() {
     try {
       driver.switchTo().alert();
       return true;
@@ -190,7 +190,7 @@ public class AddTrainerUITest {
     }
   }
 
-  private String closeAlertAndGetItsText() {
+  	private String closeAlertAndGetItsText() {
     try {
       Alert alert = driver.switchTo().alert();
       String alertText = alert.getText();
