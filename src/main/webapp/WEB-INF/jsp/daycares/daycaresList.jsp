@@ -12,6 +12,7 @@
     
     <c:if test="${owner}">
     <a class="btn btn-default" href='<spring:url value="/daycares/new" htmlEscape="true"/>'>Add daycare</a>
+	<br><br>
 	</c:if>
 	
     <table id="daycaresTable" class="table table-striped">
