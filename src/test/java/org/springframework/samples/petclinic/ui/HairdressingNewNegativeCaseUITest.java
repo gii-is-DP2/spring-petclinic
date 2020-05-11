@@ -35,7 +35,7 @@ public class HairdressingNewNegativeCaseUITest {
 	public void testSolicitarCitaNegativo() throws Exception {
 		driver.get("http://localhost:8080/");
 		driver.findElement(By.xpath("//div[@id='main-navbar']/ul/li[5]/a/span[2]")).click();
-		driver.findElement(By.linkText("Login")).click();
+		driver.findElement(By.linkText("LOGIN")).click();
 		driver.findElement(By.id("username")).click();
 		driver.findElement(By.id("username")).clear();
 		driver.findElement(By.id("username")).sendKeys("george");
@@ -43,8 +43,8 @@ public class HairdressingNewNegativeCaseUITest {
 		driver.findElement(By.id("password")).clear();
 		driver.findElement(By.id("password")).sendKeys("george");
 		driver.findElement(By.id("password")).sendKeys(Keys.ENTER);
-		driver.findElement(By.linkText("Reservations")).click();
-		driver.findElement(By.linkText("Hairdressings")).click();
+		driver.findElement(By.linkText("RESERVATIONS")).click();
+		driver.findElement(By.linkText("HAIRDRESSINGS")).click();
 		driver.findElement(By.linkText("Add hairdressing")).click();
 		driver.findElement(By.xpath("//form[@id='add-hairdressing-form']/div")).click();
 		driver.findElement(By.id("date")).click();

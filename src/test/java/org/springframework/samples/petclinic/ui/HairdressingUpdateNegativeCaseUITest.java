@@ -33,16 +33,16 @@ public class HairdressingUpdateNegativeCaseUITest {
 	@Test
 	public void testActualizarCitaNegativo() throws Exception {
 		driver.get("http://localhost:8080/");
-		driver.findElement(By.linkText("User")).click();
-		driver.findElement(By.linkText("Login")).click();
+		driver.findElement(By.linkText("USER")).click();
+		driver.findElement(By.linkText("LOGIN")).click();
 		driver.findElement(By.id("username")).clear();
 		driver.findElement(By.id("username")).sendKeys("george");
 		driver.findElement(By.id("password")).click();
 		driver.findElement(By.id("password")).clear();
 		driver.findElement(By.id("password")).sendKeys("george");
 		driver.findElement(By.xpath("//button[@type='submit']")).click();
-		driver.findElement(By.xpath("//div[@id='main-navbar']/ul/li[3]/a/span[2]")).click();
-		driver.findElement(By.xpath("//div[@id='main-navbar']/ul/li[3]/ul/li[5]/a/span[2]")).click();
+		driver.findElement(By.linkText("RESERVATIONS")).click();
+		driver.findElement(By.linkText("HAIRDRESSINGS")).click();
 		driver.findElement(By.linkText("2021-01-01")).click();
 		driver.findElement(By.linkText("Edit hairdressing")).click();
 		driver.findElement(By.id("date")).click();

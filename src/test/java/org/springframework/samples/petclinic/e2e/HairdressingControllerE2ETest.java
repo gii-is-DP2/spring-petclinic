@@ -26,7 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @AutoConfigureMockMvc
 @Transactional
-public class HairdressingControllerE2Test {
+public class HairdressingControllerE2ETest {
 
 	public final String TEST_OWNER_USERNAME = "george";
 	public final String TEST_ADMIN_USERNAME = "admin";
@@ -56,14 +56,15 @@ public class HairdressingControllerE2Test {
 	public void testProcessNewHairdressingForm() throws Exception {
 		mockMvc.perform(post("/hairdressings/new").param("cuidado", "ESTETICA").param("date", "2024/04/04")
 				.param("description", "TESTO").param("petName", "Leo").param("time", "6:00").with(csrf()))
-				.andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/hairdressings"));
+				.andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/hairdressings/owner"));
 	}
-	
+
 	@WithMockUser(username = TEST_ADMIN_USERNAME, authorities = { "admin" })
 	@Test
-	public void testProcessNewHairdressingFromAdmin() throws Exception{
+	public void testProcessNewHairdressingFromAdmin() throws Exception {
 		mockMvc.perform(post("/haidressings/new").param("cuidado", "ESTETICA").param("date", "2024/04/04")
-				.param("description", "TESTO").param("petName", "Leo").param("time", "6:00").with(csrf())).andExpect(status().isForbidden());
+				.param("description", "TESTO").param("petName", "Leo").param("time", "6:00").with(csrf()))
+				.andExpect(status().isForbidden());
 	}
 
 	@WithMockUser(username = TEST_OWNER_USERNAME, authorities = { "owner" })
@@ -82,7 +83,7 @@ public class HairdressingControllerE2Test {
 		mockMvc.perform(get("/hairdressings/{hairdressingId}/edit", this.TEST_HAIRDRESSING)).andExpect(status().isOk())
 				.andExpect(view().name("hairdressings/createOrUpdateHairdressingForm"));
 	}
-	
+
 	@WithMockUser(username = TEST_OWNER_USERNAME, authorities = { "owner" })
 	@Test
 	public void testUnathorizedUpdateHairdressingForm() throws Exception {
@@ -104,57 +105,91 @@ public class HairdressingControllerE2Test {
 				.param("petName", "Leo").param("time", "6:00")).andExpect(status().is3xxRedirection())
 				.andExpect(view().name("redirect:/hairdressings/{hairdressingId}"));
 	}
-	
+
 	@WithMockUser(username = TEST_ADMIN_USERNAME, authorities = { "admin" })
 	@Test
-	public void testProcessUpdateHairdressingFromAdmin() throws Exception{
-		mockMvc.perform(post("/haidressings/{haidressingId}/edit", this.TEST_HAIRDRESSING).param("cuidado", "ESTETICA").param("date", "2024/04/04")
-				.param("description", "TESTO").param("petName", "Leo").param("time", "6:00").with(csrf())).andExpect(status().isForbidden());
+	public void testProcessUpdateHairdressingFromAdmin() throws Exception {
+		mockMvc.perform(post("/haidressings/{haidressingId}/edit", this.TEST_HAIRDRESSING).param("cuidado", "ESTETICA")
+				.param("date", "2024/04/04").param("description", "TESTO").param("petName", "Leo").param("time", "6:00")
+				.with(csrf())).andExpect(status().isForbidden());
 	}
-	
+
 	@WithMockUser(username = TEST_OWNER_USERNAME, authorities = { "owner" })
 	@Test
 	public void testProcessUpdateHairdressingFormHasErrors() throws Exception {
 		mockMvc.perform(post("/hairdressings/{hairdressingId}/edit", this.TEST_HAIRDRESSING).with(csrf())
 				.param("cuidado", "ESTETICA").param("date", "2015/04/04").param("description", "TESTO")
-				.param("petName", "Leo").param("time", "6:00"))
-				.andExpect(model().attributeHasErrors("hairdressingDTO"))
+				.param("petName", "Leo").param("time", "6:00")).andExpect(model().attributeHasErrors("hairdressingDTO"))
 				.andExpect(model().attributeHasFieldErrors("hairdressingDTO", "date")).andExpect(status().isOk())
 				.andExpect(view().name("hairdressings/createOrUpdateHairdressingForm"));
 	}
-	
-	@WithMockUser(username = TEST_OWNER_USERNAME, authorities = {"owner"})
-    @Test
-    void testProcessDeleteFormSuccess() throws Exception {
-        mockMvc.perform(get("/hairdressings/{hairdressingId}/delete", TEST_HAIRDRESSING)
-                            .with(csrf()))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(view().name("redirect:/hairdressings"));
-    }
-    
-    @WithMockUser(username = TEST_ADMIN_USERNAME, authorities = {"admin"})
-    @Test
-    void testProcessDeleteFormSuccessAdmin() throws Exception {
-        mockMvc.perform(get("/hairdressings/{hairdressingId}/delete", TEST_HAIRDRESSING)
-                            .with(csrf()))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(view().name("redirect:/hairdressings"));
-    }
-    
-    @WithMockUser(username = "betty", authorities = {"owner"})
-    @Test
-    void testProcessDeleteFormUnauthorized() throws Exception {
-        mockMvc.perform(get("/hairdressings/{hairdressingId}/delete", TEST_HAIRDRESSING)
-                            .with(csrf()))
-                .andExpect(status().isOk())
-                .andExpect(view().name("errors/accessDenied"));
-    }
-    
-    @WithMockUser(username = TEST_OWNER_USERNAME, authorities = {"owner"})
-    @Test
-    void testProcessDeleteFormInvalid() throws Exception {
-        mockMvc.perform(get("/hairdressings/{hairdressingId}/delete", 200))
-            .andExpect(status().isOk())
-            .andExpect(view().name("errors/elementNotFound"));
-    }
+
+	@WithMockUser(username = TEST_OWNER_USERNAME, authorities = { "owner" })
+	@Test
+	void testProcessDeleteFormSuccess() throws Exception {
+		mockMvc.perform(get("/hairdressings/{hairdressingId}/delete", TEST_HAIRDRESSING).with(csrf()))
+				.andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/hairdressings/owner"));
+	}
+
+	@WithMockUser(username = TEST_ADMIN_USERNAME, authorities = { "admin" })
+	@Test
+	void testProcessDeleteFormSuccessAdmin() throws Exception {
+		mockMvc.perform(get("/hairdressings/{hairdressingId}/delete", TEST_HAIRDRESSING).with(csrf()))
+				.andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/hairdressings"));
+	}
+
+	@WithMockUser(username = "betty", authorities = { "owner" })
+	@Test
+	void testProcessDeleteFormUnauthorized() throws Exception {
+		mockMvc.perform(get("/hairdressings/{hairdressingId}/delete", TEST_HAIRDRESSING).with(csrf()))
+				.andExpect(status().isOk()).andExpect(view().name("errors/accessDenied"));
+	}
+
+	@WithMockUser(username = TEST_OWNER_USERNAME, authorities = { "owner" })
+	@Test
+	void testProcessDeleteFormInvalid() throws Exception {
+		mockMvc.perform(get("/hairdressings/{hairdressingId}/delete", 200)).andExpect(status().isOk())
+				.andExpect(view().name("errors/elementNotFound"));
+	}
+
+	@WithMockUser(username = TEST_OWNER_USERNAME, authorities = { "owner" })
+	@Test
+	void testShowHairdressing() throws Exception {
+		mockMvc.perform(get("/hairdressings/{hairdressingId}", this.TEST_HAIRDRESSING)).andExpect(status().isOk())
+				.andExpect(view().name("hairdressings/hairdressingDetails"));
+	}
+
+	@WithMockUser(username = TEST_OWNER_USERNAME, authorities = { "owner" })
+	@Test
+	void testShowHairdressingInvalid() throws Exception {
+		mockMvc.perform(get("/hairdressings/{hairdressingId}", 658)).andExpect(view().name("errors/elementNotFound"))
+				.andExpect(status().isOk());
+	}
+
+	@WithMockUser(username = TEST_OWNER_USERNAME, authorities = { "owner" })
+	@Test
+	void testShowHairdressingList() throws Exception {
+		mockMvc.perform(get("/hairdressings/owner")).andExpect(view().name("hairdressings/hairdressingsList"))
+				.andExpect(status().isOk()).andExpect(model().attributeExists("hairdressings"));
+	}
+
+	@WithMockUser(username = TEST_ADMIN_USERNAME, authorities = { "admin" })
+	@Test
+	void testShowHairdressingListAdmin() throws Exception {
+		mockMvc.perform(get("/hairdressings")).andExpect(view().name("hairdressings/hairdressingsList"))
+				.andExpect(status().isOk()).andExpect(model().attributeExists("hairdressings"));
+	}
+
+	@WithMockUser(username = TEST_ADMIN_USERNAME, authorities = { "admin" })
+	@Test
+	void testShowHairdressingListOwnerFromAdmin() throws Exception {
+		mockMvc.perform(get("/hairdressings/owner")).andExpect(view().name("errors/accessDenied"))
+				.andExpect(status().isOk());
+	}
+	@WithMockUser(username = TEST_OWNER_USERNAME, authorities = { "owner" })
+	@Test
+	void testShowHairdressingListAdminFromOwner() throws Exception {
+		mockMvc.perform(get("/hairdressings")).andExpect(view().name("errors/accessDenied"))
+				.andExpect(status().isOk());
+	}
 }

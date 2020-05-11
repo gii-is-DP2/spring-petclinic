@@ -32,16 +32,16 @@ public class HairdressingRemoveNegativeCaseUITest {
 	@Test
 	public void testDeleteCitaNegativo() throws Exception {
 		driver.get("http://localhost:8080/");
-		driver.findElement(By.linkText("User")).click();
-		driver.findElement(By.linkText("Login")).click();
+		driver.findElement(By.linkText("USER")).click();
+		driver.findElement(By.linkText("LOGIN")).click();
 		driver.findElement(By.id("username")).clear();
 		driver.findElement(By.id("username")).sendKeys("betty");
 		driver.findElement(By.id("password")).click();
 		driver.findElement(By.id("password")).clear();
 		driver.findElement(By.id("password")).sendKeys("betty");
 		driver.findElement(By.xpath("//button[@type='submit']")).click();
-		driver.findElement(By.linkText("Reservations")).click();
-		driver.findElement(By.xpath("//div[@id='main-navbar']/ul/li[3]/ul/li[5]/a/span[2]")).click();
+		driver.findElement(By.linkText("RESERVATIONS")).click();
+		driver.findElement(By.linkText("HAIRDRESSINGS")).click();
 		driver.findElement(By.xpath("//html")).click();
 		driver.get("http://localhost:8080/hairdressings/1/delete");
 	}

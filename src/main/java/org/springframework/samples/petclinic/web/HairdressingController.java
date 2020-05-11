@@ -81,88 +81,31 @@ public class HairdressingController {
 		return names;
 	}
 	
-
-	
-	//@ModelAttribute("hairdressing")
-	//public Hairdressing loadPetWithHairdressing(@PathVariable("petId") int petId) {
-		//Pet pet = this.petService.findPetById(petId);
-		//Hairdressing hairdressing = new Hairdressing();
-		//pet.addHairdressing(hairdressing);
-		//return hairdressing;
-	//}
-	
 	@InitBinder("hairdressing")
 	public void initHairdressingBinder(WebDataBinder dataBinder) {
 		dataBinder.setValidator(new HairdressingValidator());
 	}
 	
-//	// Spring MVC calls method loadPetWithVisit(...) before initNewVisitForm is called
-//	@GetMapping(value = "/owners/*/pets/{petId}/hairdressing/new")
-//	public String initNewHairdressingForm(@PathVariable("petId") int petId, Map<String, Object> model) {
-//		Pet pet = this.petService.findPetById(petId);
-//		Hairdressing hairdressing = new Hairdressing();
-//		pet.addHairdressing(hairdressing);
-//		model.put("hairdressing", hairdressing);
-//		return "pets/createOrUpdateHairdressingForm";
-//	}
-//
-//	// Spring MVC calls method loadPetWithVisit(...) before processNewVisitForm is called
-//	@PostMapping(value = "/owners/{ownerId}/pets/{petId}/hairdressing/new")
-//	public String processNewHairdressingForm(@PathVariable("petId") int petId, @PathVariable("ownerId") int ownerId, @Valid Hairdressing hairdressing, BindingResult result) {
-//		Pet pet = this.petService.findPetById(petId);
-//		hairdressing.setPet(pet);
-//		if (result.hasErrors()) {
-//			return "pets/createOrUpdateHairdressingForm";
-//		}
-//		else {
-//			if (hairdressingService.countHairdressingsByDateAndTime(hairdressing.getDate(), hairdressing.getTime()) != 0){
-//				result.rejectValue("time", "", "This time isn't available, please select another");
-//				return "pets/createOrUpdateHairdressingForm";
-//				
-//			}else {
-//				this.petService.saveHairdressing(hairdressing);
-//				System.out.println("\n\n\n\n Estos son los hairdressings que hay: \n\n\n\n"+this.petService.findPetById(petId).getHairdressings()+"\n\n\n\n");
-//				return "redirect:/owners/"+ ownerId;
-//			}
-//		}
-//	}
-//
-////	@GetMapping(value = "/owners/*/pets/{petId}/hairdressings")
-////	public String showHairdressings(@PathVariable int petId, Map<String, Object> model) {
-////		model.put("hairdressings", this.petService.findPetById(petId).getHairdressings());
-////		
-////		return "hairdressingList";
-////	}
-//	
-//	@GetMapping(value = "/owners/{ownerId}/pets/{petId}/hairdressing/{hairdressingId}/delete")
-//	public String deleteHairdressing(@PathVariable("ownerId") int ownerId, @PathVariable int hairdressingId) {
-//		Hairdressing h = hairdressingService.findHairdressingById(hairdressingId);
-//		if(h.getDate().isEqual(LocalDate.now()) || h.getDate().isEqual(LocalDate.now().plusDays(1))) {
-//			return "redirect:/owners/"+ ownerId;
-//
-//		}else {
-//			hairdressingService.delete(hairdressingId);
-//			return "redirect:/owners/"+ ownerId;
-//		}
-//	}
 	@GetMapping(value = "/hairdressings/new")
 	public String initHairdressingCreationForm(Map<String, Object> model) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		if (!auth.getAuthorities().stream().map(x -> x.getAuthority()).anyMatch(x -> x.equals("admin"))) {
-			return "redirect:errors/accessDenied";
-		}else {
-			HairdressingDTO hairdressingDTO = new HairdressingDTO();
-			model.put("hairdressingDTO", hairdressingDTO);
-			model.put("boton", true);
-			return VIEWS_HAIRDRESSING_CREATE_OR_UPDATE_FORM;
+		if (auth.getAuthorities().stream().map(x -> x.getAuthority()).anyMatch(x -> x.equals("admin"))) {
+			return "redirect:/errors/accessDenied";
 		}
-		
+		HairdressingDTO hairdressingDTO = new HairdressingDTO();
+		model.put("hairdressingDTO", hairdressingDTO);
+		model.put("boton", true);
+		return VIEWS_HAIRDRESSING_CREATE_OR_UPDATE_FORM;
 	}
 	
 	@PostMapping(value = "/hairdressings/new")
 	public String processCreationForm(@Valid HairdressingDTO hairdressingDTO, BindingResult result) {
-		
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		if (auth.getAuthorities().stream().map(x -> x.getAuthority()).anyMatch(x -> x.equals("admin"))) {
+			return "redirect:/errors/accessDenied";
+		}
 		if (result.hasErrors()) {
+			
 			return VIEWS_HAIRDRESSING_CREATE_OR_UPDATE_FORM;
 		}
 		else {
@@ -202,7 +145,10 @@ public class HairdressingController {
 
 	@GetMapping(value = "/hairdressings/{hairdressingId}/edit")
 	public String initUpdateHairdressingForm(@PathVariable("hairdressingId") int hairdressingId, Model model) {
-		
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		if (auth.getAuthorities().stream().map(x -> x.getAuthority()).anyMatch(x -> x.equals("admin"))) {
+			return "redirect:/errors/accessDenied";
+		}
 		Hairdressing hairdressing = this.hairdressingService.findHairdressingById(hairdressingId);
 		this.authorizeUserAction(hairdressing.getPet().getId());
 		
@@ -210,18 +156,20 @@ public class HairdressingController {
 		
 		model.addAttribute("boton", false);
 		model.addAttribute(hairdressingDTO);
-//		meter que el atributo "new" sea false, en la variable hairdressing
 		return VIEWS_HAIRDRESSING_CREATE_OR_UPDATE_FORM;
 	}
 
 	@PostMapping(value = "/hairdressings/{hairdressingId}/edit")
 	public String processUpdateHairdressingForm(@Valid HairdressingDTO hairdressingDTO, BindingResult result, @PathVariable("hairdressingId") int hairdressingId) {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		if (auth.getAuthorities().stream().map(x -> x.getAuthority()).anyMatch(x -> x.equals("admin"))) {
+			return "redirect:/errors/accessDenied";
+		}
 		if (result.hasErrors()) {
 			return VIEWS_HAIRDRESSING_CREATE_OR_UPDATE_FORM;
 		}
 		else {
 			Hairdressing hairdressing;
-			
 			try {
 				hairdressing = this.convertToEntity(hairdressingDTO);
 				hairdressing.setId(hairdressingId);
@@ -285,7 +233,6 @@ public class HairdressingController {
 	}
 	
 	@GetMapping(value = "/hairdressings/{hairdressingId}/delete")
-
 	public String processDeleteHairdressingForm(@PathVariable("hairdressingId") int hairdressingId) {
 		Hairdressing h = hairdressingService.findHairdressingById(hairdressingId);
 		this.authorizeUserAction(h.getPet().getId());
@@ -312,7 +259,6 @@ public class HairdressingController {
 			}
 		}
 	}
-
 	
 	private Hairdressing convertToEntity(HairdressingDTO dto) throws MappingException {
 		Hairdressing hairdressing = new Hairdressing();
