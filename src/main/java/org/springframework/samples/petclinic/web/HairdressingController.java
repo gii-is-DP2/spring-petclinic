@@ -20,6 +20,8 @@ import org.springframework.samples.petclinic.service.PetService;
 import org.springframework.samples.petclinic.service.exceptions.BusinessException;
 import org.springframework.samples.petclinic.service.exceptions.MappingException;
 import org.springframework.samples.petclinic.util.HairdressingDTO;
+import org.springframework.samples.petclinic.web.annotations.IsAdmin;
+import org.springframework.samples.petclinic.web.annotations.IsOwner;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -194,7 +196,7 @@ public class HairdressingController {
 				return VIEWS_HAIRDRESSING_CREATE_OR_UPDATE_FORM;
 			}
 			
-			return "redirect:/hairdressings";
+			return "redirect:/hairdressings/owner";
 		}
 	}
 
@@ -248,11 +250,12 @@ public class HairdressingController {
 	@GetMapping("/hairdressings/{hairdressingId}")
 	public ModelAndView showHairdressing(@PathVariable("hairdressingId") int hairdressingId, Map<String, Object> model) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		if (!auth.getAuthorities().stream().map(x -> x.getAuthority()).anyMatch(x -> x.equals("admin"))) {
-			model.put("owner", true);
-		}else {
+		if (auth.getAuthorities().stream().map(x -> x.getAuthority()).anyMatch(x -> x.equals("admin"))) {
 			model.put("owner", false);
+		}else {
+			model.put("owner", true);
 		}
+		System.out.println("\n\n··········"+model.get("owner")+"··········\n\n");
 		Hairdressing hairdressing = hairdressingService.findHairdressingById(hairdressingId);
 		this.authorizeUserAction(hairdressing.getPet().getId());
 		ModelAndView mav = new ModelAndView("hairdressings/hairdressingDetails");
@@ -260,33 +263,56 @@ public class HairdressingController {
 		return mav;
 	}
 	
+	@IsAdmin
 	@GetMapping(value = "/hairdressings")
-	public String showHairdressigsList(Map<String, Object> model) {
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		if (auth.getAuthorities().stream().map(x -> x.getAuthority()).anyMatch(x -> x.equals("admin"))) {
-			Collection<Hairdressing> results = (Collection<Hairdressing>) this.hairdressingService.findAll();
-			model.put("hairdressings", results);
-		} else {
-			Collection<Hairdressing> results = this.hairdressingService.findHairdressingsByUser(auth.getName());
-			System.out.println("···············Las citas por usuario son: " + results + "················");
-			model.put("hairdressings", results);
-		}
+	public String showHairdressingList(Map<String, Object> model) {
+		Collection<Hairdressing> results = (Collection) this.hairdressingService.findAll();
+		model.put("hairdressings", results);
+		model.put("owner", false);
 		
 		return "hairdressings/hairdressingsList";
 	}
 	
-	@GetMapping(value = "/hairdressings/{hairdressingId}/delete")
-    public String processDeleteHairdressingForm(@PathVariable("hairdressingId") int hairdressingId) {
-        Hairdressing h = hairdressingService.findHairdressingById(hairdressingId);
-        this.authorizeUserAction(h.getPet().getId());
-        if(h.getDate().isEqual(LocalDate.now()) || h.getDate().isEqual(LocalDate.now().plusDays(1))) {
-            return "redirect:/hairdressings";
+	@IsOwner
+	@GetMapping(value = "/hairdressings/owner")
+	public String showOwnerHairdressingsList(Map<String, Object> model) {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		model.put("owner", true);
+		Collection<Hairdressing> results = this.hairdressingService.findHairdressingsByUser(auth.getName());
+		model.put("hairdressings", results);
 
-        }else {
-            hairdressingService.delete(hairdressingId);
-            return "redirect:/hairdressings";
-        }
-    }
+		return "hairdressings/hairdressingsList";
+	}
+	
+	@GetMapping(value = "/hairdressings/{hairdressingId}/delete")
+
+	public String processDeleteHairdressingForm(@PathVariable("hairdressingId") int hairdressingId) {
+		Hairdressing h = hairdressingService.findHairdressingById(hairdressingId);
+		this.authorizeUserAction(h.getPet().getId());
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		if (auth.getAuthorities().stream().map(x -> x.getAuthority()).anyMatch(x -> x.equals("admin"))) {
+
+			if (h.getDate().isEqual(LocalDate.now()) || h.getDate().isEqual(LocalDate.now().plusDays(1))) {
+				return "redirect:/hairdressings";
+
+			} else {
+				this.hairdressingService.delete(hairdressingId);
+
+				return "redirect:/hairdressings";
+			}
+		} else {
+
+			if (h.getDate().isEqual(LocalDate.now()) || h.getDate().isEqual(LocalDate.now().plusDays(1))) {
+				return "redirect:/hairdressings/owner";
+
+			} else {
+				this.hairdressingService.delete(hairdressingId);
+
+				return "redirect:/hairdressings/owner";
+			}
+		}
+	}
+
 	
 	private Hairdressing convertToEntity(HairdressingDTO dto) throws MappingException {
 		Hairdressing hairdressing = new Hairdressing();

@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
@@ -53,6 +54,11 @@ public class Authorities extends BaseEntity {
 	
 	public boolean removeUser(User user) {
 		return getUsersInternal().remove(user);
+	}
+	
+	@Override
+	public String toString() {
+		return authority;
 	}
 	
 	@Override

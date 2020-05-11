@@ -9,6 +9,7 @@ import java.util.NoSuchElementException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.dao.DataAccessException;
@@ -17,13 +18,16 @@ import org.springframework.samples.petclinic.model.Training;
 import org.springframework.samples.petclinic.model.User;
 import org.springframework.samples.petclinic.service.exceptions.BusinessException;
 import org.springframework.stereotype.Service;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.transaction.annotation.Transactional;
 
 @DataJpaTest(includeFilters = @ComponentScan.Filter(Service.class))
+@AutoConfigureTestDatabase(replace=AutoConfigureTestDatabase.Replace.NONE)
+@DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
 public class TrainingServiceTest {
 	
-	private final int TRAINING_ID = 1;
-	private final int TRAINER_ID = 1;
+	private final int TRAINER_ID = 2;
 	private final int PET_ID = 1;
 	
 	private Training training;
@@ -75,16 +79,17 @@ public class TrainingServiceTest {
 	@Transactional
 	void shouldNotFindTrainingById() {
 		Assertions.assertThrows(NoSuchElementException.class, () -> {
-			this.trainingService.findTrainingById(this.TRAINING_ID);
+			this.trainingService.findTrainingById(99);
 		});
 	}
 	
 	@Test
 	@Transactional
 	void shouldFindTrainings() throws DataAccessException, BusinessException {
+		int previousSize = this.trainingService.findTrainings().size();
 		this.addTraining(LocalDate.now().plusDays(5));
 		Collection<Training> foundTrainings = this.trainingService.findTrainings();
-		assertThat(foundTrainings.size()).isEqualTo(1);
+		assertThat(foundTrainings.size()).isEqualTo(previousSize + 1);
 	}
 	
 	@Test
@@ -99,7 +104,7 @@ public class TrainingServiceTest {
 	@Transactional
 	void shouldNotFindTrainingsByUser() throws DataAccessException, BusinessException {
 		this.addTraining(LocalDate.now().plusDays(5));
-		Collection<Training> foundTrainings = this.trainingService.findTrainingsByUser("fede");
+		Collection<Training> foundTrainings = this.trainingService.findTrainingsByUser("betty");
 		assertThat(foundTrainings.size()).isEqualTo(0);
 	}
 	
@@ -170,7 +175,7 @@ public class TrainingServiceTest {
 	@Test
 	public void shouldNotDeleteInvalidTrainingById() {
 		Assertions.assertThrows(NoSuchElementException.class, () -> {
-			this.trainingService.delete(this.TRAINING_ID);
+			this.trainingService.delete(99);
 		});
 	}
 	

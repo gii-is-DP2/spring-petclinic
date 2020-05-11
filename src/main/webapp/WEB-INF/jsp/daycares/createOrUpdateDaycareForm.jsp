@@ -16,7 +16,7 @@
     <jsp:body>
         <h2><c:if test="${nuevo}">New </c:if> Daycare
 		</h2>
-        <form:form modelAttribute="daycareDTO" class="form-horizontal" id="add-training-form">
+        <form:form modelAttribute="daycareDTO" class="form-horizontal" id="add-daycare-form">
             <div class="form-group has-feedback">
                 <petclinic:inputField label="Date" name="date"/>
                 <petclinic:inputField label="Description" name="description"/>

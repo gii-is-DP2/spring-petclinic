@@ -9,6 +9,7 @@ import java.util.NoSuchElementException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.dao.DataAccessException;
@@ -17,9 +18,13 @@ import org.springframework.samples.petclinic.model.ServiceType;
 import org.springframework.samples.petclinic.model.Training;
 import org.springframework.samples.petclinic.service.exceptions.BusinessException;
 import org.springframework.stereotype.Service;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.transaction.annotation.Transactional;
 
 @DataJpaTest(includeFilters = @ComponentScan.Filter(Service.class))
+@AutoConfigureTestDatabase(replace=AutoConfigureTestDatabase.Replace.NONE)
+@DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
 public class ReviewServiceTest {
 	
 	private final String USER_USERNAME = "fede";
@@ -66,24 +71,19 @@ public class ReviewServiceTest {
 	@Transactional
 	void shouldNotFindReviewById() {
 		Assertions.assertThrows(NoSuchElementException.class, () -> {
-			reviewService.findReviewById(this.REVIEW_ID);
+			reviewService.findReviewById(99);
 		});
 	}
 
 	@Test
 	@Transactional
 	void shouldFindReviews() throws DataAccessException, BusinessException {
+		Collection<Review> foundReviews = reviewService.findReviews();
+		int previousSize = foundReviews.size();
 		this.addReview();
-		Collection<Review> foundReviews = reviewService.findReviews();
-		assertThat(foundReviews.size()).isEqualTo(1);
+		foundReviews = reviewService.findReviews();
+		assertThat(foundReviews.size()).isEqualTo(previousSize + 1);
 		assertThat(foundReviews).contains(review);
-	}
-
-	@Test
-	@Transactional
-	void shouldNotFindReviews() throws DataAccessException, BusinessException {
-		Collection<Review> foundReviews = reviewService.findReviews();
-		assertThat(foundReviews.size()).isEqualTo(0);
 	}
 	
 	@Test

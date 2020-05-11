@@ -50,9 +50,6 @@ private static final int TEST_CARER_ID = 1;
 	private CarerService carerService;
 	
 	@MockBean
-	private AuthorizationService authorizationService;
-	
-	@MockBean
 	private Authentication auth;
 	
 	@MockBean
@@ -175,12 +172,27 @@ private static final int TEST_CARER_ID = 1;
 	void testShowAllCarerList() throws Exception {
 		given(this.carerService.findCarers()).willReturn(Lists.newArrayList(this.carer));
 		
-		mockMvc.perform(get("/carer/find"))
+		mockMvc.perform(get("/carers/find"))
 			.andExpect(status().isOk())
 			.andExpect(model().attribute("carers", iterableWithSize(1)))
 			.andExpect(view().name("carers/carersList"));
 		
 		verify(this.carerService, times(1)).findCarers();
+	}
+
+	@WithMockUser(value = "spring")
+	@Test
+	void testShowCarersByLastName() throws Exception {
+		given(this.carerService.findCarersByLastName((this.carer.getLastName()))).willReturn(Lists.newArrayList(this.carer));
+		
+		mockMvc.perform(get("/carers/find")
+			.param("lastName", this.carer.getLastName())
+			.with(csrf()))
+			.andExpect(status().isOk())
+			.andExpect(model().attribute("carers", iterableWithSize(1)))
+			.andExpect(view().name("carers/carersList"));
+		
+		verify(this.carerService, times(1)).findCarersByLastName(this.carer.getLastName());
 	}
 	
 	@WithMockUser(value = "spring")
@@ -188,7 +200,7 @@ private static final int TEST_CARER_ID = 1;
 	void testShowAllEmptyTrainersList() throws Exception {
 		given(this.carerService.findCarers()).willReturn(Lists.newArrayList());
 		
-		mockMvc.perform(get("/carer/find"))
+		mockMvc.perform(get("/carers/find"))
 			.andExpect(status().isOk())
 			.andExpect(model().attribute("carers", iterableWithSize(0)))
 			.andExpect(view().name("carers/carersList"));
@@ -206,16 +218,13 @@ private static final int TEST_CARER_ID = 1;
 			.andExpect(status().isOk())
 			.andExpect(model().attributeExists("carers"))
 			.andExpect(view().name("carers/carersList"));
-		
 		verify(this.carerService, times(1)).findCarers();
 	}
 	
 	
 	@WithMockUser(value = "spring")
 	@Test
-	void testInitUpdateForm() throws Exception {
-    	given(this.authorizationService.canUserModifyEmployee(anyString())).willReturn(true);
-		
+	void testInitUpdateForm() throws Exception {		
 		mockMvc.perform(get("/carers/{carerId}/edit", this.TEST_CARER_ID))
 			.andExpect(status().isOk())
 			.andExpect(view().name("carers/createOrUpdateCarerForm"));
@@ -224,30 +233,24 @@ private static final int TEST_CARER_ID = 1;
 	@WithMockUser(value = "spring")
 	@Test
 	void testProcessUpdateFormSuccess() throws Exception {
-	   	given(this.authorizationService.canUserModifyEmployee(anyString())).willReturn(true);
-	
 	   	mockMvc.perform(post("/carers/{carerId}/edit", this.TEST_CARER_ID)
 	   			.with(csrf())
-				.param("email", "fakemail@gmail.com"))
-				.andExpect(status().is2xxSuccessful())
-				.andExpect(view().name("carers/createOrUpdateCarerForm"));
+				.param("firstName", "Jorge")
+				.param("lastName", "Fernandez")
+				.with(csrf())
+				.param("salary", "30")
+				.param("dni", "47843638")
+				.param("telephone", "666125279")
+				.param("email", "jorgito@fernan.dez")
+				.param("isHairdresser", "false"))
+				.andExpect(status().is3xxRedirection())
+				.andExpect(view().name("redirect:/carers"));
 		}
-	 
-	 @WithMockUser(value = "spring")
-		@Test
-		void testInitUpdateFormUnauthorized() throws Exception {
-	    	
-	    	given(this.authorizationService.canUserModifyEmployee(anyString())).willReturn(false);
-	    	
-			mockMvc.perform(get("/carers/{carerId}/edit", this.TEST_CARER_ID))
-					.andExpect(view().name("errors/accessDenied"));
-		}
+
 	
 	@WithMockUser(value = "spring")
 	@Test
-	void testProcessUpdateFormHasErrors() throws Exception {
-	   	given(this.authorizationService.canUserModifyEmployee(anyString())).willReturn(true);
-		
+	void testProcessUpdateFormHasErrors() throws Exception {		
 		mockMvc.perform(post("/carers/{carerId}/edit", this.TEST_CARER_ID)
 				.with(csrf())
 				.param("lastName", ""))
@@ -259,26 +262,20 @@ private static final int TEST_CARER_ID = 1;
 	@WithMockUser(value = "spring")
 	@Test
 	void testProcessDeleteFormSuccess() throws Exception {
-		given(this.carerService.findCarerById(TEST_CARER_ID)).willReturn(this.carer);
-	   	given(this.authorizationService.canUserModifyEmployee(anyString())).willReturn(true);
-		
+		given(this.carerService.findCarerById(TEST_CARER_ID)).willReturn(this.carer);		
 		mockMvc.perform(get("/carers/{carerId}/delete", this.TEST_CARER_ID)
 			.with(csrf()))
 			.andExpect(status().is3xxRedirection())
 			.andExpect(view().name("redirect:/carers"));
 	}
 	
-	@WithMockUser(value = "spring", authorities = "admin")
+	@WithMockUser(value = "spring")
 	@Test
-	void testProcessDeleteFormUnauthorized() throws Exception {
-    	
-    	given(this.authorizationService.canUserModifyEmployee(anyString())).willReturn(false);
-    	
-		mockMvc.perform(get("/carers/{caresId}/delete", TEST_CARER_ID)
-							.with(csrf()))
-				.andExpect(status().isOk())
-				.andExpect(view().name("errors/accessDenied"));
+	void testProcessDeleteFormInvalidCarer() throws Exception {
+		given(this.carerService.findCarerById(TEST_CARER_ID)).willThrow(NoSuchElementException.class);    	
+		mockMvc.perform(get("/carers/{carerId}/delete", TEST_CARER_ID))
+			.andExpect(status().isOk())
+			.andExpect(view().name("errors/elementNotFound"));
 	}
-	
 	
 }

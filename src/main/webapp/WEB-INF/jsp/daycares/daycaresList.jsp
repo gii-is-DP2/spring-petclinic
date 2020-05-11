@@ -33,10 +33,10 @@
                 </td>
                 <td>
                     <c:out value="${daycare.description}"/>
-                </td>
+                </td>      
                 <td>
                     <c:out value="${daycare.pet.name}"/>
-                </td>      
+                </td>
             </tr>
         </c:forEach>
         </tbody>
