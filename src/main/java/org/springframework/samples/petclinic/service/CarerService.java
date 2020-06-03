@@ -3,10 +3,10 @@ package org.springframework.samples.petclinic.service;
 import java.util.Collection;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.DataAccessException;
 import org.springframework.samples.petclinic.model.Carer;
-import org.springframework.samples.petclinic.model.Daycare;
-import org.springframework.samples.petclinic.model.Pet;
 import org.springframework.samples.petclinic.repository.CarerRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +27,7 @@ public class CarerService {
 	}
 	
 	@Transactional(readOnly = true)
+	@Cacheable("allCarers")
 	public Collection<Carer> findCarers() throws DataAccessException {
 		return (Collection<Carer>) this.carerRepository.findAll();
 	}
@@ -37,11 +38,13 @@ public class CarerService {
 	}
 	
 	@Transactional
+	@CacheEvict(cacheNames="allCarers", allEntries=true)
 	public void saveCarer(Carer carer) throws DataAccessException {
 		this.carerRepository.save(carer);		
 	}
 	
 	@Transactional
+	@CacheEvict(cacheNames="allCarers", allEntries=true)
 	public void delete(int carerId) throws DataAccessException{
 		this.carerRepository.deleteById(carerId);
 	}
