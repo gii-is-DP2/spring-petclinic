@@ -1,4 +1,7 @@
+
 <?xml version="1.0" encoding="UTF-8"?>
+
+
 <config
             xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
             xmlns='http://www.ehcache.org/v3'
@@ -29,7 +32,15 @@
             </resources>
         </cache-template>
         
+
 	    <cache alias="allCarers" uses-template="default">
+
+<key-type>org.springframework.cache.interceptor.SimpleKey</key-type>
+	        <value-type>java.util.Collection</value-type>
+	    </cache>        
+    
+	    <cache alias="findTrainers" uses-template="default">
+
 	        <key-type>org.springframework.cache.interceptor.SimpleKey</key-type>
 	        <value-type>java.util.Collection</value-type>
 	    </cache>        

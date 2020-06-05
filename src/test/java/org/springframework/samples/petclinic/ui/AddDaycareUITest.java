@@ -83,19 +83,11 @@ public class AddDaycareUITest {
 
 	private AddDaycareUITest addDaycare() {
 		this.initTraining();
-		
-		// Coge el ultimo dia del mes
-		Calendar calendar = Calendar.getInstance();
-		int year = LocalDate.now().getYear();
-		int month = LocalDate.now().getMonthValue();
-		int date = 1;
-		calendar.set(year, month, date);
-		int days = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
-		String ndays= Integer.toString(days);
 
 		driver.findElement(By.linkText("Add daycare")).click();
 		driver.findElement(By.id("date")).click();
-		driver.findElement(By.linkText(ndays)).click();
+		driver.findElement(By.xpath("//div[@id='ui-datepicker-div']/div/a[2]/span")).click();
+		driver.findElement(By.linkText("1")).click();
 		driver.findElement(By.id("description")).click();
 		driver.findElement(By.id("description")).clear();
 		driver.findElement(By.id("description")).sendKeys("Daycare description");
@@ -107,13 +99,9 @@ public class AddDaycareUITest {
 		List<Pet> pets = this.petService.findPetsByOwner(this.user);
 		this.daycare = new Daycare();
 		
-		// Coge el ultimo dia del mes em el que estamos
-		Calendar calendar = Calendar.getInstance();
 		int year = LocalDate.now().getYear();
 		int month = LocalDate.now().getMonthValue();
-		int date = 1;
-		calendar.set(year, month, date);
-		int days = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
+		int days = LocalDate.now().getDayOfMonth();
 		
 		this.daycare.setDate(LocalDate.of(year, month, days));
 		this.daycare.setDescription("Daycare description");

@@ -13,6 +13,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.dao.DataAccessException;
+import org.springframework.samples.petclinic.model.GroundType;
 import org.springframework.samples.petclinic.model.Review;
 import org.springframework.samples.petclinic.model.ServiceType;
 import org.springframework.samples.petclinic.model.Training;
@@ -49,6 +50,24 @@ public class ReviewServiceTest {
 		reviewService.saveReview(review);
 				
 		return review.getId();
+	}
+	
+	@Test
+	@Transactional
+	public void shouldInsertReview() throws DataAccessException, BusinessException {
+		//this.addReview();
+		int previousReview = this.reviewService.findReviews().size();
+		Review newReview = new Review();
+		newReview.setComments("Very Good");
+		newReview.setDate(LocalDate.now().plusDays(2));
+		newReview.setRating(3);
+		newReview.setServiceType(ServiceType.HAIRDRESSING); 
+		newReview.setUser(userService.findByUsername(this.USER_USERNAME));
+		
+		this.reviewService.saveReview(newReview);
+		
+		Collection<Review> actualReviews = this.reviewService.findReviews();
+		assertThat(actualReviews.size()).isEqualTo(previousReview + 1);
 	}
 	
 	@Test

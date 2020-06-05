@@ -268,21 +268,25 @@ public class HairdressingController {
 
 	private Hairdressing convertToEntity(HairdressingDTO dto) throws MappingException {
 		Hairdressing hairdressing = new Hairdressing();
-
-		try {
-			String owner = SecurityContextHolder.getContext().getAuthentication().getName();
-			Pet pet = this.petService.findPetsByName(dto.getPetName(), owner);
-			hairdressing.setPet(pet);
-		} catch (DataAccessException e) {
-			throw new MappingException("pet", "Not existance", "Pet does not exist");
-		}
-
+		String owner = SecurityContextHolder.getContext().getAuthentication().getName();
+		Pet pet = getOwnerPet(dto,  owner);
+		
+		hairdressing.setPet(pet);
 		hairdressing.setCuidado(dto.getCuidado());
 		hairdressing.setDate(dto.getDate());
 		hairdressing.setDescription(dto.getDescription());
 		hairdressing.setTime(dto.getTime());
-
 		return hairdressing;
+	}
+
+	private Pet getOwnerPet(HairdressingDTO dto, String owner) throws MappingException {
+		Pet result;
+		try {
+			result = this.petService.findPetsByName(dto.getPetName(), owner);
+		} catch (DataAccessException e) {
+			throw new MappingException("pet", "Not existance", "Pet does not exist");
+		}
+		return result;
 	}
 
 	private HairdressingDTO convertToDto(Hairdressing entity) {
@@ -290,7 +294,8 @@ public class HairdressingController {
 		dto.setDate(entity.getDate());
 		dto.setDescription(entity.getDescription());
 		dto.setPetName(entity.getPet().getName());
-
+		dto.setCuidado(entity.getCuidado());
+		dto.setTime(entity.getTime());
 		return dto;
 	}
 

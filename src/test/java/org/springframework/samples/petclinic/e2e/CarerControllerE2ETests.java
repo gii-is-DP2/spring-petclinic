@@ -1,5 +1,8 @@
 package org.springframework.samples.petclinic.e2e;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.hasProperty;
+import static org.hamcrest.Matchers.is;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -10,11 +13,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.time.LocalDate;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.samples.petclinic.model.Carer;
+import org.springframework.samples.petclinic.model.Hairdressing;
+import org.springframework.samples.petclinic.model.TipoCuidado;
+import org.springframework.samples.petclinic.service.CarerService;
+import org.springframework.samples.petclinic.service.HairdressingService;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -32,6 +41,16 @@ public class CarerControllerE2ETests {
 
 	@Autowired
 	private MockMvc mockMvc;
+	
+	@Autowired
+	private CarerService carerService;
+	
+	private Carer testCarer;
+	
+	@BeforeEach
+	private void setup() {
+		testCarer = carerService.findCarerById(TEST_CARER_ID);
+	}
 
 	@Test
 	void testNotLoggedIn() throws Exception { //La annotation @IsAdmin esta sobre el nombre de la clase
@@ -54,7 +73,8 @@ public class CarerControllerE2ETests {
 	void testInitCreationFormSuccess() throws Exception {
 		mockMvc.perform(get("/carers/new"))
 		.andExpect(status().isOk())
-		.andExpect(view().name("carers/createOrUpdateCarerForm"));
+		.andExpect(view().name("carers/createOrUpdateCarerForm"))
+		.andExpect(model().attributeExists("carer"));
 	}
 	
 	@WithMockUser(username = TEST_ADMIN_USERNAME, authorities = {"admin"})
@@ -87,7 +107,15 @@ public class CarerControllerE2ETests {
 		mockMvc.perform(get("/carers/{carerId}/edit", TEST_CARER_ID))
 		.andExpect(status().isOk())
 		.andExpect(model().attributeExists("carer"))
-		.andExpect(view().name("carers/createOrUpdateCarerForm"));
+		.andExpect(view().name("carers/createOrUpdateCarerForm"))
+		.andExpect(model().attributeExists("carer"))
+		.andExpect(model().attribute("carer", hasProperty("isHairdresser", is(testCarer.getIsHairdresser()))))
+		.andExpect(model().attribute("carer", hasProperty("firstName", is(testCarer.getFirstName()))))
+		.andExpect(model().attribute("carer", hasProperty("lastName", is(testCarer.getLastName()))))
+		.andExpect(model().attribute("carer", hasProperty("salary", is(testCarer.getSalary()))))
+		.andExpect(model().attribute("carer", hasProperty("dni", is(testCarer.getDni()))))
+		.andExpect(model().attribute("carer", hasProperty("email", is(testCarer.getEmail()))))
+		.andExpect(model().attribute("carer", hasProperty("telephone", is(testCarer.getTelephone()))));
 	}
 	
 	@WithMockUser(username = TEST_ADMIN_USERNAME, authorities = {"admin"})
@@ -116,17 +144,35 @@ public class CarerControllerE2ETests {
 	@WithMockUser(username = TEST_ADMIN_USERNAME, authorities = {"admin"})
 	@Test
 	void testProcessUpdateFormSuccess() throws Exception {		
+		String isHairdresser = "true";
+		String firstName = "Alonso";
+		String lastName = "Rodriguez";
+		String salary = "1000";
+		String dni = "11122233444d";
+		String telephone = "12335435";
+		String email = "correo1@gmail.com";
+		
 		mockMvc.perform(post("/carers/{carerId}/edit", TEST_CARER_ID)
-				.param("firstName", "Alonso")
-				.param("lastName", "Rodriguez")
-				.param("salary", "1000")
-				.param("dni", "11223344d")
-				.param("telephone", "111223344")
-				.param("email", "correo1@gmail.com")
-				.param("isHairdresser", "true")
+				.param("firstName", firstName)
+				.param("lastName", lastName)
+				.param("salary", salary)
+				.param("dni", dni)
+				.param("telephone", telephone)
+				.param("email", email)
+				.param("isHairdresser", isHairdresser)
 				.with(csrf()))
 		.andExpect(status().is3xxRedirection())
 		.andExpect(view().name("redirect:/carers"));
+		
+		Carer updatedCarer = carerService.findCarerById(TEST_CARER_ID);
+
+		assertThat(String.valueOf(updatedCarer.getIsHairdresser())).isEqualTo(isHairdresser);
+		assertThat(updatedCarer.getFirstName()).isEqualTo(firstName);
+		assertThat(updatedCarer.getLastName()).isEqualTo(lastName);
+		assertThat(updatedCarer.getSalary()).isEqualTo(1000);
+		assertThat(updatedCarer.getDni()).isEqualTo(dni);
+		assertThat(updatedCarer.getTelephone()).isEqualTo(telephone);
+		assertThat(updatedCarer.getEmail()).isEqualTo(email);
 	}
 	
 	@WithMockUser(username = TEST_ADMIN_USERNAME, authorities = {"admin"})

@@ -1,5 +1,8 @@
 package org.springframework.samples.petclinic.e2e;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.hasProperty;
+import static org.hamcrest.Matchers.is;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -7,11 +10,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.samples.petclinic.model.Hairdressing;
+import org.springframework.samples.petclinic.model.Pet;
+import org.springframework.samples.petclinic.model.PetType;
+import org.springframework.samples.petclinic.service.HairdressingService;
+import org.springframework.samples.petclinic.service.PetService;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
@@ -33,6 +42,16 @@ public class PetControllerE2ETests {
 
 	@Autowired
 	private MockMvc mockMvc;
+	
+	@Autowired
+	private PetService petService;
+	
+	private Pet testPet;
+	
+	@BeforeEach
+	private void setup() {
+		testPet = petService.findPetById(TEST_PET_ID);
+	}
 
 	@WithMockUser(username = TEST_OWNER_USERNAME, authorities = {"owner"})
     @Test
@@ -114,7 +133,12 @@ public class PetControllerE2ETests {
 		mockMvc.perform(get("/owners/{ownerId}/pets/{petId}/edit", TEST_OWNER_ID, TEST_PET_ID))
 				.andExpect(status().isOk())
 				.andExpect(model().attributeExists("pet"))
-				.andExpect(view().name("pets/createOrUpdatePetForm"));
+				.andExpect(view().name("pets/createOrUpdatePetForm"))
+				.andExpect(model().attributeExists("pet"))
+				.andExpect(model().attribute("pet", hasProperty("name", is(testPet.getName()))))
+				.andExpect(model().attribute("pet", hasProperty("owner", is(testPet.getOwner()))))
+				.andExpect(model().attribute("pet", hasProperty("birthDate", is(testPet.getBirthDate()))))
+				.andExpect(model().attribute("pet", hasProperty("type", is(testPet.getType()))));
 	}
 	
 	@WithMockUser(username = TEST_ADMIN_USERNAME, authorities = {"admin"})
@@ -123,7 +147,12 @@ public class PetControllerE2ETests {
 		mockMvc.perform(get("/owners/{ownerId}/pets/{petId}/edit", TEST_OWNER_ID, TEST_PET_ID))
 				.andExpect(status().isOk())
 				.andExpect(model().attributeExists("pet"))
-				.andExpect(view().name("pets/createOrUpdatePetForm"));
+				.andExpect(view().name("pets/createOrUpdatePetForm"))
+				.andExpect(model().attributeExists("pet"))
+				.andExpect(model().attribute("pet", hasProperty("name", is(testPet.getName()))))
+				.andExpect(model().attribute("pet", hasProperty("owner", is(testPet.getOwner()))))
+				.andExpect(model().attribute("pet", hasProperty("birthDate", is(testPet.getBirthDate()))))
+				.andExpect(model().attribute("pet", hasProperty("type", is(testPet.getType()))));
 	}
 	
 	@WithMockUser(username = TEST_OWNER_USERNAME, authorities = {"owner"})
@@ -144,14 +173,23 @@ public class PetControllerE2ETests {
 	
 	@WithMockUser(username = TEST_OWNER_USERNAME, authorities = {"owner"})
 	@Test
-	void testProcessUpdateFormSuccess() throws Exception {    	
+	void testProcessUpdateFormSuccess() throws Exception {    
+		String name = "Betty";
+		String type = "hamster";
+		String birthDate = "2015/02/12";
+		
 		mockMvc.perform(post("/owners/{ownerId}/pets/{petId}/edit", TEST_OWNER_ID, TEST_PET_ID)
 							.with(csrf())
-							.param("name", "Betty")
-							.param("type", "hamster")
-							.param("birthDate", "2015/02/12"))
+							.param("name", name)
+							.param("type", type)
+							.param("birthDate", birthDate))
 				.andExpect(status().is3xxRedirection())
 				.andExpect(view().name("redirect:/owners/{ownerId}"));
+		
+		Pet updatedPet = petService.findPetById(TEST_PET_ID);
+
+		assertThat(updatedPet.getName()).isEqualTo(name);
+		assertThat(updatedPet.getType().toString()).isEqualTo(type);
 	}
 	
 	@WithMockUser(username = TEST_ADMIN_USERNAME, authorities = {"admin"})
