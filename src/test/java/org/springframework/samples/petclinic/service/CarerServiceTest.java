@@ -91,7 +91,7 @@ public class CarerServiceTest {
 	
 	@Test
 	@Transactional
-	public void shouldInsertInvalidCarer() {
+	public void shouldNotInsertInvalidCarer() {
 		Carer carer = new Carer();
 		
 		assertThrows(ConstraintViolationException.class, () -> {

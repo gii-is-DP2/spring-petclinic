@@ -1,6 +1,7 @@
 package org.springframework.samples.petclinic.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -12,6 +13,10 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
+import javax.validation.ConstraintViolationException;
+import javax.validation.ValidationException;
+
+import org.hibernate.exception.DataException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,11 +24,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.dao.DataAccessException;
+import org.springframework.samples.petclinic.model.Carer;
 import org.springframework.samples.petclinic.model.Daycare;
 import org.springframework.samples.petclinic.model.Owner;
 import org.springframework.samples.petclinic.model.Pet;
 import org.springframework.samples.petclinic.model.PetType;
 import org.springframework.samples.petclinic.repository.springdatajpa.DaycareRepository;
+import org.springframework.samples.petclinic.service.exceptions.BusinessException;
 import org.springframework.samples.petclinic.util.EntityUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.test.annotation.DirtiesContext;
@@ -124,9 +132,10 @@ public class DaycareServiceTest {
 		verify(this.daycareRepository, times(1)).save(daycare);
 	}
 	
+	
 	@Test
 	@Transactional
-	public void shouldDeleteDaycare() {
+	public void shouldDeleteDaycareById() {
 	
 		Daycare daycare = new Daycare();
 		Pet pet = new Pet();
@@ -151,9 +160,46 @@ public class DaycareServiceTest {
 	}
 	
 	@Test
+	public void shouldNotDeleteInvalidDaycareById() {
+		Assertions.assertThrows(NoSuchElementException.class, () -> {
+			this.daycareService.delete(1234);
+		});
+	}
+	
+	@Test
 	@Transactional
-	public void shouldCountDaycareByDate() {
+	public void shouldCountOneDaycareByDate() {
+		Daycare daycare = new Daycare();
+		Pet pet = new Pet();
+		pet.setId(1);
+		pet.setBirthDate(LocalDate.now());
+		pet.setName("alonso");
+		Collection<PetType> types = this.petService.findPetTypes();
+		pet.setType(EntityUtils.getById(types, PetType.class, 2));
+		daycare.setId(1);
+		daycare.setDescription("asdasd");
+		daycare.setDate(LocalDate.now());
+		daycare.setCapacity(15);
+		daycare.setPet(pet);   
+		pet.addDaycare(daycare);
+		Owner owner6 = this.ownerService.findOwnerById(6);
+		owner6.addPet(pet);
 		
+		when(this.daycareRepository.countDaycareByDateAndPetId(daycare.getDate(), pet.getId())).thenReturn(1);
+		
+		this.daycareService.oneDaycareById(daycare.getDate(), 1);
+		verify(this.daycareRepository, times(1)).countDaycareByDateAndPetId(daycare.getDate(), 1);
+	}
+	
+	@Test
+	@Transactional
+	public void shouldNotCountOneDaycareByDate() {
+		
+		
+		when(this.daycareRepository.countDaycareByDateAndPetId(LocalDate.now().plusDays(2) , 2 )).thenReturn(0);
+		
+		assertThat(this.daycareService.oneDaycareById(LocalDate.now().plusDays(2) , 2) == 0);
+		verify(this.daycareRepository, times(1)).countDaycareByDateAndPetId(LocalDate.now().plusDays(2) , 2);
 	}
 	
 	
