@@ -8,10 +8,13 @@
 <petclinic:layout pageName="trainings">
     <h2>Trainings</h2>
     
+    <c:if test="${owner}">
 	<a class="btn btn-default" href='<spring:url value="/trainings/new" htmlEscape="true"/>'>Add training</a>
+	</c:if>
 	<br><br>
 
     <table id="trainingsTable" class="table table-striped">
+    
         <thead>
         <tr>
             <th>Date</th>

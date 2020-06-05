@@ -165,7 +165,15 @@ public class TrainingController {
 	}
 
 	@GetMapping("/trainings/{trainingId}")
-	public ModelAndView showTraining(@PathVariable("trainingId") int trainingId) {
+	public ModelAndView showTraining(@PathVariable("trainingId") int trainingId, Map<String, Object> model) {
+		
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		if (auth.getAuthorities().stream().map(x -> x.getAuthority()).anyMatch(x -> x.equals("admin"))) {
+			model.put("owner", false);
+		} else {
+			model.put("owner", true);
+		}
+		
 		ModelAndView mav = new ModelAndView("trainings/trainingDetails");
 		Training training = trainingService.findTrainingById(trainingId);
 		authorizeUserAction(training.getPet().getId());
@@ -178,6 +186,7 @@ public class TrainingController {
 	public String showTrainingsList(Map<String, Object> model) {
 		Collection<Training> results = this.trainingService.findTrainings();
 		model.put("trainings", results);
+		model.put("owner", false);
 		
 		return "trainings/trainingsList";
 	}
@@ -188,6 +197,7 @@ public class TrainingController {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		Collection<Training> results = this.trainingService.findTrainingsByUser(auth.getName());
 		model.put("trainings", results);
+		model.put("owner", true);
 		
 		return "trainings/trainingsList";
 	}
