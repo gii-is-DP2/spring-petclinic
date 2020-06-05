@@ -165,7 +165,15 @@ public class TrainingController {
 	}
 
 	@GetMapping("/trainings/{trainingId}")
-	public ModelAndView showTraining(@PathVariable("trainingId") int trainingId) {
+	public ModelAndView showTraining(@PathVariable("trainingId") int trainingId, Map<String, Object> model) {
+		
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		if (auth.getAuthorities().stream().map(x -> x.getAuthority()).anyMatch(x -> x.equals("admin"))) {
+			model.put("owner", false);
+		} else {
+			model.put("owner", true);
+		}
+		
 		ModelAndView mav = new ModelAndView("trainings/trainingDetails");
 		Training training = trainingService.findTrainingById(trainingId);
 		authorizeUserAction(training.getPet().getId());
@@ -178,6 +186,7 @@ public class TrainingController {
 	public String showTrainingsList(Map<String, Object> model) {
 		Collection<Training> results = this.trainingService.findTrainings();
 		model.put("trainings", results);
+		model.put("owner", false);
 		
 		return "trainings/trainingsList";
 	}
@@ -188,6 +197,7 @@ public class TrainingController {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		Collection<Training> results = this.trainingService.findTrainingsByUser(auth.getName());
 		model.put("trainings", results);
+		model.put("owner", true);
 		
 		return "trainings/trainingsList";
 	}
@@ -209,18 +219,9 @@ public class TrainingController {
 		Training training = new Training();
 		
 		String owner = SecurityContextHolder.getContext().getAuthentication().getName();
-		Pet pet = this.petService.findPetsByName(dto.getPetName(), owner);
-		if (pet == null) {
-			throw new MappingException("petName", "Not existance", "Pet does not exist");
-		}
-		training.setPet(pet);
 		
-		try {
-			Trainer trainer = this.trainerService.findTrainerById(dto.getTrainerId());
-			training.setTrainer(trainer);
-		} catch(NoSuchElementException e) {
-			throw new MappingException("trainerId", "Not existance", "Trainer does not exist");
-		}
+		training.setPet(this.getOwnerPet(dto.getPetName(), owner));	
+		training.setTrainer(this.getTrainerById(dto.getTrainerId()));
 
 		training.setGround(dto.getGround());
 		training.setGroundType(dto.getGroundType());
@@ -229,7 +230,29 @@ public class TrainingController {
 		
 		return training;
 	}
+	
+	private Pet getOwnerPet(String petName, String owner) throws MappingException {
+		Pet pet = this.petService.findPetsByName(petName, owner);
+		if (pet == null) {
+			throw new MappingException("petName", "Not existance", "Pet does not exist");
+		}
+		
+		return pet;
+	}
 
+	private Trainer getTrainerById(Integer trainerId) throws MappingException {
+		Trainer trainer;
+		
+		try {
+			trainer = this.trainerService.findTrainerById(trainerId);
+			
+		} catch(NoSuchElementException e) {
+			throw new MappingException("trainerId", "Not existance", "Trainer does not exist");
+		}
+		
+		return trainer;
+	}
+	
 	private TrainingDTO convertToDto(Training entity) {
 		TrainingDTO dto = new TrainingDTO();
 		dto.setDate(entity.getDate());

@@ -19,7 +19,7 @@
             <td><b><c:out value="${training.description}"/></b></td>
         </tr>
         <tr>
-            <th>Training Ground</th>
+            <th>Training Ground Number</th>
             <td><b><c:out value="${training.ground}"/></b></td>
         </tr>
         <tr>
@@ -36,8 +36,9 @@
         </tr>
     </table>
     
+    <c:if test="${owner}">
    	<a class="btn btn-default" href='<spring:url value="/trainings/${training.id}/edit" htmlEscape="true"/>'>Edit training</a>
-   	
+   	</c:if>
    	
    	
    	<spring:url value="/trainings/{trainingId}/delete" var="trainingUrl">

@@ -24,7 +24,7 @@
 	        <div class="form-group has-feedback">
 	            <petclinic:inputField label="Date" name="date" />
 	            <petclinic:inputField label="Description" name="description" />
-	            <petclinic:inputField label="Ground" type="number" minValue="1" name="ground" />
+	            <petclinic:inputField label="Ground Number" type="number" minValue="1" name="ground" />
 				<div class="control-group">
                     <petclinic:selectField name="groundType" label="Ground Type" names="${groundTypes}" size="${groundTypes.size()}"/>
                     <petclinic:selectField name="petName" label="Pet Name" names="${pets}" size="${pets.size()}"/>
