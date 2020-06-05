@@ -1,6 +1,8 @@
 package org.springframework.samples.petclinic.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.DataAccessException;
 import org.springframework.samples.petclinic.model.Trainer;
 import org.springframework.samples.petclinic.repository.TrainerRepository;
@@ -25,6 +27,7 @@ public class TrainerService {
 	}
 	
 	@Transactional(readOnly = true)
+	@Cacheable("findTrainers")
 	public Collection<Trainer> findTrainers() throws DataAccessException {
 		return (Collection<Trainer>) this.trainerRepository.findAll();
 	}
@@ -35,6 +38,7 @@ public class TrainerService {
 	}
 	
 	@Transactional
+	@CacheEvict(cacheNames = "findTrainers", allEntries = true)
 	public void saveTrainer(Trainer trainer) throws DataAccessException {
 		this.trainerRepository.save(trainer);		
 	}
