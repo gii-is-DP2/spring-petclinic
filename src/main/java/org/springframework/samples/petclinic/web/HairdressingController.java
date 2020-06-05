@@ -281,7 +281,6 @@ public class HairdressingController {
 		hairdressing.setDate(dto.getDate());
 		hairdressing.setDescription(dto.getDescription());
 		hairdressing.setTime(dto.getTime());
-
 		return hairdressing;
 	}
 
@@ -290,7 +289,8 @@ public class HairdressingController {
 		dto.setDate(entity.getDate());
 		dto.setDescription(entity.getDescription());
 		dto.setPetName(entity.getPet().getName());
-
+		dto.setCuidado(entity.getCuidado());
+		dto.setTime(entity.getTime());
 		return dto;
 	}
 
