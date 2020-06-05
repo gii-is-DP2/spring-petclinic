@@ -1,5 +1,6 @@
 package org.springframework.samples.petclinic.e2e;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
@@ -23,11 +24,18 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.assertj.core.util.Lists;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.samples.petclinic.model.Hairdressing;
+import org.springframework.samples.petclinic.model.Trainer;
+import org.springframework.samples.petclinic.model.Training;
+import org.springframework.samples.petclinic.service.HairdressingService;
+import org.springframework.samples.petclinic.service.TrainerService;
+import org.springframework.samples.petclinic.service.TrainingService;
 import org.springframework.samples.petclinic.service.exceptions.BusinessException;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
@@ -50,6 +58,16 @@ public class TrainingControllerE2ETests {
 
 	@Autowired
 	private MockMvc mockMvc;
+	
+	@Autowired
+	private TrainingService trainingService;
+	
+	private Training testTraining;
+	
+	@BeforeEach
+	private void setup() {
+		testTraining = trainingService.findTrainingById(TEST_TRAINING_ID);
+	}
 	
 	 @Test
 	void testNotLoggedIn() throws Exception { //La annotation @IsAuthenticated esta sobre el nombre de la clase
@@ -209,7 +227,14 @@ public class TrainingControllerE2ETests {
 		mockMvc.perform(get("/trainings/{trainingId}/edit", TEST_TRAINING_ID))
 				.andExpect(status().isOk())
 				.andExpect(model().attributeExists("trainingDTO"))
-			.andExpect(view().name("trainings/createOrUpdateTrainingForm"));
+			.andExpect(view().name("trainings/createOrUpdateTrainingForm"))
+			.andExpect(model().attributeExists("trainingDTO"))
+			.andExpect(model().attribute("trainingDTO", hasProperty("date", is(testTraining.getDate()))))
+			.andExpect(model().attribute("trainingDTO", hasProperty("description", is(testTraining.getDescription()))))
+			.andExpect(model().attribute("trainingDTO", hasProperty("ground", is(testTraining.getGround()))))
+			.andExpect(model().attribute("trainingDTO", hasProperty("groundType", is(testTraining.getGroundType()))))
+			.andExpect(model().attribute("trainingDTO", hasProperty("petName", is(testTraining.getPet().getName()))))
+			.andExpect(model().attribute("trainingDTO", hasProperty("trainerId", is(testTraining.getTrainer().getId()))));
 	}
 	
 	@WithMockUser(username = "george", authorities = {"owner"})
@@ -260,16 +285,31 @@ public class TrainingControllerE2ETests {
 	@WithMockUser(username = TEST_OWNER_USERNAME, authorities = {"owner"})
 	@Test
 	void testProcessUpdateFormSuccess() throws Exception {
+		String description = "Descripcion cambiada";
+		String date = (LocalDate.now().getYear() + 1) + "/05/12";
+		String ground = "3";
+		String groundType = "AGILIDAD";
+		String petName = "Iker";
+		String trainerId = "1";
+		
 		mockMvc.perform(post("/trainings/{trainingId}/edit", TEST_TRAINING_ID)
 				.with(csrf())
-				.param("description", "Descripcion cambiada")
-				.param("date", (LocalDate.now().getYear() + 1) + "/05/12")
-				.param("ground", "3")
-				.param("groundType", "AGILIDAD")
-				.param("petName","Iker")
-				.param("trainerId", "1"))
+				.param("description", description)
+				.param("date", date)
+				.param("ground", ground)
+				.param("groundType", groundType)
+				.param("petName", petName)
+				.param("trainerId", trainerId))
 			.andExpect(status().is3xxRedirection())
-			.andExpect(view().name("redirect:/trainings/{trainingId}"));		
+			.andExpect(view().name("redirect:/trainings/{trainingId}"));	
+		
+		Training updatedTraining = trainingService.findTrainingById(TEST_TRAINING_ID);
+
+		assertThat(updatedTraining.getDescription()).isEqualTo(description);
+		assertThat(String.valueOf(updatedTraining.getGround())).isEqualTo(ground);
+		assertThat(updatedTraining.getGroundType().toString()).isEqualTo(groundType);
+		assertThat(updatedTraining.getPet().getName()).isEqualTo(petName);
+		assertThat(String.valueOf(updatedTraining.getTrainer().getId())).isEqualTo(trainerId);
 	}
 	
 	@WithMockUser(username = TEST_OWNER_USERNAME, authorities = {"owner"})
