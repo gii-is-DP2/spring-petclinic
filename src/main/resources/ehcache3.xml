@@ -1,0 +1,35 @@
+<config
+            xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+            xmlns='http://www.ehcache.org/v3'
+            xsi:schemaLocation="
+                http://www.ehcache.org/v3 
+                http://www.ehcache.org/schema/ehcache-core-3.7.xsd">
+                
+        <!-- Persistent cache directory -->
+        <!--<persistence directory="spring-boot-ehcache/cache" />-->
+        
+        <!-- Default cache template -->
+        <cache-template name="default">
+            <expiry>
+                <ttl unit="seconds">120</ttl>
+            </expiry>
+            <listeners>
+                <listener>
+                    <class>org.springframework.samples.petclinic.configuration.CacheLogger</class>
+                    <event-firing-mode>ASYNCHRONOUS</event-firing-mode>
+                    <event-ordering-mode>UNORDERED</event-ordering-mode>
+                    <events-to-fire-on>CREATED</events-to-fire-on>
+                    <events-to-fire-on>EXPIRED</events-to-fire-on>
+                    <events-to-fire-on>EVICTED</events-to-fire-on>
+                </listener>
+            </listeners>
+            <resources>
+                <heap>1000</heap>
+            </resources>
+        </cache-template>
+        
+	    <cache alias="findTrainers" uses-template="default">
+	        <key-type>org.springframework.cache.interceptor.SimpleKey</key-type>
+	        <value-type>java.util.Collection</value-type>
+	    </cache>        
+    </config>
