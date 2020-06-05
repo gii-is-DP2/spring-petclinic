@@ -116,7 +116,6 @@ public class CarerController {
 	
 	@GetMapping(value= "/carers/{carerId}/delete")
 	public String deleteCarer(@PathVariable("carerId") final int carerId, final ModelMap model) {
-		Carer carer = this.carerService.findCarerById(carerId);
 		this.carerService.delete(carerId);
 		return "redirect:/carers";
 	}
