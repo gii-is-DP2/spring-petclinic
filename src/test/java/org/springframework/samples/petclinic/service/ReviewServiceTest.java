@@ -55,7 +55,7 @@ public class ReviewServiceTest {
 	@Test
 	@Transactional
 	public void shouldInsertReview() throws DataAccessException, BusinessException {
-		this.addReview();
+		//this.addReview();
 		int previousReview = this.reviewService.findReviews().size();
 		Review newReview = new Review();
 		newReview.setComments("Very Good");

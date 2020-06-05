@@ -48,7 +48,7 @@ public class ReviewService {
 	@Transactional(readOnly = true)	
 	public boolean existsByUserAndServiceType(User user, ServiceType type) {
 		Collection<Review> found = this.reviewRepository.findByUsernameAndServiceType(user.getUsername(), type);
-		return found.size() > 1;
+		return found.size() > 0;
 	}
 	@Transactional
 	public void deleteReview(Review review) throws DataAccessException {
